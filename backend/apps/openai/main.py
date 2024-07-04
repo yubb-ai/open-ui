@@ -7,7 +7,7 @@ from typing import List, Optional
 
 import aiohttp
 import requests
-from apps.filter.WordsSearch import WordsSearch
+
 from apps.webui.models.models import Models
 from config import (
     SRC_LOG_LEVELS,
