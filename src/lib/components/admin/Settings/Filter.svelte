@@ -68,7 +68,7 @@
 
 				<div class=" py-0.5 flex w-full justify-between">
 					<div class=" self-center text-xs font-medium">
-						{$i18n.t('Message Filter Enable')}
+						{$i18n.t('Enable Message Filter')}
 					</div>
 
 					<button
@@ -85,7 +85,7 @@
 
 				<div class=" py-0.5 flex w-full justify-between">
 					<div class=" self-center text-xs font-medium">
-						{$i18n.t('Enable Message Filter Replace Content')}
+						{$i18n.t('Enable message bad Words replacement')}
 					</div>
 
 					<button
@@ -102,7 +102,7 @@
 
 				<div class=" flex gap-2">
 					<div class="w-full">
-						<div class=" mb-1.5 text-sm font-medium">{$i18n.t('Banwords File')}</div>
+						<div class=" mb-1.5 text-sm font-medium">{$i18n.t('Bad words File')}</div>
 						<div class="flex w-full">
 							<div class="flex-1">
 								<input
@@ -114,7 +114,7 @@
 						</div>
 					</div>
 					<div class="w-full">
-						<div class=" mb-1.5 text-sm font-medium">{$i18n.t('Replace Words')}</div>
+						<div class=" mb-1.5 text-sm font-medium">{$i18n.t('Replace bad words Words')}</div>
 						<div class="flex w-full">
 							<div class="flex-1">
 								<input
@@ -126,8 +126,11 @@
 						</div>
 					</div>
 				</div>
+                
+                <div class=" py-0.5 flex w-full justify-between" />
+
 				<div>
-					<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Banwords Template')}</div>
+					<div class=" mb-2.5 text-sm font-medium">{$i18n.t('Bad words Template')}</div>
 					<textarea
 						bind:value={CHAT_FILTER_WORDS}
 						class="w-full rounded-lg px-4 py-3 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none resize-none"

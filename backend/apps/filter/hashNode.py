@@ -1,4 +1,4 @@
-class TrieNode2():
+class hashNode:
     def __init__(self):
         self.End = False
         self.Results = []

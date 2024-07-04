@@ -1,4 +1,4 @@
-class TrieNode():
+class trieNode:
     def __init__(self):
         self.Index = 0
         self.Index = 0
@@ -13,7 +13,7 @@ class TrieNode():
     def Add(self, c):
         if c in self.m_values:
             return self.m_values[c]
-        node = TrieNode()
+        node = trieNode()
         node.Parent = self
         node.Char = c
         self.m_values[c] = node

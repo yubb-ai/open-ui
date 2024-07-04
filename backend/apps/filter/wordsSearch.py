@@ -1,8 +1,8 @@
-from apps.filter.TrieNode import TrieNode
-from apps.filter.TrieNode2 import TrieNode2
+from apps.filter.trieNode import trieNode
+from apps.filter.hashNode import hashNode
 
 
-class WordsSearch:
+class wordsSearch:
     def __init__(self):
         self._first = {}
         self._keywords = []
@@ -14,7 +14,7 @@ class WordsSearch:
         for i in range(len(keywords)):
             self._indexs.append(i)
 
-        root = TrieNode()
+        root = trieNode()
         allNodeLayer = {}
 
         for i in range(len(self._keywords)):
@@ -55,7 +55,7 @@ class WordsSearch:
 
         allNode2 = []
         for i in range(len(allNode)):
-            allNode2.append(TrieNode2())
+            allNode2.append(hashNode())
 
         for i in range(len(allNode2)):
             oldNode = allNode[i]
@@ -103,7 +103,7 @@ class WordsSearch:
                         "Success": True,
                         "End": index,
                         "Start": index + 1 - len(keyword),
-                        "Index": self._indexs[item]
+                        "Index": self._indexs[item],
                     }
             ptr = tn
         return None
@@ -133,7 +133,7 @@ class WordsSearch:
                                 "Success": True,
                                 "End": index,
                                 "Start": index + 1 - len(keyword),
-                                "Index": self._indexs[item]
+                                "Index": self._indexs[item],
                             }
                         )
             ptr = tn

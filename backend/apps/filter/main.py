@@ -2,7 +2,7 @@ import logging
 import os
 import time
 
-from apps.filter.WordsSearch import WordsSearch
+from apps.filter.wordsSearch import wordsSearch
 from config import (
     ENABLE_MESSAGE_FILTER,
     CHAT_FILTER_WORDS_FILE,
@@ -37,15 +37,16 @@ if os.path.exists(file_dir):
     if os.path.isfile(file_path):
         with open(file_path, "r", encoding="utf-8") as file:
             lines = file.readlines()
-            joined_text = ",".join(line.strip() for line in lines)
+            unique_lines = set(line.strip() for line in lines)
+            joined_text = ",".join(unique_lines)
             CHAT_FILTER_WORDS = PersistentConfig(
                 "CHAT_FILTER_WORDS",
                 "message_filter.words",
                 joined_text if joined_text else "",
             )
     else:
-        with open(file_path, "r", encoding="utf-8") as file:
-            file.write('')
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write("")
 
 app.state.config = AppConfig()
 
@@ -57,7 +58,7 @@ app.state.config.REPLACE_FILTER_WORDS = REPLACE_FILTER_WORDS
 
 search = None
 if app.state.config.ENABLE_MESSAGE_FILTER and app.state.config.CHAT_FILTER_WORDS:
-    search = WordsSearch()
+    search = wordsSearch()
     search.SetKeywords(str(app.state.config.CHAT_FILTER_WORDS).split(","))
 
 
@@ -85,15 +86,21 @@ async def update_filter_config(
     form_data: FILTERConfigForm, user=Depends(get_admin_user)
 ):
     global search
+
+    if app.state.config.CHAT_FILTER_WORDS != form_data.CHAT_FILTER_WORDS:
+        new_bad_words = set(word.strip() for word in form_data.CHAT_FILTER_WORDS.split(","))
+        app.state.config.CHAT_FILTER_WORDS = ",".join(sorted(new_bad_words))
+        if app.state.config.ENABLE_MESSAGE_FILTER and app.state.config.CHAT_FILTER_WORDS:
+            search = wordsSearch()
+            search.SetKeywords(str(app.state.config.CHAT_FILTER_WORDS).split(","))
+
+        with open(file_path, "w", encoding="utf-8") as file:
+            file.write("\n".join(sorted(new_bad_words)) + "\n")
+
     app.state.config.ENABLE_MESSAGE_FILTER = form_data.ENABLE_MESSAGE_FILTER
-    app.state.config.CHAT_FILTER_WORDS = form_data.CHAT_FILTER_WORDS
     app.state.config.CHAT_FILTER_WORDS_FILE = form_data.CHAT_FILTER_WORDS_FILE
     app.state.config.ENABLE_REPLACE_FILTER_WORDS = form_data.ENABLE_REPLACE_FILTER_WORDS
     app.state.config.REPLACE_FILTER_WORDS = form_data.REPLACE_FILTER_WORDS
-
-    if app.state.config.ENABLE_MESSAGE_FILTER and app.state.config.CHAT_FILTER_WORDS:
-        search = WordsSearch()
-        search.SetKeywords(str(app.state.config.CHAT_FILTER_WORDS).split(","))
 
     return {
         "ENABLE_MESSAGE_FILTER": app.state.config.ENABLE_MESSAGE_FILTER,
@@ -117,12 +124,12 @@ def filter_message(payload: dict):
                             if not app.state.config.ENABLE_REPLACE_FILTER_WORDS:
                                 filter_word = filter_condition["Keyword"]
                                 detail_message = (
-                                    f"Open WebUI: Your message contains inappropriate words (`{filter_word}`) "
+                                    f"Open WebUI: Your message contains bad words (`{filter_word}`) "
                                     "and cannot be sent. Please create a new topic and try again."
                                 )
                                 log.info(
                                     "The time taken to check the filter words: %.6fs",
-                                    time.time() - start_time
+                                    time.time() - start_time,
                                 )
                                 raise HTTPException(
                                     status_code=503, detail=detail_message
@@ -132,10 +139,10 @@ def filter_message(payload: dict):
                                     content, app.state.config.REPLACE_FILTER_WORDS
                                 )
                                 log.info(
-                                    f"Replace filter words in content: {message['content']}"
+                                    f"Replace bad words in content: {message['content']}"
                                 )
                         break
             log.info(
-                "The time taken to check the filter words: %.6fs",
-                time.time() - start_time
+                "The time taken to check the bad words: %.6fs",
+                time.time() - start_time,
             )
