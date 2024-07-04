@@ -81,8 +81,6 @@
 					</button>
 				</div>
 
-				<div class=" py-0.5 flex w-full justify-between" />
-
 				<div class=" py-0.5 flex w-full justify-between">
 					<div class=" self-center text-xs font-medium">
 						{$i18n.t('Enable message bad Words replacement')}
