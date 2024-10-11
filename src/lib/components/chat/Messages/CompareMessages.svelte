@@ -131,6 +131,7 @@
 							<ResponseMessage
 								message={groupedMessages[modelIdx].messages[groupedMessagesIdx[modelIdx]]}
 								siblings={groupedMessages[modelIdx].messages.map((m) => m.id)}
+								bufferTime={Math.min(60 * Object.keys(groupedMessages).length, 250)}
 								isLastMessage={true}
 								{updateChatMessages}
 								{confirmEditResponseMessage}

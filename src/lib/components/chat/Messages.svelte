@@ -359,6 +359,7 @@
 										{message}
 										siblings={history.messages[message.parentId]?.childrenIds ?? []}
 										isLastMessage={messageIdx + 1 === messages.length}
+										bufferTime={50}
 										{readOnly}
 										{updateChatMessages}
 										{confirmEditResponseMessage}
