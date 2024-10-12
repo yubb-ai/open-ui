@@ -102,7 +102,7 @@
 							></path>
 						</svg>
 					</div>
-					<div class=" self-center font-medium">{$i18n.t('Instructions')}</div>
+					<div class=" self-center font-medium">{$i18n.t('Documentation')}</div>
 				</button>
 			{/if}
 
