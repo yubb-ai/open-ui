@@ -17,7 +17,7 @@
 	export let id: string;
 	export let tokens: Token[];
 	export let top = true;
-	
+
 	const tokenIdMap = new WeakMap();
 
 	function getUniqueId(token) {
