@@ -22,7 +22,7 @@
 	}));
 </script>
 
-{#each tokensWithId as token}
+{#each tokensWithId as token (token.uniqueId)}
 	{#if token.type === 'escape'}
 		{unescapeHtml(token.text)}
 	{:else if token.type === 'html'}
