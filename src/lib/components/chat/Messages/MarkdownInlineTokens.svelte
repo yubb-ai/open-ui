@@ -16,9 +16,13 @@
 	const i18n = getContext('i18n');
 	export let id: string;
 	export let tokens: Token[];
+	$: tokensWithId = tokens.map((token, index) => ({
+		...token,
+		uniqueId: token.uniqueId || `${id}-token-${index}-${token.type}`
+	}));
 </script>
 
-{#each tokens as token}
+{#each tokensWithId as token}
 	{#if token.type === 'escape'}
 		{unescapeHtml(token.text)}
 	{:else if token.type === 'html'}

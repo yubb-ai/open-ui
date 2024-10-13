@@ -17,13 +17,18 @@
 	export let tokens: Token[];
 	export let top = true;
 
+	$: tokensWithId = tokens.map((token, index) => ({
+		...token,
+		uniqueId: token.uniqueId || `${id}-token-${index}-${token.type}`
+	}));
+
 	const headerComponent = (depth: number) => {
 		return 'h' + depth;
 	};
 </script>
 
 <!-- {JSON.stringify(tokens)} -->
-{#each tokens as token, tokenIdx}
+{#each tokensWithId as token, tokenIdx (token.uniqueId)}
 	{#if token.type === 'hr'}
 		<hr />
 	{:else if token.type === 'heading'}
