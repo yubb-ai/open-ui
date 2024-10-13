@@ -132,23 +132,37 @@
 
 	marked.use(markedKatex(options));
 
-	let processedContent;
+	const throttledBufferTime = Number(bufferTime) || 50;
 
-	const throttledBufferTime = Number(bufferTime) || 100;
+	let previousProcessedContent = '';
+	let previousMessageContent = '';
+	let processedContent = '';
 
 	const processContentThrottled = throttle(() => {
 		if (message?.content) {
-			processedContent = processResponseContent(message.content);
-			tokens = marked.lexer(replaceTokens(processedContent, model?.name, $user?.name));
+			if (Math.abs(message.content.length - previousProcessedContent.length) > 10) {
+				processedContent = replaceTokens(
+					processResponseContent(message.content),
+					model?.name,
+					$user?.name
+				);
+				previousProcessedContent = message.content;
+			} else {
+				processedContent += message.content.slice(previousMessageContent.length);
+			}
+			previousMessageContent = message.content;
+			tokens = marked.lexer(processedContent);
 		}
 	}, throttledBufferTime);
 
 	$: if (message?.content) {
-		processContentThrottled();
-	}
-
-	$: if (message?.done) {
-		processContentThrottled();
+		if (message.done) {
+			tokens = marked.lexer(
+				replaceTokens(processResponseContent(message.content), model?.name, $user?.name)
+			);
+		} else {
+			processContentThrottled();
+		}
 	}
 
 	const playAudio = (idx: number) => {
