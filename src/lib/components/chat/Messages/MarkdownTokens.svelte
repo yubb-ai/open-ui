@@ -7,7 +7,6 @@
 		revertSanitizedCodeResponseContent,
 		unescapeHtml
 	} from '$lib/utils';
-	import { v4 as uuidv4 } from 'uuid';
 
 	import CodeBlock from '$lib/components/chat/Messages/CodeBlock.svelte';
 	import MarkdownInlineTokens from '$lib/components/chat/Messages/MarkdownInlineTokens.svelte';
@@ -18,27 +17,13 @@
 	export let tokens: Token[];
 	export let top = true;
 
-	const tokenIdMap = new WeakMap();
-
-	function getUniqueId(token) {
-		if (!tokenIdMap.has(token)) {
-			tokenIdMap.set(token, uuidv4());
-		}
-		return tokenIdMap.get(token);
-	}
-
-	$: tokensWithId = tokens.map((token) => ({
-		...token,
-		uniqueId: getUniqueId(token)
-	}));
-
 	const headerComponent = (depth: number) => {
 		return 'h' + depth;
 	};
 </script>
 
 <!-- {JSON.stringify(tokens)} -->
-{#each tokensWithId as token, tokenIdx (token.uniqueId)}
+{#each tokens as token, tokenIdx}
 	{#if token.type === 'hr'}
 		<hr />
 	{:else if token.type === 'heading'}

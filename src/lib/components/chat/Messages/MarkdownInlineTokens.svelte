@@ -8,7 +8,6 @@
 		copyToClipboard
 	} from '$lib/utils';
 	import { onMount } from 'svelte';
-	import { v4 as uuidv4 } from 'uuid';
 	import Image from '$lib/components/common/Image.svelte';
 	import { toast } from 'svelte-sonner';
 	import { getContext } from 'svelte';
@@ -17,23 +16,9 @@
 	const i18n = getContext('i18n');
 	export let id: string;
 	export let tokens: Token[];
-
-	const tokenIdMap = new WeakMap();
-
-	function getUniqueId(token) {
-		if (!tokenIdMap.has(token)) {
-			tokenIdMap.set(token, uuidv4());
-		}
-		return tokenIdMap.get(token);
-	}
-
-	$: tokensWithId = tokens.map((token) => ({
-		...token,
-		uniqueId: getUniqueId(token)
-	}));
 </script>
 
-{#each tokensWithId as token (token.uniqueId)}
+{#each tokens as token}
 	{#if token.type === 'escape'}
 		{unescapeHtml(token.text)}
 	{:else if token.type === 'html'}
