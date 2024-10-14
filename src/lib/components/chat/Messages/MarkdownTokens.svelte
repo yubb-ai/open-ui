@@ -113,6 +113,7 @@
 		{/if}
 	{:else if token.type === 'iframe'}
 		<iframe
+			allowfullscreen
 			src="{WEBUI_BASE_URL}/api/v1/files/{token.fileId}/content"
 			title={token.fileId}
 			width="100%"
