@@ -116,39 +116,44 @@
 
 				canvas.width = img.width;
 				canvas.height = img.height;
-
 				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-				const maxFileSize = 2 * 1024 * 1024;
-				const originalFileSize = file.size;
-				let compressionRatio = 1.0;
+				const maxFileSize = 2.5 * 1024 * 1024;
+				const minFileSize = 2.0 * 1024 * 1024;
+				let minRatio = 0.1;
+				let maxRatio = 1.0;
+				let compressionRatio = maxRatio;
+				let compressedFile;
+				const tolerance = 0.005;
 
-				// 如果原始大小大于目标大小，计算出初步猜测的压缩比率
-				if (originalFileSize > maxFileSize) {
-					compressionRatio = maxFileSize / originalFileSize;
+				const tryCompress = (ratio) => {
+					const base64 = canvas.toDataURL('image/jpeg', ratio);
+					return base64ToFile(base64, `${crypto.randomUUID()}.jpg`);
+				};
 
-					// 初步把压缩率限制为 0.1 - 1.0 之间
-					compressionRatio = Math.max(0.1, Math.min(1.0, compressionRatio));
+				while (maxRatio - minRatio > tolerance) {
+					compressedFile = tryCompress(compressionRatio);
+					const compressedFileSize = compressedFile.size;
+
+					if (compressedFileSize <= maxFileSize && compressedFileSize >= minFileSize) {
+						console.log('压缩文件已在目标区间内，停止压缩。');
+						break;
+					}
+
+					if (compressedFileSize < minFileSize) {
+						minRatio = compressionRatio;
+					} else {
+						maxRatio = compressionRatio;
+					}
+					compressionRatio = (minRatio + maxRatio) / 2;
 				}
 
-				let base64 = canvas.toDataURL('image/jpeg', compressionRatio);
-				let compressedFile = base64ToFile(base64, `${uuidv4()}.jpg`);
-				let compressedFileSize = compressedFile.size;
-
-				if (compressedFileSize > maxFileSize) {
-					compressionRatio *= maxFileSize / compressedFileSize;
-					base64 = canvas.toDataURL('image/jpeg', compressionRatio);
-					compressedFile = base64ToFile(base64, `${uuidv4()}.jpg`);
-					compressedFileSize = compressedFile.size;
-				}
-
-				console.log(`Final quality: ${compressionRatio}`);
-				console.log(`Final file size: ${(compressedFileSize / 1024 / 1024).toFixed(2)} MB`);
+				console.log(`最终压缩率: ${compressionRatio}`);
+				console.log(`最终文件大小: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
 
 				resolve(compressedFile);
 			};
-
-			img.onerror = (e) => reject(new Error('Image could not be loaded.'));
+			img.onerror = (e) => reject(new Error('图片加载失败'));
 		});
 	};
 
@@ -171,7 +176,7 @@
 		try {
 			compressedFile = await compressImage(file);
 		} catch (error) {
-			console.log('Image compression failed:', error.message);
+			toast.error(error.message || error);
 			compressedFile = file;
 		}
 

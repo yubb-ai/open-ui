@@ -63,7 +63,13 @@
 							class=" "
 							{disabled}
 							on:click={() => {
-								selectedModels = [...selectedModels, ''];
+								if (selectedModels.length < 6) {
+									selectedModels = [...selectedModels, ''];
+								} else {
+									toast.error(
+										$i18n.t('For a better chat experience, the model can add up to 6 at most.')
+									);
+								}
 							}}
 							aria-label="Add Model"
 						>

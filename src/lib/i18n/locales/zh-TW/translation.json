@@ -322,6 +322,7 @@
 	"Followed instructions perfectly": "完全遵循指示",
 	"Form": "表單",
 	"Format your variables using square brackets like this:": "使用方括號來格式化您的變數，如下所示：",
+	"For a better chat experience, the model can add up to 6 at most.": "為了確保良好的聊天體驗，模型最多只能添加6個",
 	"Frequency Penalty": "頻率懲罰",
 	"Function created successfully": "成功建立函式",
 	"Function deleted successfully": "成功刪除函式",
