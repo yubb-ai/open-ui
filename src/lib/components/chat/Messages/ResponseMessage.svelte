@@ -140,7 +140,7 @@
 
 	const processContentThrottled = throttle(() => {
 		if (message?.content) {
-			if (Math.abs(message.content.length - previousProcessedContent.length) > 15) {
+			if (Math.abs(message.content.length - previousProcessedContent.length) > 20) {
 				processedContent = replaceTokens(
 					processResponseContent(message.content),
 					model?.name,
