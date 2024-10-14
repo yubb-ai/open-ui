@@ -395,7 +395,7 @@ __builtins__.input = input`);
 				</div>
 			</div>
 			<div style="display: {expanded ? 'flex' : 'none'}; bg-white">
-				<iframe bind:this={sandpackIframe} allowfullscreen title="Preview" class="w-full h-96 mt-4" />
+				<iframe bind:this={sandpackIframe} title="Preview" class="w-full h-96 mt-4" />
 			</div>
 		</div>
 	{/if}
