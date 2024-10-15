@@ -40,7 +40,7 @@ export async function createOpenAITextStream(
 async function* openAIStreamToIterator(
 	reader: ReadableStreamDefaultReader<ParsedEvent>
 ): AsyncGenerator<TextStreamUpdate> {
-	// 初始速率设为10ms，设定最小延迟和最大延迟上下限
+	// 初始延迟设为20ms，设定最小延迟和最大延迟上下限
 	let delay = 20;
 	// 最小延迟，避免过快
 	const minDelay = 10;
@@ -55,8 +55,11 @@ async function* openAIStreamToIterator(
 		delay = Math.max(minDelay, Math.min(maxDelay, delay));
 	}
 
+	// 记录上一次循环的结束时间
+	let lastLoopTime = Date.now();
+
 	while (true) {
-		const startTime = Date.now();
+		const loopStartTime = Date.now();
 		const { value, done } = await reader.read();
 		if (done) {
 			yield { done: true, value: '' };
@@ -90,13 +93,24 @@ async function* openAIStreamToIterator(
 				value: parsedData.choices?.[0]?.delta?.content ?? '',
 				usage: parsedData.usage
 			};
-			const endTime = Date.now();
-			const processingTime = endTime - startTime;
 
-			// 等待动态调整后的时间
-			if (processingTime - maxDelay < 0) {
-				adjustDelay(processingTime);
-				await sleep(delay);
+			// 计算处理时间
+			const processingTime = Date.now() - loopStartTime;
+
+			// 动态调整延迟
+			adjustDelay(processingTime);
+
+			// 计算应等待的时间，使总循环时间接近目标延迟
+			const elapsedTime = Date.now() - lastLoopTime;
+			let sleepTime = delay - elapsedTime;
+			sleepTime = Math.max(0, sleepTime); // 确保 sleepTime 不为负数
+
+			// 更新上一次循环的结束时间
+			lastLoopTime = Date.now();
+
+			// 等待计算出的时间
+			if (sleepTime > 0) {
+				await sleep(sleepTime);
 			}
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
