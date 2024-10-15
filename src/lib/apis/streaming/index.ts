@@ -40,6 +40,10 @@ export async function createOpenAITextStream(
 async function* openAIStreamToIterator(
 	reader: ReadableStreamDefaultReader<ParsedEvent>
 ): AsyncGenerator<TextStreamUpdate> {
+	// 期望的每次 yield 间隔时间（毫秒）
+	const desiredInterval = 20;
+	let lastYieldTime = Date.now();
+
 	while (true) {
 		const { value, done } = await reader.read();
 		if (done) {
@@ -74,7 +78,14 @@ async function* openAIStreamToIterator(
 				value: parsedData.choices?.[0]?.delta?.content ?? '',
 				usage: parsedData.usage
 			};
-			await sleep(10);
+
+			// 动态计算等待时间
+			const elapsedTime = Date.now() - lastYieldTime;
+			const sleepTime = desiredInterval - elapsedTime;
+			if (sleepTime > 0) {
+				await sleep(sleepTime);
+			}
+			lastYieldTime = Date.now();
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
 		}
