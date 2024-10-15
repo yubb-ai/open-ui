@@ -94,8 +94,10 @@ async function* openAIStreamToIterator(
 			const processingTime = endTime - startTime;
 
 			// 等待动态调整后的时间
-			adjustDelay(processingTime);
-			await sleep(delay);
+			if (processingTime - maxDelay < 0) {
+				adjustDelay(processingTime);
+				await sleep(delay);
+			}
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
 		}
