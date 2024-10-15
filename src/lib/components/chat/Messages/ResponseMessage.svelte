@@ -3,6 +3,7 @@
 	import dayjs from 'dayjs';
 	import { marked } from 'marked';
 	import { throttle } from 'lodash';
+	import { mobile } from '$lib/stores';
 
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, tick, getContext } from 'svelte';
@@ -856,7 +857,7 @@
 									</Tooltip>
 								{/if}
 
-								{#if message.info}
+								{#if message.info && !$mobile}
 									<Tooltip
 										content={message.info.openai
 											? `${$i18n.t('prompt_tokens')}: ${message.info.prompt_tokens ?? 'N/A'}<br/>

@@ -97,6 +97,7 @@ async function* streamLargeDeltasAsRandomChunks(
 		}
 		let content = textStreamUpdate.value;
 		if (content.length < 5) {
+			await sleep(5);
 			yield { done: false, value: content };
 			continue;
 		}
@@ -111,6 +112,7 @@ async function* streamLargeDeltasAsRandomChunks(
 			}
 			content = content.slice(chunkSize);
 		}
+		await sleep(5);
 	}
 }
 
