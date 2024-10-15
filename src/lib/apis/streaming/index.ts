@@ -40,11 +40,23 @@ export async function createOpenAITextStream(
 async function* openAIStreamToIterator(
 	reader: ReadableStreamDefaultReader<ParsedEvent>
 ): AsyncGenerator<TextStreamUpdate> {
-	// 期望的每次 yield 间隔时间（毫秒）
-	const desiredInterval = 20;
-	let lastYieldTime = Date.now();
+	// 初始速率设为10ms，设定最小延迟和最大延迟上下限
+	let delay = 20;
+	// 最小延迟，避免过快
+	const minDelay = 10;
+	// 最大延迟，避免过慢
+	const maxDelay = 30;
+	// 平滑因子，用于动态调整速率
+	const smoothingFactor = 0.1;
+
+	function adjustDelay(newTime: number) {
+		// 指数移动平均平滑处理时间，并控制在合理范围内
+		delay = delay * (1 - smoothingFactor) + newTime * smoothingFactor;
+		delay = Math.max(minDelay, Math.min(maxDelay, delay));
+	}
 
 	while (true) {
+		const startTime = Date.now();
 		const { value, done } = await reader.read();
 		if (done) {
 			yield { done: true, value: '' };
@@ -78,14 +90,12 @@ async function* openAIStreamToIterator(
 				value: parsedData.choices?.[0]?.delta?.content ?? '',
 				usage: parsedData.usage
 			};
+			const endTime = Date.now();
+			const processingTime = endTime - startTime;
 
-			// 动态计算等待时间
-			const elapsedTime = Date.now() - lastYieldTime;
-			const sleepTime = desiredInterval - elapsedTime;
-			if (sleepTime > 0) {
-				await sleep(sleepTime);
-			}
-			lastYieldTime = Date.now();
+			// 等待动态调整后的时间
+			adjustDelay(processingTime);
+			await sleep(delay);
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
 		}
