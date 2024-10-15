@@ -103,7 +103,7 @@ async function* openAIStreamToIterator(
 			// 计算应等待的时间，使总循环时间接近目标延迟
 			const elapsedTime = Date.now() - lastLoopTime;
 			let sleepTime = delay - elapsedTime;
-			sleepTime = Math.max(0, sleepTime); // 确保 sleepTime 不为负数
+			sleepTime = Math.max(0, sleepTime);
 
 			// 更新上一次循环的结束时间
 			lastLoopTime = Date.now();
