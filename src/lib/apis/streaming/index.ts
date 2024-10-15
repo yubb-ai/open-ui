@@ -74,6 +74,7 @@ async function* openAIStreamToIterator(
 				value: parsedData.choices?.[0]?.delta?.content ?? '',
 				usage: parsedData.usage
 			};
+			await sleep(10);
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
 		}
@@ -106,7 +107,7 @@ async function* streamLargeDeltasAsRandomChunks(
 			// Do not sleep if the tab is hidden
 			// Timers are throttled to 1s in hidden tabs
 			if (document?.visibilityState !== 'hidden') {
-				await sleep(5);
+				await sleep(10);
 			}
 			content = content.slice(chunkSize);
 		}
