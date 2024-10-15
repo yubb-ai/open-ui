@@ -74,7 +74,7 @@ async function* openAIStreamToIterator(
 				value: parsedData.choices?.[0]?.delta?.content ?? '',
 				usage: parsedData.usage
 			};
-			await sleep(10);
+			await sleep(20);
 		} catch (e) {
 			console.error('Error extracting delta from SSE event:', e);
 		}
