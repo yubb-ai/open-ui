@@ -55,12 +55,12 @@
 			{token.text}
 		{/if}
 	{:else if token.type === 'table'}
-		<div class="scrollbar-hidden relative whitespace-nowrap overflow-x-auto max-w-full">
+		<div class="scrollbar-hidden relative whitespace-normal overflow-x-auto max-w-full">
 			<table class="w-full">
 				<thead>
 					<tr>
 						{#each token.header as header, headerIdx}
-							<th style={token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}>
+							<th style={`text-align: center; min-width: 4.5rem;`}>
 								<MarkdownInlineTokens
 									id={`${id}-${tokenIdx}-header-${headerIdx}`}
 									tokens={header.tokens}
