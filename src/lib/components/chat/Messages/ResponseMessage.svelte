@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
-	import { marked } from 'marked';
-	import { throttle } from 'lodash';
 	import { mobile } from '$lib/stores';
 
 	import { createEventDispatcher } from 'svelte';
