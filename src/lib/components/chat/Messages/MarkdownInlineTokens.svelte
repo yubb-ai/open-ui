@@ -1,19 +1,18 @@
 <script lang="ts">
 	import DOMPurify from 'dompurify';
-	import type { Token } from 'marked';
-	import {
-		revertSanitizedResponseContent,
-		revertSanitizedCodeResponseContent,
-		unescapeHtml,
-		copyToClipboard
-	} from '$lib/utils';
-	import { onMount } from 'svelte';
-	import Image from '$lib/components/common/Image.svelte';
 	import { toast } from 'svelte-sonner';
+
+	import type { Token } from 'marked';
 	import { getContext } from 'svelte';
-	import KatexRenderer from './KatexRenderer.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+
 	const i18n = getContext('i18n');
+
+	import { WEBUI_BASE_URL } from '$lib/constants';
+	import { copyToClipboard, revertSanitizedResponseContent, unescapeHtml } from '$lib/utils';
+
+	import Image from '$lib/components/common/Image.svelte';
+	import KatexRenderer from './KatexRenderer.svelte';
+
 	export let id: string;
 	export let tokens: Token[];
 </script>
@@ -66,10 +65,7 @@
 		</del>
 	{:else if token.type === 'inlineKatex'}
 		{#if token.text}
-			<KatexRenderer
-				content={revertSanitizedResponseContent(token.text)}
-				displayMode={token?.displayMode ?? false}
-			/>
+			<KatexRenderer content={revertSanitizedResponseContent(token.text)} displayMode={false} />
 		{/if}
 	{:else if token.type === 'iframe'}
 		<iframe

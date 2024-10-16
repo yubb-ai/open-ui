@@ -187,6 +187,19 @@ export const canvasPixelTest = () => {
 	return true;
 };
 
+export const createMessagesList = (history, messageId) => {
+	if (messageId === null) {
+		return [];
+	}
+
+	const message = history.messages[messageId];
+	if (message?.parentId) {
+		return [...createMessagesList(history, message.parentId), message];
+	} else {
+		return [message];
+	}
+};
+
 export const generateInitialsImage = (name) => {
 	const canvas = document.createElement('canvas');
 	const ctx = canvas.getContext('2d');

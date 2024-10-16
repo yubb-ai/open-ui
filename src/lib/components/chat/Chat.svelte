@@ -29,7 +29,8 @@
 		currentChatPage,
 		temporaryChatEnabled,
 		mobile,
-		showOverview
+		showOverview,
+		showArtifacts
 	} from '$lib/stores';
 	import {
 		convertMessagesToHistory,
@@ -326,6 +327,10 @@
 		if ($page.url.pathname.includes('/c/')) {
 			window.history.replaceState(history.state, '', `/`);
 		}
+		await showControls.set(false);
+		await showCallOverlay.set(false);
+		await showOverview.set(false);
+		await showArtifacts.set(false);
 
 		await chatId.set('');
 		autoScroll = true;

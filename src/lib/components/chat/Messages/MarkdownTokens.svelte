@@ -1,21 +1,23 @@
 <script lang="ts">
 	import DOMPurify from 'dompurify';
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import { marked, type Token } from 'marked';
-	import {
-		revertSanitizedResponseContent,
-		revertSanitizedCodeResponseContent,
-		unescapeHtml
-	} from '$lib/utils';
+	import { revertSanitizedResponseContent, unescapeHtml } from '$lib/utils';
+
+	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import CodeBlock from '$lib/components/chat/Messages/CodeBlock.svelte';
 	import MarkdownInlineTokens from '$lib/components/chat/Messages/MarkdownInlineTokens.svelte';
 	import KatexRenderer from './KatexRenderer.svelte';
-	import { WEBUI_BASE_URL } from '$lib/constants';
+	import Collapsible from '$lib/components/common/Collapsible.svelte';
+
+	const dispatch = createEventDispatcher();
 
 	export let id: string;
 	export let tokens: Token[];
 	export let top = true;
+
+	export let save = false;
 
 	const headerComponent = (depth: number) => {
 		return 'h' + depth;
@@ -31,19 +33,34 @@
 			<MarkdownInlineTokens id={`${id}-${tokenIdx}-h`} tokens={token.tokens} />
 		</svelte:element>
 	{:else if token.type === 'code'}
-		<CodeBlock
-			id={`${id}-${tokenIdx}`}
-			{token}
-			lang={token?.lang ?? ''}
-			code={revertSanitizedCodeResponseContent(token?.text ?? '')}
-		/>
+		{#if token.raw.includes('```')}
+			<CodeBlock
+				id={`${id}-${tokenIdx}`}
+				{token}
+				lang={token?.lang ?? ''}
+				code={revertSanitizedResponseContent(token?.text ?? '')}
+				{save}
+				on:code={(e) => {
+					dispatch('code', e.detail);
+				}}
+				on:save={(e) => {
+					dispatch('update', {
+						raw: token.raw,
+						oldContent: token.text,
+						newContent: e.detail
+					});
+				}}
+			/>
+		{:else}
+			{token.text}
+		{/if}
 	{:else if token.type === 'table'}
-		<div class="scrollbar-hidden relative whitespace-normal overflow-x-auto max-w-full">
+		<div class="scrollbar-hidden relative whitespace-nowrap overflow-x-auto max-w-full">
 			<table class="w-full">
 				<thead>
 					<tr>
 						{#each token.header as header, headerIdx}
-							<th style={`text-align: center; min-width: 4.5rem;`}>
+							<th style={token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}>
 								<MarkdownInlineTokens
 									id={`${id}-${tokenIdx}-header-${headerIdx}`}
 									tokens={header.tokens}
@@ -56,11 +73,7 @@
 					{#each token.rows as row, rowIdx}
 						<tr>
 							{#each row ?? [] as cell, cellIdx}
-								<td
-									style={token.align[cellIdx]
-										? 'min-width: 4.5rem;'
-										: `text-align: ${token.align[cellIdx]}; min-width: 4rem;`}
-								>
+								<td style={token.align[cellIdx] ? '' : `text-align: ${token.align[cellIdx]}`}>
 									<MarkdownInlineTokens
 										id={`${id}-${tokenIdx}-row-${rowIdx}-${cellIdx}`}
 										tokens={cell.tokens}
@@ -102,6 +115,12 @@
 				{/each}
 			</ul>
 		{/if}
+	{:else if token.type === 'details'}
+		<Collapsible title={token.summary} className="w-fit space-y-1">
+			<div class=" mb-1.5" slot="content">
+				<svelte:self id={`${id}-${tokenIdx}-d`} tokens={marked.lexer(token.text)} />
+			</div>
+		</Collapsible>
 	{:else if token.type === 'html'}
 		{@const html = DOMPurify.sanitize(token.text)}
 		{#if html && html.includes('<video')}
