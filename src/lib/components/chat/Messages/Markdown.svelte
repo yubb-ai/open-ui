@@ -5,7 +5,6 @@
 	import 'katex/dist/katex.min.css';
 
 	import markedKatexExtension from '$lib/utils/marked/katex-extension';
-	import markedKatex from '$lib/utils/marked/katex-extension';
 
 	import MarkdownTokens from './MarkdownTokens.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -16,6 +15,7 @@
 	export let content;
 	export let model = null;
 	export let save = false;
+	export let bufferTime;
 
 	let tokens = [];
 

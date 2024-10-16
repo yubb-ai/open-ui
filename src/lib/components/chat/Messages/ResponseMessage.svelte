@@ -484,6 +484,7 @@
 											id={message.id}
 											content={message.content}
 											floatingButtons={message?.done}
+											bufferTime={bufferTime}
 											save={true}
 											{model}
 											on:update={(e) => {

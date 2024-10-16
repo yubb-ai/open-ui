@@ -14,6 +14,7 @@
 
 	export let save = false;
 	export let floatingButtons = true;
+	export let bufferTime;
 
 	let contentContainerElement;
 	let buttonsContainerElement;
@@ -129,6 +130,7 @@
 		{content}
 		{model}
 		{save}
+		bufferTime={bufferTime}
 		on:update={(e) => {
 			dispatch('update', e.detail);
 		}}
