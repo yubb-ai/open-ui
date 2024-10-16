@@ -41,6 +41,7 @@
 	import auto_render from 'katex/dist/contrib/auto-render.mjs';
 
 	import type { Writable } from 'svelte/store';
+	import 'katex/dist/katex.min.css';
 	import type { i18n as i18nType } from 'i18next';
 
 	interface MessageType {
@@ -121,50 +122,6 @@
 	let showCitationModal = false;
 
 	let selectedCitation = null;
-
-	let tokens;
-
-	import 'katex/dist/katex.min.css';
-	import markedKatex from '$lib/utils/marked/katex-extension';
-
-	const options = {
-		throwOnError: false
-	};
-
-	marked.use(markedKatex(options));
-
-	const throttledBufferTime = Number(bufferTime) || 50;
-
-	let previousProcessedContent = '';
-	let previousMessageContent = '';
-	let processedContent = '';
-
-	const processContentThrottled = throttle(() => {
-		if (message?.content) {
-			if (Math.abs(message.content.length - previousProcessedContent.length) > 20) {
-				processedContent = replaceTokens(
-					processResponseContent(message.content),
-					model?.name,
-					$user?.name
-				);
-				previousProcessedContent = message.content;
-			} else {
-				processedContent += message.content.slice(previousMessageContent.length);
-			}
-			previousMessageContent = message.content;
-			tokens = marked.lexer(processedContent);
-		}
-	}, throttledBufferTime);
-
-	$: if (message?.content) {
-		if (message.done) {
-			tokens = marked.lexer(
-				replaceTokens(processResponseContent(message.content), model?.name, $user?.name)
-			);
-		} else {
-			processContentThrottled();
-		}
-	}
 
 	const playAudio = (idx: number) => {
 		return new Promise<void>((res) => {
@@ -522,7 +479,38 @@
 									<!-- always show message contents even if there's an error -->
 									<!-- unless message.error === true which is legacy error handling, where the error message is stored in message.content -->
 									{#key message.id}
-										<MarkdownTokens id={message.id} {tokens} />
+										<ContentRenderer
+											id={message.id}
+											content={message.content}
+											floatingButtons={message?.done}
+											save={true}
+											{model}
+											on:update={(e) => {
+												const { raw, oldContent, newContent } = e.detail;
+
+												history.messages[message.id].content = history.messages[
+													message.id
+												].content.replace(raw, raw.replace(oldContent, newContent));
+
+												dispatch('update');
+											}}
+											on:select={(e) => {
+												const { type, content } = e.detail;
+
+												if (type === 'explain') {
+													dispatch('submit', {
+														parentId: message.id,
+														prompt: `Explain this section to me in more detail\n\n\`\`\`\n${content}\n\`\`\``
+													});
+												} else if (type === 'ask') {
+													const input = e.detail?.input ?? '';
+													dispatch('submit', {
+														parentId: message.id,
+														prompt: `\`\`\`\n${content}\n\`\`\`\n${input}`
+													});
+												}
+											}}
+										/>
 									{/key}
 								{/if}
 

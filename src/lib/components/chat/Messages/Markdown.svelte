@@ -2,9 +2,10 @@
 	import { marked } from 'marked';
 	import { replaceTokens, processResponseContent } from '$lib/utils';
 	import { user } from '$lib/stores';
+	import 'katex/dist/katex.min.css';
 
-	import markedExtension from '$lib/utils/marked/extension';
 	import markedKatexExtension from '$lib/utils/marked/katex-extension';
+	import markedKatex from '$lib/utils/marked/katex-extension';
 
 	import MarkdownTokens from './MarkdownTokens.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -23,13 +24,33 @@
 	};
 
 	marked.use(markedKatexExtension(options));
-	marked.use(markedExtension(options));
+
+	const throttledBufferTime = Number(bufferTime) || 50;
+
+	let previousProcessedContent = '';
+	let previousMessageContent = '';
+	let processedContent = '';
+
+	const processContentThrottled = throttle(() => {
+		if (content) {
+			if (Math.abs(content.length - previousProcessedContent.length) > 20) {
+				processedContent = replaceTokens(processResponseContent(content), model?.name, $user?.name);
+				previousProcessedContent = content;
+			} else {
+				processedContent += content.slice(previousMessageContent.length);
+			}
+			previousMessageContent = content;
+			tokens = marked.lexer(processedContent);
+		}
+	}, throttledBufferTime);
 
 	$: (async () => {
 		if (content) {
 			tokens = marked.lexer(
 				replaceTokens(processResponseContent(content), model?.name, $user?.name)
 			);
+		} else {
+			processContentThrottled();
 		}
 	})();
 </script>
