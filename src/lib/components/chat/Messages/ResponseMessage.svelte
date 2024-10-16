@@ -43,6 +43,7 @@
 	import type { Writable } from 'svelte/store';
 	import 'katex/dist/katex.min.css';
 	import type { i18n as i18nType } from 'i18next';
+	import ContentRenderer from './ContentRenderer.svelte';
 
 	interface MessageType {
 		id: string;
