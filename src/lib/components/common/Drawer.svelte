@@ -76,7 +76,7 @@
 	}}
 >
 	<div
-		class=" mt-auto max-w-full w-full bg-gray-50 dark:bg-gray-900 max-h-[100dvh] overflow-y-auto scrollbar-hidden"
+		class=" mt-auto max-w-full w-full bg-gray-50 dark:bg-gray-900 max-h-[100dvh] scrollbar-hidden"
 		on:mousedown={(e) => {
 			e.stopPropagation();
 		}}
