@@ -7,7 +7,7 @@
 
 	import { blur, fade } from 'svelte/transition';
 
-	import Suggestions from './Suggestions.svelte';
+	import ChatSuggestions from './ChatSuggestions.svelte';
 	import { sanitizeResponseContent } from '$lib/utils';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
@@ -124,7 +124,7 @@
 		</div>
 
 		<div class=" w-full font-primary" in:fade={{ duration: 200, delay: 300 }}>
-			<Suggestions
+			<ChatSuggestions
 				className="grid grid-cols-2"
 				suggestionPrompts={models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
 					$config?.default_prompt_suggestions ??
