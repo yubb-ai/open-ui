@@ -32,9 +32,10 @@ math {
 
 .hljs {
 	@apply rounded-lg;
-	border-radius: 0rem;
-	border-bottom-left-radius: .5rem;
-	border-bottom-right-radius: .5rem;
+}
+
+.markdown-prose {
+	@apply prose dark:prose-invert prose-p:my-0 prose-img:my-1 prose-headings:my-1 prose-pre:my-0 prose-table:my-0 prose-blockquote:my-0 prose-ul:-my-0 prose-ol:-my-0 prose-li:-my-0 whitespace-pre-line;
 }
 
 .markdown a {
@@ -61,6 +62,12 @@ li p {
 	border-width: 1px;
 }
 
+/* Dark theme scrollbar styles */
+.dark ::-webkit-scrollbar-thumb {
+	background-color: rgba(69, 69, 74, 0.8); /* Darker color for dark theme */
+	border-color: rgba(0, 0, 0, var(--tw-border-opacity));
+}
+
 ::-webkit-scrollbar {
 	height: 0.4rem;
 	width: 0.4rem;
@@ -83,10 +90,6 @@ select {
 	-moz-appearance: none;
 	/* for Chrome */
 	-webkit-appearance: none;
-}
-
-.katex-mathml {
-	display: none;
 }
 
 .katex-display > .katex {
