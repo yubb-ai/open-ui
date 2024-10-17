@@ -1397,7 +1397,7 @@
 												.map((file) => ({
 													type: 'image_url',
 													image_url: {
-														url: file.url
+														url: file.base64 ? file.base64_url : file.url
 													}
 												}))
 										]
