@@ -480,7 +480,7 @@
 										id={message.id}
 										content={message.content}
 										floatingButtons={message?.done}
-										bufferTime={bufferTime}
+										{bufferTime}
 										save={true}
 										{model}
 										on:update={(e) => {
@@ -1061,7 +1061,15 @@
 														? 'visible'
 														: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
 													on:click={() => {
-														dispatch('action', action.id);
+														dispatch('action', {
+															id: action.id,
+															event: {
+																id: action.name,
+																data: {
+																	messageId: message.id
+																}
+															}
+														});
 													}}
 												>
 													{#if action.icon_url}
