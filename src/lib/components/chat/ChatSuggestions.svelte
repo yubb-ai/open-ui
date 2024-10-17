@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Bolt from '$lib/components/icons/Bolt.svelte';
-	import { onMount, getContext } from 'svelte';
+	import { onMount, getContext, createEventDispatcher } from 'svelte';
 
 	const i18n = getContext('i18n');
+	const dispatch = createEventDispatcher();
 
 	export let submitPrompt: Function;
 	export let suggestionPrompts = [];
+	export let className = '';
 
 	let prompts = [];
 
@@ -49,7 +51,7 @@
 				<button
 					class="flex flex-col flex-1 shrink-0 w-64 justify-between h-36 p-5 px-6 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 rounded-3xl transition group"
 					on:click={() => {
-						submitPrompt(prompt.content);
+						dispatch('select', prompt.content);
 					}}
 				>
 					<div class="flex flex-col text-left">
