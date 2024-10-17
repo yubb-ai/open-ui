@@ -55,7 +55,7 @@ export const formatPythonCode = async (code: string) => {
 	return res;
 };
 
-export const downloadChatAsPDF = async (chat: object) => {
+export const downloadChatAsPDF = async (title: string, messages: object[]) => {
 	let error = null;
 
 	const blob = await fetch(`${WEBUI_API_BASE_URL}/utils/pdf`, {
@@ -64,8 +64,8 @@ export const downloadChatAsPDF = async (chat: object) => {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({
-			title: chat.title,
-			messages: chat.messages
+			title: title,
+			messages: messages
 		})
 	})
 		.then(async (res) => {
@@ -179,16 +179,16 @@ export const downloadLiteLLMConfig = async (token: string) => {
 };
 
 export const removeMarkdown = (text: string) => {
-    text = text.replace(/(^|\s)(#+)\s+/g, ' ');
-    text = text.replace(/(\*\*|__)(.*?)\1/g, '$2');
-    text = text.replace(/(\*|_)(.*?)\1/g, '$2');
-    text = text.replace(/~~(.*?)~~/g, '$1');
-    text = text.replace(/`([^`]+)`/g, '$1');
-    text = text.replace(/```[\s\S]*?```/g, '');
-    text = text.replace(/$$ ([^ $$]+)\]$ [^)]+ $/g, '$1');
-    text = text.replace(/!$$ ([^ $$]*)\]$ [^)]+ $/g, '$1');
-    text = text.replace(/^\s*>+\s?/gm, '');
-    text = text.replace(/^\s*([-*+]|\d+\.)\s+/gm, '');
-    text = text.replace(/\s{2,}/g, ' ').trim();
-    return text;
+	text = text.replace(/(^|\s)(#+)\s+/g, ' ');
+	text = text.replace(/(\*\*|__)(.*?)\1/g, '$2');
+	text = text.replace(/(\*|_)(.*?)\1/g, '$2');
+	text = text.replace(/~~(.*?)~~/g, '$1');
+	text = text.replace(/`([^`]+)`/g, '$1');
+	text = text.replace(/```[\s\S]*?```/g, '');
+	text = text.replace(/$$ ([^ $$]+)\]$ [^)]+ $/g, '$1');
+	text = text.replace(/!$$ ([^ $$]*)\]$ [^)]+ $/g, '$1');
+	text = text.replace(/^\s*>+\s?/gm, '');
+	text = text.replace(/^\s*([-*+]|\d+\.)\s+/gm, '');
+	text = text.replace(/\s{2,}/g, ' ').trim();
+	return text;
 }
