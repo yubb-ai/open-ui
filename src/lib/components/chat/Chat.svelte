@@ -701,6 +701,7 @@
 						['doc', 'file', 'collection'].includes(item.type) &&
 						(!item.base64 || item.type !== 'file')
 				)
+			);
 			chatFiles = chatFiles.filter(
 				// Remove duplicates
 				(item, index, array) =>
