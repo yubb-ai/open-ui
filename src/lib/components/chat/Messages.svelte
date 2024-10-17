@@ -310,7 +310,7 @@
 </script>
 
 <div
-	class="h-full flex 'pt-8'"
+	class="h-full flex pt-8"
 >
 	{#if Object.keys(history?.messages ?? {}).length == 0}
 		<ChatPlaceholder
