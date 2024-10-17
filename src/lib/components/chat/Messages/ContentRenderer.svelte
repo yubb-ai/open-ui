@@ -39,47 +39,36 @@
 
 			let selection = window.getSelection();
 
-			if (selection.rangeCount > 0 && selection.toString().trim().length > 0) {
+			if (selection.toString().trim().length > 0) {
 				floatingInput = false;
 				const range = selection.getRangeAt(0);
 				const rect = range.getBoundingClientRect();
 
-				const scrollX = window.pageXOffset || document.documentElement.scrollLeft;
-				const scrollY = window.pageYOffset || document.documentElement.scrollTop;
-				let top = rect.bottom + scrollY + 5;
-				let left = rect.left + scrollX;
+				const parentRect = contentContainerElement.getBoundingClientRect();
+
+				// Adjust based on parent rect
+				const top = rect.bottom - parentRect.top;
+				const left = rect.left - parentRect.left;
 
 				if (buttonsContainerElement) {
 					buttonsContainerElement.style.display = 'block';
-					buttonsContainerElement.style.position = 'absolute';
-					buttonsContainerElement.style.zIndex = '9999';
 
-					const spaceOnRight =
-						window.innerWidth + scrollX - (left + buttonsContainerElement.offsetWidth);
+					// Calculate space available on the right
+					const spaceOnRight = parentRect.width - (left + buttonsContainerElement.offsetWidth);
 
 					let thirdScreenWidth = window.innerWidth / 3;
 
 					if (spaceOnRight < thirdScreenWidth) {
-						let right = window.innerWidth + scrollX - rect.right;
+						const right = parentRect.right - rect.right;
 						buttonsContainerElement.style.right = `${right}px`;
-						buttonsContainerElement.style.left = 'auto';
+						buttonsContainerElement.style.left = 'auto'; // Reset left
 					} else {
+						// Enough space, position using 'left'
 						buttonsContainerElement.style.left = `${left}px`;
-						buttonsContainerElement.style.right = 'auto';
+						buttonsContainerElement.style.right = 'auto'; // Reset right
 					}
 
-					buttonsContainerElement.style.top = `${top}px`;
-
-					const buttonsWidth = buttonsContainerElement.offsetWidth;
-					const buttonsHeight = buttonsContainerElement.offsetHeight;
-
-					if (left + buttonsWidth > scrollX + window.innerWidth) {
-						buttonsContainerElement.style.left = `${scrollX + window.innerWidth - buttonsWidth - 10}px`;
-					}
-
-					if (top + buttonsHeight > scrollY + window.innerHeight) {
-						buttonsContainerElement.style.top = `${rect.top + scrollY - buttonsHeight - 5}px`;
-					}
+					buttonsContainerElement.style.top = `${top + 5}px`; // +5 to add some spacing
 				}
 			} else {
 				closeFloatingButtons();
