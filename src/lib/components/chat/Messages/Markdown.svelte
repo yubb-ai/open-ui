@@ -7,7 +7,7 @@
 
 	import markedKatexExtension from '$lib/utils/marked/katex-extension';
 
-	import MarkdownTokens from './MarkdownTokens.svelte';
+	import MarkdownTokens from '.Markdown/MarkdownTokens.svelte';
 	import { createEventDispatcher } from 'svelte';
 
 	const dispatch = createEventDispatcher();

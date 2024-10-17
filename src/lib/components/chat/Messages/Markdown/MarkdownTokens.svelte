@@ -7,7 +7,7 @@
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import CodeBlock from '$lib/components/chat/Messages/CodeBlock.svelte';
-	import MarkdownInlineTokens from '$lib/components/chat/Messages/MarkdownInlineTokens.svelte';
+	import MarkdownInlineTokens from '$lib/components/chat/Messages/Markdown/MarkdownInlineTokens.svelte';
 	import KatexRenderer from './KatexRenderer.svelte';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
 
@@ -55,12 +55,12 @@
 			{token.text}
 		{/if}
 	{:else if token.type === 'table'}
-		<div class="scrollbar-hidden relative whitespace-normal overflow-x-auto max-w-full">
+		<div class="scrollbar-hidden relative whitespace-nowrap overflow-x-auto max-w-full">
 			<table class="w-full">
 				<thead>
 					<tr>
 						{#each token.header as header, headerIdx}
-							<th style={`text-align: center; min-width: 4.5rem;`}>
+							<th style={token.align[headerIdx] ? '' : `text-align: ${token.align[headerIdx]}`}>
 								<MarkdownInlineTokens
 									id={`${id}-${tokenIdx}-header-${headerIdx}`}
 									tokens={header.tokens}

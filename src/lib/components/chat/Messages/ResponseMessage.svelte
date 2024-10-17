@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
-	import { mobile } from '$lib/stores';
 
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, tick, getContext } from 'svelte';
@@ -14,32 +13,30 @@
 	import { synthesizeOpenAISpeech } from '$lib/apis/audio';
 	import { imageGenerations } from '$lib/apis/images';
 	import {
+		copyToClipboard as _copyToClipboard,
 		approximateToHumanReadable,
-		replaceTokens,
-		processResponseContent,
 		extractParagraphsForAudio,
 		extractSentencesForAudio,
 		cleanText,
-		getMessageContentParts
+		getMessageContentParts,
+		sanitizeResponseContent
 	} from '$lib/utils';
 	import { WEBUI_BASE_URL } from '$lib/constants';
 
 	import Name from './Name.svelte';
 	import ProfileImage from './ProfileImage.svelte';
 	import Skeleton from './Skeleton.svelte';
-	import CodeBlock from './CodeBlock.svelte';
 	import Image from '$lib/components/common/Image.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import RateComment from './RateComment.svelte';
-	import CitationsModal from '$lib/components/chat/Messages/CitationsModal.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
 	import WebSearchResults from './ResponseMessage/WebSearchResults.svelte';
 	import Sparkles from '$lib/components/icons/Sparkles.svelte';
-	import MarkdownTokens from './MarkdownTokens.svelte';
-	import auto_render from 'katex/dist/contrib/auto-render.mjs';
+	import Markdown from './Markdown.svelte';
+	import Error from './Error.svelte';
+	import Citations from './Citations.svelte';
 
 	import type { Writable } from 'svelte/store';
-	import 'katex/dist/katex.min.css';
 	import type { i18n as i18nType } from 'i18next';
 	import ContentRenderer from './ContentRenderer.svelte';
 
@@ -78,29 +75,35 @@
 			prompt_eval_duration?: number;
 			total_duration?: number;
 			load_duration?: number;
+			usage?: unknown;
 		};
 		annotation?: { type: string; rating: number };
 	}
 
-	export let message: MessageType;
-	export let siblings;
+	export let history;
+	export let messageId;
 	export let bufferTime;
 
-	export let isLastMessage = true;
+	let message: MessageType = JSON.parse(JSON.stringify(history.messages[messageId]));
+	$: if (history.messages) {
+		if (JSON.stringify(message) !== JSON.stringify(history.messages[messageId])) {
+			message = JSON.parse(JSON.stringify(history.messages[messageId]));
+		}
+	}
 
-	export let readOnly = false;
-
-	export let updateChatMessages: Function;
-	export let confirmEditResponseMessage: Function;
-	export let saveNewResponseMessage: Function = () => {};
+	export let siblings;
 
 	export let showPreviousMessage: Function;
 	export let showNextMessage: Function;
+
+	export let editMessage: Function;
 	export let rateMessage: Function;
 
-	export let copyToClipboard: Function;
-	export let continueGeneration: Function;
+	export let continueResponse: Function;
 	export let regenerateResponse: Function;
+
+	export let isLastMessage = true;
+	export let readOnly = false;
 
 	let model = null;
 	$: model = $models.find((m) => m.id === message.model);
@@ -108,7 +111,6 @@
 	let edit = false;
 	let editedContent = '';
 	let editTextAreaElement: HTMLTextAreaElement;
-	let tooltipInstance = null;
 
 	let audioParts: Record<number, HTMLAudioElement | null> = {};
 	let speaking = false;
@@ -118,9 +120,13 @@
 	let generatingImage = false;
 
 	let showRateComment = false;
-	let showCitationModal = false;
 
-	let selectedCitation = null;
+	const copyToClipboard = async (text) => {
+		const res = await _copyToClipboard(text);
+		if (res) {
+			toast.success($i18n.t('Copying to clipboard was successful!'));
+		}
+	};
 
 	const playAudio = (idx: number) => {
 		return new Promise<void>((res) => {
@@ -271,11 +277,7 @@
 	};
 
 	const editMessageConfirmHandler = async () => {
-		if (editedContent === '') {
-			editedContent = ' ';
-		}
-
-		confirmEditResponseMessage(message.id, editedContent);
+		editMessage(message.id, editedContent ? editedContent : '', false);
 
 		edit = false;
 		editedContent = '';
@@ -283,8 +285,8 @@
 		await tick();
 	};
 
-	const saveNewMessageHandler = async () => {
-		saveNewResponseMessage(message, editedContent);
+	const saveAsCopyHandler = async () => {
+		editMessage(message.id, editedContent ? editedContent : '');
 
 		edit = false;
 		editedContent = '';
@@ -306,13 +308,12 @@
 		console.log(res);
 
 		if (res) {
-			message.files = res.map((image) => ({
+			const files = res.map((image) => ({
 				type: 'image',
-				status: 'processed',
 				url: `${image.url}`
 			}));
 
-			dispatch('save', message);
+			dispatch('save', { ...message, files: files });
 		}
 
 		generatingImage = false;
@@ -325,11 +326,11 @@
 	}
 
 	onMount(async () => {
+		console.log('ResponseMessage mounted');
+
 		await tick();
 	});
 </script>
-
-<CitationsModal bind:show={showCitationModal} citation={selectedCitation} />
 
 {#key message.id}
 	<div
@@ -342,13 +343,13 @@
 				($i18n.language === 'dg-DG' ? `/doge.png` : `${WEBUI_BASE_URL}/static/favicon.png`)}
 		/>
 
-		<div class="w-full overflow-hidden pl-1">
+		<div class="flex-auto w-0 pl-1">
 			<Name>
 				{model?.name ?? message.model}
 
 				{#if message.timestamp}
 					<span
-						class=" self-center invisible group-hover:visible text-gray-400 text-xs font-medium uppercase"
+						class=" self-center invisible group-hover:visible text-gray-400 text-xs font-medium uppercase ml-0.5 -mt-0.5"
 					>
 						{dayjs(message.timestamp * 1000).format($i18n.t('h:mm a'))}
 					</span>
@@ -368,9 +369,7 @@
 					</div>
 				{/if}
 
-				<div
-					class="prose chat-{message.role} w-full max-w-full dark:prose-invert prose-p:my-0 prose-img:my-1 prose-headings:my-1 prose-pre:my-0 prose-table:my-0 prose-blockquote:my-0 prose-ul:-my-0 prose-ol:-my-0 prose-li:-my-0 whitespace-pre-line"
-				>
+				<div class="chat-{message.role} w-full min-w-full markdown-prose">
 					<div>
 						{#if (message?.statusHistory ?? [...(message?.status ? [message?.status] : [])]).length > 0}
 							{@const status = (
@@ -440,7 +439,7 @@
 											id="save-new-message-button"
 											class=" px-4 py-2 bg-gray-50 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 border dark:border-gray-700 text-gray-700 dark:text-gray-200 transition rounded-3xl"
 											on:click={() => {
-												editMessageConfirmHandler();
+												saveAsCopyHandler();
 											}}
 										>
 											{$i18n.t('Save As Copy')}
@@ -471,120 +470,53 @@
 								</div>
 							</div>
 						{:else}
-							<div class="w-full flex flex-col">
+							<div class="w-full flex flex-col relative" id="response-content-container">
 								{#if message.content === '' && !message.error}
 									<Skeleton />
 								{:else if message.content && message.error !== true}
 									<!-- always show message contents even if there's an error -->
 									<!-- unless message.error === true which is legacy error handling, where the error message is stored in message.content -->
-									{#key message.id}
-										<ContentRenderer
-											id={message.id}
-											content={message.content}
-											floatingButtons={message?.done}
-											bufferTime={bufferTime}
-											save={true}
-											{model}
-											on:update={(e) => {
-												const { raw, oldContent, newContent } = e.detail;
+									<ContentRenderer
+										id={message.id}
+										content={message.content}
+										floatingButtons={message?.done}
+										bufferTime={bufferTime}
+										save={true}
+										{model}
+										on:update={(e) => {
+											const { raw, oldContent, newContent } = e.detail;
 
-												history.messages[message.id].content = history.messages[
-													message.id
-												].content.replace(raw, raw.replace(oldContent, newContent));
+											history.messages[message.id].content = history.messages[
+												message.id
+											].content.replace(raw, raw.replace(oldContent, newContent));
 
-												dispatch('update');
-											}}
-											on:select={(e) => {
-												const { type, content } = e.detail;
+											dispatch('update');
+										}}
+										on:select={(e) => {
+											const { type, content } = e.detail;
 
-												if (type === 'explain') {
-													dispatch('submit', {
-														parentId: message.id,
-														prompt: `Explain this section to me in more detail\n\n\`\`\`\n${content}\n\`\`\``
-													});
-												} else if (type === 'ask') {
-													const input = e.detail?.input ?? '';
-													dispatch('submit', {
-														parentId: message.id,
-														prompt: `\`\`\`\n${content}\n\`\`\`\n${input}`
-													});
-												}
-											}}
-										/>
-									{/key}
+											if (type === 'explain') {
+												dispatch('submit', {
+													parentId: message.id,
+													prompt: `Explain this section to me in more detail\n\n\`\`\`\n${content}\n\`\`\``
+												});
+											} else if (type === 'ask') {
+												const input = e.detail?.input ?? '';
+												dispatch('submit', {
+													parentId: message.id,
+													prompt: `\`\`\`\n${content}\n\`\`\`\n${input}`
+												});
+											}
+										}}
+									/>
 								{/if}
 
 								{#if message.error}
-									<div
-										class="flex mt-2 mb-4 space-x-2 border px-4 py-3 border-red-800 bg-red-800/30 font-medium rounded-lg"
-									>
-										<svg
-											xmlns="http://www.w3.org/2000/svg"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke-width="1.5"
-											stroke="currentColor"
-											class="w-5 h-5 self-center"
-										>
-											<path
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-											/>
-										</svg>
-
-										<div class=" self-center">
-											{message?.error?.content ?? message.content}
-										</div>
-									</div>
+									<Error content={message?.error?.content ?? message.content} />
 								{/if}
 
 								{#if message.citations}
-									<div class="mt-1 mb-2 w-full flex gap-1 items-center flex-wrap">
-										{#each message.citations.reduce((acc, citation) => {
-											citation.document.forEach((document, index) => {
-												const metadata = citation.metadata?.[index];
-												const id = metadata?.source ?? 'N/A';
-												let source = citation?.source;
-
-												if (metadata?.name) {
-													source = { ...source, name: metadata.name };
-												}
-
-												// Check if ID looks like a URL
-												if (id.startsWith('http://') || id.startsWith('https://')) {
-													source = { name: id };
-												}
-
-												const existingSource = acc.find((item) => item.id === id);
-
-												if (existingSource) {
-													existingSource.document.push(document);
-													existingSource.metadata.push(metadata);
-												} else {
-													acc.push( { id: id, source: source, document: [document], metadata: metadata ? [metadata] : [] } );
-												}
-											});
-											return acc;
-										}, []) as citation, idx}
-											<div class="flex gap-1 text-xs font-semibold">
-												<button
-													class="flex dark:text-gray-300 py-1 px-1 bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-xl"
-													on:click={() => {
-														showCitationModal = true;
-														selectedCitation = citation;
-													}}
-												>
-													<div class="bg-white dark:bg-gray-700 rounded-full size-4">
-														{idx + 1}
-													</div>
-													<div class="flex-1 mx-2 line-clamp-1">
-														{citation.source.name}
-													</div>
-												</button>
-											</div>
-										{/each}
-									</div>
+									<Citations citations={message.citations} />
 								{/if}
 							</div>
 						{/if}
@@ -725,30 +657,32 @@
 												fill="currentColor"
 												viewBox="0 0 24 24"
 												xmlns="http://www.w3.org/2000/svg"
-												><style>
+											>
+												<style>
 													.spinner_S1WN {
 														animation: spinner_MGfb 0.8s linear infinite;
 														animation-delay: -0.8s;
 													}
+
 													.spinner_Km9P {
 														animation-delay: -0.65s;
 													}
+
 													.spinner_JApP {
 														animation-delay: -0.5s;
 													}
+
 													@keyframes spinner_MGfb {
 														93.75%,
 														100% {
 															opacity: 0.2;
 														}
 													}
-												</style><circle class="spinner_S1WN" cx="4" cy="12" r="3" /><circle
-													class="spinner_S1WN spinner_Km9P"
-													cx="12"
-													cy="12"
-													r="3"
-												/><circle class="spinner_S1WN spinner_JApP" cx="20" cy="12" r="3" /></svg
-											>
+												</style>
+												<circle class="spinner_S1WN" cx="4" cy="12" r="3" />
+												<circle class="spinner_S1WN spinner_Km9P" cx="12" cy="12" r="3" />
+												<circle class="spinner_S1WN spinner_JApP" cx="20" cy="12" r="3" />
+											</svg>
 										{:else if speaking}
 											<svg
 												xmlns="http://www.w3.org/2000/svg"
@@ -801,30 +735,32 @@
 													fill="currentColor"
 													viewBox="0 0 24 24"
 													xmlns="http://www.w3.org/2000/svg"
-													><style>
+												>
+													<style>
 														.spinner_S1WN {
 															animation: spinner_MGfb 0.8s linear infinite;
 															animation-delay: -0.8s;
 														}
+
 														.spinner_Km9P {
 															animation-delay: -0.65s;
 														}
+
 														.spinner_JApP {
 															animation-delay: -0.5s;
 														}
+
 														@keyframes spinner_MGfb {
 															93.75%,
 															100% {
 																opacity: 0.2;
 															}
 														}
-													</style><circle class="spinner_S1WN" cx="4" cy="12" r="3" /><circle
-														class="spinner_S1WN spinner_Km9P"
-														cx="12"
-														cy="12"
-														r="3"
-													/><circle class="spinner_S1WN spinner_JApP" cx="20" cy="12" r="3" /></svg
-												>
+													</style>
+													<circle class="spinner_S1WN" cx="4" cy="12" r="3" />
+													<circle class="spinner_S1WN spinner_Km9P" cx="12" cy="12" r="3" />
+													<circle class="spinner_S1WN spinner_JApP" cx="20" cy="12" r="3" />
+												</svg>
 											{:else}
 												<svg
 													xmlns="http://www.w3.org/2000/svg"
@@ -845,12 +781,22 @@
 									</Tooltip>
 								{/if}
 
-								{#if message.info && !$mobile}
+								{#if message.info}
 									<Tooltip
 										content={message.info.openai
-											? `${$i18n.t('prompt_tokens')}: ${message.info.prompt_tokens ?? 'N/A'}<br/>
-													${$i18n.t('completion_tokens')}: ${message.info.completion_tokens ?? 'N/A'}<br/>
-													${$i18n.t('total_tokens')}: ${message.info.total_tokens ?? 'N/A'}`
+											? message.info.usage
+												? `<pre>${sanitizeResponseContent(
+														JSON.stringify(message.info.usage, null, 2)
+															.replace(/"([^(")"]+)":/g, '$1:')
+															.slice(1, -1)
+															.split('\n')
+															.map((line) => line.slice(2))
+															.map((line) => (line.endsWith(',') ? line.slice(0, -1) : line))
+															.join('\n')
+													)}</pre>`
+												: `prompt_tokens: ${message.info.prompt_tokens ?? 'N/A'}<br/>
+													completion_tokens: ${message.info.completion_tokens ?? 'N/A'}<br/>
+													total_tokens: ${message.info.total_tokens ?? 'N/A'}`
 											: `response_token/s: ${
 													`${
 														Math.round(
@@ -958,10 +904,11 @@
 													stroke-linejoin="round"
 													class="w-4 h-4"
 													xmlns="http://www.w3.org/2000/svg"
-													><path
-														d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
-													/></svg
 												>
+													<path
+														d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"
+													/>
+												</svg>
 											</button>
 										</Tooltip>
 
@@ -1007,10 +954,11 @@
 													stroke-linejoin="round"
 													class="w-4 h-4"
 													xmlns="http://www.w3.org/2000/svg"
-													><path
-														d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
-													/></svg
 												>
+													<path
+														d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"
+													/>
+												</svg>
 											</button>
 										</Tooltip>
 									{/if}
@@ -1024,7 +972,7 @@
 													? 'visible'
 													: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
 												on:click={() => {
-													continueGeneration();
+													continueResponse();
 
 													(model?.actions ?? [])
 														.filter((action) => action?.__webui__ ?? false)
@@ -1113,15 +1061,7 @@
 														? 'visible'
 														: 'invisible group-hover:visible'} p-1.5 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg dark:hover:text-white hover:text-black transition regenerate-response-button"
 													on:click={() => {
-														dispatch('action', {
-															id: action.id,
-															event: {
-																id: action.name,
-																data: {
-																	messageId: message.id
-																}
-															}
-														});
+														dispatch('action', action.id);
 													}}
 												>
 													{#if action.icon_url}
@@ -1147,12 +1087,17 @@
 
 					{#if message.done && showRateComment}
 						<RateComment
-							messageId={message.id}
-							bind:show={showRateComment}
 							bind:message
+							bind:show={showRateComment}
 							on:submit={(e) => {
-								updateChatMessages();
-
+								dispatch('save', {
+									...message,
+									annotation: {
+										...message.annotation,
+										comment: e.detail.comment,
+										reason: e.detail.reason
+									}
+								});
 								(model?.actions ?? [])
 									.filter((action) => action?.__webui__ ?? false)
 									.forEach((action) => {

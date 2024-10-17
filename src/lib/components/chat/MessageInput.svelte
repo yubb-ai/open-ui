@@ -13,7 +13,8 @@
 		config,
 		showCallOverlay,
 		tools,
-		user as _user
+		user as _user,
+		showControls
 	} from '$lib/stores';
 
 	import { processDocToVectorDB } from '$lib/apis/rag';
@@ -42,13 +43,21 @@
 
 	export let transparentBackground = false;
 
-	export let submitPrompt: Function;
+	export let createMessagePair: Function;
 	export let stopResponse: Function;
 
 	export let autoScroll = false;
 
 	export let atSelectedModel: Model | undefined;
 	export let selectedModels: [''];
+
+	export let history;
+
+	export let prompt = '';
+	export let files = [];
+	export let availableToolIds = [];
+	export let selectedToolIds = [];
+	export let webSearchEnabled = false;
 
 	let recording = false;
 
@@ -61,16 +70,7 @@
 	let dragged = false;
 
 	let user = null;
-	let chatInputPlaceholder = '';
-
-	export let files = [];
-
-	export let availableToolIds = [];
-	export let selectedToolIds = [];
-	export let webSearchEnabled = false;
-
-	export let prompt = '';
-	export let messages = [];
+	export let placeholder = '';
 
 	let visionCapableModels = [];
 	let notBase64CapableModels = [];
@@ -223,7 +223,8 @@
 
 		files = [...files, fileItem];
 
-		if (['audio/mpeg', 'audio/wav', 'audio/ogg'].includes(file['type'])) {
+		// Check if the file is an audio file and transcribe/convert it to text file
+		if (['audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/x-m4a'].includes(file['type'])) {
 			const res = await transcribeAudio(localStorage.token, file).catch((error) => {
 				toast.error(error);
 				return null;
@@ -436,9 +437,9 @@
 
 <div class="w-full font-primary">
 	<div class=" -mb-0.5 mx-auto inset-x-0 bg-transparent flex justify-center">
-		<div class="flex flex-col max-w-6xl px-2.5 md:px-6 w-full">
+		<div class="flex flex-col px-2.5 max-w-6xl w-full">
 			<div class="relative">
-				{#if autoScroll === false && messages.length > 0}
+				{#if autoScroll === false && history?.currentId}
 					<div
 						class=" absolute -top-12 left-0 right-0 flex justify-center z-30 pointer-events-none"
 					>
@@ -469,13 +470,13 @@
 			<div class="w-full relative">
 				{#if atSelectedModel !== undefined}
 					<div
-						class="px-3 py-2.5 text-left w-full flex justify-between items-center absolute bottom-0.5 left-0 right-0 bg-gradient-to-t from-50% from-white dark:from-gray-900 z-10"
+						class="px-3 py-1 text-left w-full flex justify-between items-center absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white dark:from-gray-900 z-10"
 					>
 						<div class="flex items-center gap-2 text-sm dark:text-gray-500">
 							<img
 								crossorigin="anonymous"
 								alt="model profile"
-								class="size-5 max-w-[28px] object-cover rounded-full"
+								class="size-4 max-w-[28px] object-cover rounded-full"
 								src={$models.find((model) => model.id === atSelectedModel.id)?.info?.meta
 									?.profile_image_url ??
 									($i18n.language === 'dg-DG'
@@ -483,7 +484,6 @@
 										: `${WEBUI_BASE_URL}/static/favicon.png`)}
 							/>
 							<div>
-								<!-- Talking to <span class=" font-medium">{atSelectedModel.name}</span> -->
 								<span>{$i18n.t('Talking to ')}</span><strong>{atSelectedModel.name}</strong>
 							</div>
 						</div>
@@ -519,8 +519,8 @@
 	</div>
 
 	<div class="{transparentBackground ? 'bg-transparent' : 'bg-white dark:bg-gray-900'} ">
-		<div class="max-w-6xl px-2.5 md:px-6 mx-auto inset-x-0">
-			<div class=" pb-2">
+		<div class="max-w-6xl px-4 mx-auto inset-x-0">
+			<div class="">
 				<input
 					bind:this={filesInputElement}
 					bind:files={inputFiles}
@@ -566,7 +566,7 @@
 							document.getElementById('chat-textarea')?.focus();
 
 							if ($settings?.speechAutoSend ?? false) {
-								submitPrompt(prompt);
+								dispatch('submit', prompt);
 							}
 						}}
 					/>
@@ -575,7 +575,7 @@
 						class="w-full flex gap-1.5"
 						on:submit|preventDefault={() => {
 							// check if selectedModels support image input
-							submitPrompt(prompt);
+							dispatch('submit', prompt);
 						}}
 					>
 						<div
@@ -639,14 +639,7 @@
 													</button>
 												</div>
 											</div>
-										{/if}
-									{/each}
-								</div>
-							{/if}
-							{#if files.length > 0}
-								<div class="mx-1 mt-2.5 mb-1 flex flex-wrap gap-2">
-									{#each files as file, fileIdx}
-										{#if file.type !== 'image'}
+										{:else}
 											<FileItem
 												name={file.name}
 												type={file.type}
@@ -709,9 +702,7 @@
 									id="chat-textarea"
 									bind:this={chatTextAreaElement}
 									class="scrollbar-hidden bg-gray-50 dark:bg-gray-850 dark:text-gray-100 outline-none w-full py-3 px-1 rounded-xl resize-none h-[48px]"
-									placeholder={chatInputPlaceholder !== ''
-										? chatInputPlaceholder
-										: $i18n.t('Send a Message and Use @ to Select a Model')}
+									placeholder={placeholder ? placeholder : $i18n.t('Send a Message and Use @ to Select a Model')}
 									bind:value={prompt}
 									on:keypress={(e) => {
 										if (
@@ -729,13 +720,19 @@
 
 											// Submit the prompt when Enter key is pressed
 											if (prompt !== '' && e.key === 'Enter' && !e.shiftKey) {
-												submitPrompt(prompt);
+												dispatch('submit', prompt);
 											}
 										}
 									}}
 									on:keydown={async (e) => {
 										const isCtrlPressed = e.ctrlKey || e.metaKey; // metaKey is for Cmd key on Mac
 										const commandsContainerElement = document.getElementById('commands-container');
+
+										// Command/Ctrl + Shift + Enter to submit a message pair
+										if (isCtrlPressed && e.key === 'Enter' && e.shiftKey) {
+											e.preventDefault();
+											createMessagePair(prompt);
+										}
 
 										// Check if Ctrl + R is pressed
 										if (prompt === '' && isCtrlPressed && e.key.toLowerCase() === 'r') {
@@ -849,6 +846,7 @@
 									}}
 									on:paste={async (e) => {
 										const clipboardData = e.clipboardData || window.clipboardData;
+
 										try {
 											if (clipboardData && clipboardData.items) {
 												const inputFiles = Array.from(clipboardData.items)
@@ -875,7 +873,7 @@
 								/>
 
 								<div class="self-end mb-2 flex space-x-1 mr-1">
-									{#if messages.length == 0 || messages.at(-1).done == true}
+									{#if !history?.currentId || history.messages[history.currentId]?.done == true}
 										<Tooltip content={$i18n.t('Record voice')}>
 											<button
 												id="voice-input-button"
@@ -927,7 +925,7 @@
 							</div>
 						</div>
 						<div class="flex items-end w-10">
-							{#if messages.length == 0 || messages.at(-1).done == true}
+							{#if !history.currentId || history.messages[history.currentId]?.done == true}
 								{#if prompt === ''}
 									<div class=" flex items-center mb-1">
 										<Tooltip content={$i18n.t('Call')}>
@@ -961,7 +959,7 @@
 														stream = null;
 
 														showCallOverlay.set(true);
-														dispatch('call');
+														showControls.set(true);
 													} catch (err) {
 														// If the user denies the permission or an error occurs, show an error message
 														toast.error($i18n.t('Permission denied when accessing media devices'));
@@ -1026,22 +1024,7 @@
 						</div>
 					</form>
 				{/if}
-
-				<div class="mt-1.5 text-xs text-gray-500 text-center line-clamp-1">
-					{$i18n.t('LLMs can make mistakes. Verify important information.')}
-				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
-<style>
-	.scrollbar-hidden:active::-webkit-scrollbar-thumb,
-	.scrollbar-hidden:focus::-webkit-scrollbar-thumb,
-	.scrollbar-hidden:hover::-webkit-scrollbar-thumb {
-		visibility: visible;
-	}
-	.scrollbar-hidden::-webkit-scrollbar-thumb {
-		visibility: hidden;
-	}
-</style>

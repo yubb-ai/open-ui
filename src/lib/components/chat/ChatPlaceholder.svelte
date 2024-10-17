@@ -7,7 +7,7 @@
 
 	import { blur, fade } from 'svelte/transition';
 
-	import Suggestions from '../MessageInput/Suggestions.svelte';
+	import Suggestions from './Suggestions.svelte';
 	import { sanitizeResponseContent } from '$lib/utils';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import EyeSlash from '$lib/components/icons/EyeSlash.svelte';
@@ -72,7 +72,7 @@
 				placement="top-start"
 			>
 				<div class="flex items-center gap-2 text-gray-500 font-medium text-lg my-2 w-fit">
-					<EyeSlash strokeWidth="2.5" className="size-5" /> {$i18n.t('Temporary Chat')}
+					<EyeSlash strokeWidth="2.5" className="size-5" /> Temporary Chat
 				</div>
 			</Tooltip>
 		{/if}
@@ -125,10 +125,13 @@
 
 		<div class=" w-full font-primary" in:fade={{ duration: 200, delay: 300 }}>
 			<Suggestions
+				className="grid grid-cols-2"
 				suggestionPrompts={models[selectedModelIdx]?.info?.meta?.suggestion_prompts ??
 					$config?.default_prompt_suggestions ??
 					[]}
-				{submitPrompt}
+				on:select={(e) => {
+					submitPrompt(e.detail);
+				}}
 			/>
 		</div>
 	</div>
