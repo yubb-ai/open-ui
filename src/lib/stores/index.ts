@@ -114,6 +114,7 @@ type Settings = {
 	splitLargeDeltas?: boolean;
 	chatDirection: 'LTR' | 'RTL';
 	enableFileUpdateBase64?: boolean;
+	landingPageMode?: boolean;
 
 	system?: string;
 	requestFormat?: string;
