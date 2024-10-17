@@ -496,9 +496,12 @@
 											const { type, content } = e.detail;
 
 											if (type === 'explain') {
+												const localizedContent = $i18n.t(
+													'Explain this section to me in more detail'
+												);
 												dispatch('submit', {
 													parentId: message.id,
-													prompt: `Explain this section to me in more detail\n\n\`\`\`\n${content}\n\`\`\``
+													prompt: `${localizedContent}\n\n\`\`\`\n${content}\n\`\`\``
 												});
 											} else if (type === 'ask') {
 												const input = e.detail?.input ?? '';
