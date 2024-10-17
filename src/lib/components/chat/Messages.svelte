@@ -1,17 +1,6 @@
 <script lang="ts">
 	import { v4 as uuidv4 } from 'uuid';
-	import {
-		chats,
-		config,
-		settings,
-		user as _user,
-		mobile,
-		currentChatPage,
-		showControls,
-		showCallOverlay,
-		showOverview,
-		showArtifacts
-	} from '$lib/stores';
+	import { chats, config, settings, user as _user, mobile, currentChatPage } from '$lib/stores';
 	import { tick, getContext, onMount, createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
@@ -321,14 +310,7 @@
 </script>
 
 <div
-	class="h-full flex {($mobile === true &&
-		($showControls === false &&
-		$showOverview === false &&
-		$showCallOverlay === false &&
-		$showArtifacts === false
-			? 'pt-8'
-			: '')) ||
-		'pt-8'}"
+	class="h-full flex 'pt-8'"
 >
 	{#if Object.keys(history?.messages ?? {}).length == 0}
 		<ChatPlaceholder
