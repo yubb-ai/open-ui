@@ -12,7 +12,7 @@
 
 	const sizeToWidth = (size) => {
 		if (size === 'xs') {
-			return 'w-[15rem]';
+			return 'w-[16rem]';
 		} else if (size === 'sm') {
 			return 'w-[30rem]';
 		} else if (size === 'md') {
