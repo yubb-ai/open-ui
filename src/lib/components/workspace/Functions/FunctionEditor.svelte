@@ -1,13 +1,12 @@
 <script>
 	import { getContext, createEventDispatcher, onMount, tick } from 'svelte';
+	import { goto } from '$app/navigation';
 
+	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
 
 	import CodeEditor from '$lib/components/common/CodeEditor.svelte';
-	import { goto } from '$app/navigation';
 	import ConfirmDialog from '$lib/components/common/ConfirmDialog.svelte';
-
-	const dispatch = createEventDispatcher();
 
 	let formElement = null;
 	let loading = false;
@@ -37,106 +36,219 @@
 	}
 
 	let codeEditor;
-	let boilerplate = `import os
-import requests
-from datetime import datetime
+	let boilerplate = `"""
+title: Example Filter
+author: open-webui
+author_url: https://github.com/open-webui
+funding_url: https://github.com/open-webui
+version: 0.1
+"""
+
+from pydantic import BaseModel, Field
+from typing import Optional
 
 
-class Tools:
-    def __init__(self):
+class Filter:
+    class Valves(BaseModel):
+        priority: int = Field(
+            default=0, description="Priority level for the filter operations."
+        )
+        max_turns: int = Field(
+            default=8, description="Maximum allowable conversation turns for a user."
+        )
         pass
 
-    # Add your custom tools using pure Python code here, make sure to add type hints
-    # Use Sphinx-style docstrings to document your tools, they will be used for generating tools specifications
-    # Please refer to function_calling_filter_pipeline.py file from pipelines project for an example
+    class UserValves(BaseModel):
+        max_turns: int = Field(
+            default=4, description="Maximum allowable conversation turns for a user."
+        )
+        pass
 
-    def get_user_name_and_email_and_id(self, __user__: dict = {}) -> str:
-        """
-        Get the user name, Email and ID from the user object.
-        """
+    def __init__(self):
+        # Indicates custom file handling logic. This flag helps disengage default routines in favor of custom
+        # implementations, informing the WebUI to defer file-related operations to designated methods within this class.
+        # Alternatively, you can remove the files directly from the body in from the inlet hook
+        # self.file_handler = True
 
-        # Do not include :param for __user__ in the docstring as it should not be shown in the tool's specification
-        # The session user object will be passed as a parameter when the function is called
+        # Initialize 'valves' with specific configurations. Using 'Valves' instance helps encapsulate settings,
+        # which ensures settings are managed cohesively and not confused with operational flags like 'file_handler'.
+        self.valves = self.Valves()
+        pass
 
-        print(__user__)
-        result = ""
+    def inlet(self, body: dict, __user__: Optional[dict] = None) -> dict:
+        # Modify the request body or validate it before processing by the chat completion API.
+        # This function is the pre-processor for the API where various checks on the input can be performed.
+        # It can also modify the request before sending it to the API.
+        print(f"inlet:{__name__}")
+        print(f"inlet:body:{body}")
+        print(f"inlet:user:{__user__}")
 
-        if "name" in __user__:
-            result += f"User: {__user__['name']}"
-        if "id" in __user__:
-            result += f" (ID: {__user__['id']})"
-        if "email" in __user__:
-            result += f" (Email: {__user__['email']})"
+        if __user__.get("role", "admin") in ["user", "admin"]:
+            messages = body.get("messages", [])
 
-        if result == "":
-            result = "User: Unknown"
+            max_turns = min(__user__["valves"].max_turns, self.valves.max_turns)
+            if len(messages) > max_turns:
+                raise Exception(
+                    f"Conversation turn limit exceeded. Max turns: {max_turns}"
+                )
 
-        return result
+        return body
 
-    def get_current_time(self) -> str:
-        """
-        Get the current time in a more human-readable format.
-        :return: The current time.
-        """
+    def outlet(self, body: dict, __user__: Optional[dict] = None) -> dict:
+        # Modify or analyze the response body after processing by the API.
+        # This function is the post-processor for the API, which can be used to modify the response
+        # or perform additional checks and analytics.
+        print(f"outlet:{__name__}")
+        print(f"outlet:body:{body}")
+        print(f"outlet:user:{__user__}")
 
-        now = datetime.now()
-        current_time = now.strftime("%I:%M:%S %p")  # Using 12-hour format with AM/PM
-        current_date = now.strftime(
-            "%A, %B %d, %Y"
-        )  # Full weekday, month name, day, and year
+        return body
+`;
 
-        return f"Current Date and Time = {current_date}, {current_time}"
+	const _boilerplate = `from pydantic import BaseModel
+from typing import Optional, Union, Generator, Iterator
+from open_webui.utils.misc import get_last_user_message
 
-    def calculator(self, equation: str) -> str:
-        """
-        Calculate the result of an equation.
-        :param equation: The equation to calculate.
-        """
+import os
+import requests
 
-        # Avoid using eval in production code
-        # https://nedbatchelder.com/blog/201206/eval_really_is_dangerous.html
+
+# Filter Class: This class is designed to serve as a pre-processor and post-processor
+# for request and response modifications. It checks and transforms requests and responses
+# to ensure they meet specific criteria before further processing or returning to the user.
+class Filter:
+    class Valves(BaseModel):
+        max_turns: int = 4
+        pass
+
+    def __init__(self):
+        # Indicates custom file handling logic. This flag helps disengage default routines in favor of custom
+        # implementations, informing the WebUI to defer file-related operations to designated methods within this class.
+        # Alternatively, you can remove the files directly from the body in from the inlet hook
+        self.file_handler = True
+
+        # Initialize 'valves' with specific configurations. Using 'Valves' instance helps encapsulate settings,
+        # which ensures settings are managed cohesively and not confused with operational flags like 'file_handler'.
+        self.valves = self.Valves(**{"max_turns": 2})
+        pass
+
+    def inlet(self, body: dict, user: Optional[dict] = None) -> dict:
+        # Modify the request body or validate it before processing by the chat completion API.
+        # This function is the pre-processor for the API where various checks on the input can be performed.
+        # It can also modify the request before sending it to the API.
+        print(f"inlet:{__name__}")
+        print(f"inlet:body:{body}")
+        print(f"inlet:user:{user}")
+
+        if user.get("role", "admin") in ["user", "admin"]:
+            messages = body.get("messages", [])
+            if len(messages) > self.valves.max_turns:
+                raise Exception(
+                    f"Conversation turn limit exceeded. Max turns: {self.valves.max_turns}"
+                )
+
+        return body
+
+    def outlet(self, body: dict, user: Optional[dict] = None) -> dict:
+        # Modify or analyze the response body after processing by the API.
+        # This function is the post-processor for the API, which can be used to modify the response
+        # or perform additional checks and analytics.
+        print(f"outlet:{__name__}")
+        print(f"outlet:body:{body}")
+        print(f"outlet:user:{user}")
+
+        messages = [
+            {
+                **message,
+                "content": f"{message['content']} - @@Modified from Filter Outlet",
+            }
+            for message in body.get("messages", [])
+        ]
+
+        return {"messages": messages}
+
+
+
+# Pipe Class: This class functions as a customizable pipeline.
+# It can be adapted to work with any external or internal models,
+# making it versatile for various use cases outside of just OpenAI models.
+class Pipe:
+    class Valves(BaseModel):
+        OPENAI_API_BASE_URL: str = "https://api.openai.com/v1"
+        OPENAI_API_KEY: str = "your-key"
+        pass
+
+    def __init__(self):
+        self.type = "manifold"
+        self.valves = self.Valves()
+        self.pipes = self.get_openai_models()
+        pass
+
+    def get_openai_models(self):
+        if self.valves.OPENAI_API_KEY:
+            try:
+                headers = {}
+                headers["Authorization"] = f"Bearer {self.valves.OPENAI_API_KEY}"
+                headers["Content-Type"] = "application/json"
+
+                r = requests.get(
+                    f"{self.valves.OPENAI_API_BASE_URL}/models", headers=headers
+                )
+
+                models = r.json()
+                return [
+                    {
+                        "id": model["id"],
+                        "name": model["name"] if "name" in model else model["id"],
+                    }
+                    for model in models["data"]
+                    if "gpt" in model["id"]
+                ]
+
+            except Exception as e:
+
+                print(f"Error: {e}")
+                return [
+                    {
+                        "id": "error",
+                        "name": "Could not fetch models from OpenAI, please update the API Key in the valves.",
+                    },
+                ]
+        else:
+            return []
+
+    def pipe(self, body: dict) -> Union[str, Generator, Iterator]:
+        # This is where you can add your custom pipelines like RAG.
+        print(f"pipe:{__name__}")
+
+        if "user" in body:
+            print(body["user"])
+            del body["user"]
+
+        headers = {}
+        headers["Authorization"] = f"Bearer {self.valves.OPENAI_API_KEY}"
+        headers["Content-Type"] = "application/json"
+
+        model_id = body["model"][body["model"].find(".") + 1 :]
+        payload = {**body, "model": model_id}
+        print(payload)
+
         try:
-            result = eval(equation)
-            return f"{equation} = {result}"
-        except Exception as e:
-            print(e)
-            return "Invalid equation"
-
-    def get_current_weather(self, city: str) -> str:
-        """
-        Get the current weather for a given city.
-        :param city: The name of the city to get the weather for.
-        :return: The current weather information or an error message.
-        """
-        api_key = os.getenv("OPENWEATHER_API_KEY")
-        if not api_key:
-            return (
-                "API key is not set in the environment variable 'OPENWEATHER_API_KEY'."
+            r = requests.post(
+                url=f"{self.valves.OPENAI_API_BASE_URL}/chat/completions",
+                json=payload,
+                headers=headers,
+                stream=True,
             )
 
-        base_url = "http://api.openweathermap.org/data/2.5/weather"
-        params = {
-            "q": city,
-            "appid": api_key,
-            "units": "metric",  # Optional: Use 'imperial' for Fahrenheit
-        }
+            r.raise_for_status()
 
-        try:
-            response = requests.get(base_url, params=params)
-            response.raise_for_status()  # Raise HTTPError for bad responses (4xx and 5xx)
-            data = response.json()
-
-            if data.get("cod") != 200:
-                return f"Error fetching weather data: {data.get('message')}"
-
-            weather_description = data["weather"][0]["description"]
-            temperature = data["main"]["temp"]
-            humidity = data["main"]["humidity"]
-            wind_speed = data["wind"]["speed"]
-
-            return f"Weather in {city}: {temperature}°C"
-        except requests.RequestException as e:
-            return f"Error fetching weather data: {str(e)}"
+            if body["stream"]:
+                return r.iter_lines()
+            else:
+                return r.json()
+        except Exception as e:
+            return f"Error: {e}"
 `;
 
 	const saveHandler = async () => {
@@ -186,7 +298,7 @@ class Tools:
 				<button
 					class="flex space-x-1"
 					on:click={() => {
-						goto('/workspace/tools');
+						goto('/workspace/functions');
 					}}
 					type="button"
 				>
@@ -214,7 +326,7 @@ class Tools:
 						<input
 							class="w-full px-3 py-2 text-sm font-medium bg-gray-50 dark:bg-gray-850 dark:text-gray-200 rounded-lg outline-none"
 							type="text"
-							placeholder={$i18n.t('Toolkit Name (e.g. My ToolKit)')}
+							placeholder={$i18n.t('Function Name (e.g. My Filter)')}
 							bind:value={name}
 							required
 						/>
@@ -222,7 +334,7 @@ class Tools:
 						<input
 							class="w-full px-3 py-2 text-sm font-medium disabled:text-gray-300 dark:disabled:text-gray-700 bg-gray-50 dark:bg-gray-850 dark:text-gray-200 rounded-lg outline-none"
 							type="text"
-							placeholder={$i18n.t('Toolkit ID (e.g. my_toolkit)')}
+							placeholder={$i18n.t('Function ID (e.g. my_filter)')}
 							bind:value={id}
 							required
 							disabled={edit}
@@ -232,7 +344,7 @@ class Tools:
 						class="w-full px-3 py-2 text-sm font-medium bg-gray-50 dark:bg-gray-850 dark:text-gray-200 rounded-lg outline-none"
 						type="text"
 						placeholder={$i18n.t(
-							'Toolkit Description (e.g. A toolkit for performing various operations)'
+							'Function Description (e.g. A filter to remove profanity from text)'
 						)}
 						bind:value={meta.description}
 						required
@@ -243,12 +355,12 @@ class Tools:
 					<CodeEditor
 						bind:this={codeEditor}
 						value={content}
-						{boilerplate}
 						lang="python"
+						{boilerplate}
 						on:change={(e) => {
 							_content = e.detail.value;
 						}}
-						on:save={() => {
+						on:save={async () => {
 							if (formElement) {
 								formElement.requestSubmit();
 							}
@@ -260,9 +372,9 @@ class Tools:
 					<div class="flex-1 pr-3">
 						<div class="text-xs text-gray-500 line-clamp-2">
 							<span class=" font-semibold dark:text-gray-200">{$i18n.t('Warning:')}</span>
-							{$i18n.t('Tools are a function calling system with arbitrary code execution')} <br />—
+							{$i18n.t('Functions allow arbitrary code execution')} <br />—
 							<span class=" font-medium dark:text-gray-400"
-								>{$i18n.t(`don't install random tools from sources you don't trust.`)}</span
+								>{$i18n.t(`don't install random functions from sources you don't trust.`)}</span
 							>
 						</div>
 					</div>
@@ -290,10 +402,8 @@ class Tools:
 			<div>{$i18n.t('Please carefully review the following warnings:')}</div>
 
 			<ul class=" mt-1 list-disc pl-4 text-xs">
-				<li>
-					{$i18n.t('Tools have a function calling system that allows arbitrary code execution.')}
-				</li>
-				<li>{$i18n.t('Do not install tools from sources you do not fully trust.')}</li>
+				<li>{$i18n.t('Functions allow arbitrary code execution.')}</li>
+				<li>{$i18n.t('Do not install functions from sources you do not fully trust.')}</li>
 			</ul>
 		</div>
 
