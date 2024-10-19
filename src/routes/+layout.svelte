@@ -116,7 +116,7 @@
 				: [navigator.language || navigator.userLanguage];
 			const lang = backendConfig.default_locale
 				? backendConfig.default_locale
-				: bestMatchingLanguage(languages, browserLanguages, 'en-US');
+				: bestMatchingLanguage(languages, browserLanguages, 'zh-CN');
 			$i18n.changeLanguage(lang);
 		}
 
@@ -159,10 +159,7 @@
 
 		await tick();
 
-		if (
-			document.documentElement.classList.contains('her') &&
-			document.getElementById('progress-bar')
-		) {
+		if (document.getElementById('progress-bar')) {
 			loadingProgress.subscribe((value) => {
 				const progressBar = document.getElementById('progress-bar');
 
@@ -172,22 +169,9 @@
 			});
 
 			await loadingProgress.set(100);
-
-			document.getElementById('splash-screen')?.remove();
-
-			const audio = new Audio(`/audio/greeting.mp3`);
-			const playAudio = () => {
-				audio.play();
-				document.removeEventListener('click', playAudio);
-			};
-
-			document.addEventListener('click', playAudio);
-
-			loaded = true;
-		} else {
-			document.getElementById('splash-screen')?.remove();
-			loaded = true;
 		}
+		document.getElementById('splash-screen')?.remove();
+		loaded = true;
 
 		return () => {
 			window.removeEventListener('resize', onResize);
