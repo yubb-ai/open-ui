@@ -121,62 +121,20 @@
 			</div>
 		</div>
 
-		<div id="splash-screen" style="position: fixed; z-index: 100; top: 0; left: 0; width: 100%; height: 100%">
-			<style type="text/css" nonce="">
-				html {
-					overflow-y: scroll !important;
-				}
-			</style>
-
-			<img id="logo" style="
-					position: absolute;
-					width: auto;
-					height: 6rem;
-					top: 44%;
-					left: 50%;
-					border-radius: 50%;
-					transform: translateX(-50%);
-				" src="/static/splash.png" />
-
-			<div style="
-					position: absolute;
-					top: 33%;
-					left: 50%;
-
-					width: 24rem;
-					transform: translateX(-50%);
-
-					display: flex;
-					flex-direction: column;
-					align-items: center;
-				">
-				<img id="logo-her" style="width: auto; height: 13rem" src="/static/splash.png" class="animate-pulse-fast" />
-
-				<div style="position: relative; width: 24rem; margin-top: 0.5rem">
-					<div id="progress-background" style="
-							position: absolute;
-							width: 100%;
-							height: 0.75rem;
-
-							border-radius: 9999px;
-							background-color: #fafafa9a;
-						"></div>
-
-					<div id="progress-bar" style="
-							position: absolute;
-							width: 0%;
-							height: 0.75rem;
-							border-radius: 9999px;
-							background-color: #fff;
-						" class="bg-white"></div>
-				</div>
+		<div id="splash-screen">
+			<img id="logo" src="https://open.clivia.fun/static/favicon.png" class="animate-pulse-fast" alt="logo">
+			<div id="progress-container">
+				<div id="progress-background"></div>
+				<div id="progress-bar"></div>
 			</div>
 		</div>
 	</body>
+
 </html>
 
 <style type="text/css" nonce="">
-	html, body {
+	html,
+	body {
 		position: fixed;
 		overflow-y: hidden;
 		height: 100%;
@@ -192,45 +150,59 @@
 		background: #000;
 	}
 
-	html.her #splash-screen {
-		background: #983724;
+	#splash-screen {
+		position: fixed;
+		z-index: 9999;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		background: #fff;
 	}
 
-	#logo-her {
-		display: none;
-	}
-
-	#progress-background {
-		display: none;
+	#progress-container {
+		width: 24rem;
+		position: relative;
 	}
 
 	#progress-bar {
-		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 0;
+		height: 0.6rem;
+		border-radius: 9999px;
+		background: linear-gradient(90deg, #4fd1c5 0%, #63b3ed 100%);
+		transition: width 0.1s linear;
 	}
 
-	html.her #logo {
-		display: none;
+	#logo {
+		width: auto;
+		height: 10rem;
+		margin-bottom: 3rem;
+		border-radius: 50%;
 	}
 
-	html.her #logo-her {
-		display: block;
+	#progress-background {
+		width: 100%;
+		height: 0.6rem;
+		border-radius: 9999px;
+		background-color: rgba(0, 0, 0, 0.1);
 	}
 
-	html.her #progress-background {
-		display: block;
-	}
-
-	html.her #progress-bar {
-		display: block;
-	}
-
-	@media (max-width: 24rem) {
-		html.her #progress-background {
-			display: none;
+	@media (max-width: 768px) {
+		#logo {
+			height: 7rem;
+			margin-bottom: 2rem;
 		}
 
-		html.her #progress-bar {
-			display: none;
+		#progress-container {
+			width: 60%;
+			max-width: 20rem;
 		}
 	}
 
@@ -238,10 +210,6 @@
 		50% {
 			opacity: 0.65;
 		}
-	}
-
-	.animate-pulse-fast {
-		animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 	}
 
 	#browser-warning {
@@ -263,15 +231,15 @@
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		transform: translate(-50%, -50%); 
+		transform: translate(-50%, -50%);
 		text-align: center;
 		max-width: 300px;
 		width: 100%;
 	}
 
 	#browser-warning #startLogo {
-		display: block; 
-		margin: 0 auto 1rem; 
+		display: block;
+		margin: 0 auto 1rem;
 		width: 8rem;
 		height: auto;
 		border-radius: 50%;
@@ -284,7 +252,7 @@
 		margin-bottom: 2rem;
 		color: #4a4a4a;
 		font-weight: 500;
-		
+
 	}
 
 	#browser-warning button {
