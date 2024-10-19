@@ -160,14 +160,14 @@
 		await tick();
 
 		if (document.getElementById('progress-bar')) {
+			const progressBar = document.getElementById('progress-bar');
 			loadingProgress.subscribe((value) => {
-				const progressBar = document.getElementById('progress-bar');
-
-				if (progressBar) {
-					progressBar.style.width = `${value}%`;
-				}
+				requestAnimationFrame(() => {
+					if (progressBar) {
+						progressBar.style.width = `${value}%`;
+					}
+				});
 			});
-
 			await loadingProgress.set(100);
 		}
 		document.getElementById('splash-screen')?.remove();
