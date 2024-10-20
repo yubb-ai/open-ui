@@ -122,6 +122,8 @@
 
 		config.set(backendConfig);
 		WEBUI_NAME.set(backendConfig.name);
+		// 设置 WebSocket 连接
+		setupSocket();
 
 		if (localStorage.token) {
 			// 获取会话用户信息
@@ -131,8 +133,6 @@
 			});
 
 			if (sessionUser) {
-				// 设置 WebSocket 连接
-				setupSocket();
 				// 将会话用户保存到 store
 				user.set(sessionUser);
 			} else {
