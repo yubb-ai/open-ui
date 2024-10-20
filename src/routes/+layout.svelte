@@ -3,8 +3,8 @@
 	import { spring } from 'svelte/motion';
 
 	let loadingProgress = spring(0, {
-		stiffness: 0.5,
-		damping: 1.0
+		stiffness: 0.8,
+		damping: 0.8
 	});
 
 	import { onMount, tick, setContext } from 'svelte';
