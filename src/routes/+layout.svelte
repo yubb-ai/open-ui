@@ -141,11 +141,7 @@
 		// 更新进度条
 		const progressBar = document.getElementById('progress-bar');
 		if (progressBar) {
-			progressBar.style.width = '0%';
-			progressBar.style.transition = 'width 0.5s ease';
-			setTimeout(() => {
-				progressBar.style.width = '100%';
-			}, 0);
+			progressBar.style.width = '100%';
 		}
 
 		// 移除启动画面
