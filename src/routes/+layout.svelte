@@ -152,10 +152,12 @@
 		if (progressBar) {
 			loadingProgress.subscribe((value) => {
 				requestAnimationFrame(() => {
-					progressBar.style.width = `${Math.min(value, 100)}%`;
+					if (progressBar) {
+						progressBar.style.width = `${Math.min(value, 100)}%`;
+					}
 				});
 			});
-			loadingProgress.set(100);
+			await loadingProgress.set(100);
 		}
 
 		// 移除启动画面
