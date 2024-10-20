@@ -317,7 +317,9 @@ __builtins__.input = input`);
 				<div class="flex items-center gap-0.5 translate-y-[1px]">
 					{#if lang.toLowerCase() === 'python' || lang.toLowerCase() === 'py' || (lang === '' && checkPythonCode(code))}
 						{#if executing}
-							<div class="run-code-button bg-none border-none p-1 cursor-not-allowed">Running</div>
+							<div class="run-code-button bg-none border-none p-1 cursor-not-allowed">
+								{$i18n.t('Running')}
+							</div>
 						{:else}
 							<button
 								class="run-code-button bg-none border-none bg-gray-50 hover:bg-gray-100 dark:bg-gray-850 dark:hover:bg-gray-800 transition rounded-md px-1.5 py-0.5"
@@ -373,7 +375,7 @@ __builtins__.input = input`);
 			{#if executing}
 				<div class="bg-[#202123] text-white px-4 py-4 rounded-b-lg">
 					<div class=" text-gray-500 text-xs mb-1">{$i18n.t('STDOUT/STDERR')}</div>
-					<div class="text-sm">{$i18n.t('Running') + '...'}</div>
+					<div class="text-sm">{$i18n.t('Running')}...</div>
 				</div>
 			{:else if stdout || stderr || result}
 				<div class="bg-[#202123] text-white px-4 py-4 rounded-b-lg">
