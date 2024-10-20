@@ -163,8 +163,9 @@
 			const progressBar = document.getElementById('progress-bar');
 			loadingProgress.subscribe((value) => {
 				requestAnimationFrame(() => {
+					const safeValue = Math.min(value, 100);
 					if (progressBar) {
-						progressBar.style.width = `${value}%`;
+						progressBar.style.width = `${safeValue}%`;
 					}
 				});
 			});
