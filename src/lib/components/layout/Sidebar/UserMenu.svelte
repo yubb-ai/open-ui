@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu } from 'bits-ui';
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
+	import { toast } from 'svelte-sonner';
 
 	import { flyAndScale } from '$lib/utils/transitions';
 	import { goto } from '$app/navigation';
@@ -162,8 +163,13 @@
 				<button
 					class="flex rounded-md py-2.5 px-3.5 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
 					on:click={() => {
-						window.open($config?.midjourney_url, '_blank');
-						showDropdown = false;
+						const allowedRoles = ['admin', 'svip', 'vip'];
+						if (allowedRoles.includes(role)) {
+							window.open($config?.midjourney_url, '_blank');
+							showDropdown = false;
+						} else {
+							toast.error('快找小羊升级您的等级体验Midjourney吧！');
+						}
 					}}
 				>
 					<div class="self-center mr-3">
