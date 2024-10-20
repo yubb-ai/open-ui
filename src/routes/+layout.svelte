@@ -129,6 +129,7 @@
 			if (sessionUser) {
 				// 将会话用户保存到 store
 				user.set(sessionUser);
+				config.set(backendConfig);
 			} else {
 				// 如果会话无效，重定向到 /auth 页面
 				localStorage.removeItem('token');
