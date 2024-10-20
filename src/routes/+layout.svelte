@@ -1,12 +1,5 @@
 <script>
 	import { io } from 'socket.io-client';
-	import { spring } from 'svelte/motion';
-
-	let loadingProgress = spring(0, {
-		stiffness: 0.8,
-		damping: 0.8
-	});
-
 	import { onMount, tick, setContext } from 'svelte';
 	import {
 		config,
@@ -148,14 +141,11 @@
 		// 更新进度条
 		const progressBar = document.getElementById('progress-bar');
 		if (progressBar) {
-			loadingProgress.subscribe((value) => {
-				requestAnimationFrame(() => {
-					if (progressBar) {
-						progressBar.style.width = `${Math.min(value, 100)}%`;
-					}
-				});
-			});
-			await loadingProgress.set(100);
+			progressBar.style.width = '0%';
+			progressBar.style.transition = 'width 0.5s ease';
+			setTimeout(() => {
+				progressBar.style.width = '100%';
+			}, 0);
 		}
 
 		// 移除启动画面
