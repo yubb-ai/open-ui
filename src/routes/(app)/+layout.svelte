@@ -57,64 +57,94 @@
 		if ($user === undefined) {
 			await goto('/auth');
 		} else if ($user.role !== 'pending') {
-			try {
-				// Check if IndexedDB exists
-				DB = await openDB('Chats', 1);
-
-				if (DB) {
-					const chats = await DB.getAllFromIndex('chats', 'timestamp');
-					localDBChats = chats.map((item, idx) => chats[chats.length - 1 - idx]);
-
-					if (localDBChats.length === 0) {
-						await deleteDB('Chats');
-					}
-				}
-
-				console.log(DB);
-			} catch (error) {
-				// IndexedDB Not Found
-			}
-
-			const userSettings = await getUserSettings(localStorage.token).catch((error) => {
-				console.error(error);
-				return null;
-			});
-
-			if (userSettings) {
-				settings.set(userSettings.ui);
-			} else {
-				let localStorageSettings = {} as Parameters<(typeof settings)['set']>[0];
-
-				try {
-					localStorageSettings = JSON.parse(localStorage.getItem('settings') ?? '{}');
-				} catch (e: unknown) {
-					console.error('Failed to parse settings from localStorage', e);
-				}
-
-				settings.set(localStorageSettings);
-			}
-
 			await Promise.all([
 				(async () => {
-					models.set(await getModels());
+					try {
+						// Check if IndexedDB exists
+						DB = await openDB('Chats', 1);
+
+						if (DB) {
+							const chats = await DB.getAllFromIndex('chats', 'timestamp');
+							localDBChats = chats.reverse();
+
+							if (localDBChats.length === 0) {
+								await deleteDB('Chats');
+							}
+						}
+
+						console.log(DB);
+					} catch (error) {
+						console.error('IndexedDB Error:', error);
+					}
 				})(),
 				(async () => {
-					prompts.set(await getPrompts(localStorage.token));
+					const userSettings = await getUserSettings(localStorage.token).catch((error) => {
+						console.error(error);
+						return null;
+					});
+
+					if (userSettings) {
+						settings.set(userSettings.ui);
+					} else {
+						let localStorageSettings = {} as Parameters<(typeof settings)['set']>[0];
+
+						try {
+							localStorageSettings = JSON.parse(localStorage.getItem('settings') ?? '{}');
+						} catch (e: unknown) {
+							console.error('Failed to parse settings from localStorage', e);
+						}
+
+						settings.set(localStorageSettings);
+					}
 				})(),
 				(async () => {
-					documents.set(await getDocs(localStorage.token));
+					try {
+						models.set(await getModels());
+					} catch (error) {
+						console.error('Error fetching models:', error);
+					}
 				})(),
 				(async () => {
-					tools.set(await getTools(localStorage.token));
+					try {
+						prompts.set(await getPrompts(localStorage.token));
+					} catch (error) {
+						console.error('Error fetching prompts:', error);
+					}
 				})(),
 				(async () => {
-					functions.set(await getFunctions(localStorage.token));
+					try {
+						documents.set(await getDocs(localStorage.token));
+					} catch (error) {
+						console.error('Error fetching documents:', error);
+					}
 				})(),
 				(async () => {
-					banners.set(await getBanners(localStorage.token));
+					try {
+						tools.set(await getTools(localStorage.token));
+					} catch (error) {
+						console.error('Error fetching tools:', error);
+					}
 				})(),
 				(async () => {
-					tags.set(await getAllChatTags(localStorage.token));
+					try {
+						functions.set(await getFunctions(localStorage.token));
+					} catch (error) {
+						console.error('Error fetching functions:', error);
+					}
+				})(),
+				(async () => {
+					try {
+						banners.set(await getBanners(localStorage.token));
+					} catch (error) {
+						console.error('Error fetching banners:', error);
+					}
+				})(),
+				(async () => {
+					try {
+						tags.set(await getAllChatTags(localStorage.token));
+					} catch (error) {
+						console.error('Error fetching tags:', error);
+					}
 				})()
 			]);
 

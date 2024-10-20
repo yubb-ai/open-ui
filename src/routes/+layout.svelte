@@ -3,7 +3,8 @@
 	import { spring } from 'svelte/motion';
 
 	let loadingProgress = spring(0, {
-		stiffness: 0.05
+		stiffness: 1.0,
+		damping: 1.0
 	});
 
 	import { onMount, tick, setContext } from 'svelte';
@@ -87,95 +88,85 @@
 	onMount(async () => {
 		theme.set(localStorage.theme);
 
-		mobile.set(window.innerWidth < BREAKPOINT);
-		const onResize = () => {
-			if (window.innerWidth < BREAKPOINT) {
-				mobile.set(true);
-			} else {
-				mobile.set(false);
-			}
-		};
+		const updateMobileFlag = () => mobile.set(window.innerWidth < BREAKPOINT);
+		updateMobileFlag();
+		window.addEventListener('resize', updateMobileFlag);
 
-		window.addEventListener('resize', onResize);
-
-		let backendConfig = null;
-		try {
-			backendConfig = await getBackendConfig();
-			console.log('Backend config:', backendConfig);
-		} catch (error) {
-			console.error('Error loading backend config:', error);
-		}
-		// Initialize i18n even if we didn't get a backend config,
-		// so `/error` can show something that's not `undefined`.
+		const backendConfigPromise = getBackendConfig();
+		const languagesPromise = getLanguages();
 
 		initI18n();
+
 		if (!localStorage.locale) {
-			const languages = await getLanguages();
-			const browserLanguages = navigator.languages
-				? navigator.languages
-				: [navigator.language || navigator.userLanguage];
-			const lang = backendConfig.default_locale
-				? backendConfig.default_locale
-				: bestMatchingLanguage(languages, browserLanguages, 'zh-CN');
+			const [languages, backendConfig] = await Promise.all([
+				languagesPromise,
+				backendConfigPromise.catch(() => null)
+			]);
+			const browserLanguages = navigator.languages || [
+				navigator.language || navigator.userLanguage
+			];
+			const lang =
+				backendConfig?.default_locale || bestMatchingLanguage(languages, browserLanguages, 'zh-CN');
 			$i18n.changeLanguage(lang);
 		}
 
-		if (backendConfig) {
-			// Save Backend Status to Store
-			await config.set(backendConfig);
-			await WEBUI_NAME.set(backendConfig.name);
-
-			if ($config) {
-				setupSocket();
-
-				if (localStorage.token) {
-					// Get Session User Info
-					const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
-						toast.error(error);
-						return null;
-					});
-
-					if (sessionUser) {
-						// Save Session User to Store
-						await user.set(sessionUser);
-						await config.set(await getBackendConfig());
-					} else {
-						// Redirect Invalid Session User to /auth Page
-						localStorage.removeItem('token');
-						await goto('/auth');
-					}
-				} else {
-					// Don't redirect if we're already on the auth page
-					// Needed because we pass in tokens from OAuth logins via URL fragments
-					if ($page.url.pathname !== '/auth') {
-						await goto('/auth');
-					}
-				}
-			}
-		} else {
-			// Redirect to /error when Backend Not Detected
-			await goto(`/error`);
+		let backendConfig = null;
+		try {
+			backendConfig = await backendConfigPromise;
+			console.log('后端配置:', backendConfig);
+		} catch (error) {
+			console.error('加载后端配置时出错:', error);
+			await goto('/error');
+			return;
 		}
 
-		await tick();
+		config.set(backendConfig);
+		WEBUI_NAME.set(backendConfig.name);
 
-		if (document.getElementById('progress-bar')) {
-			const progressBar = document.getElementById('progress-bar');
+		if (localStorage.token) {
+			// 获取会话用户信息
+			const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
+				toast.error(error);
+				return null;
+			});
+
+			if (sessionUser) {
+				// 设置 WebSocket 连接
+				setupSocket();
+				// 将会话用户保存到 store
+				user.set(sessionUser);
+			} else {
+				// 如果会话无效，重定向到 /auth 页面
+				localStorage.removeItem('token');
+				await goto('/auth');
+			}
+		} else if ($page.url.pathname !== '/auth') {
+			// 如果不在认证页面，重定向到 /auth
+			await goto('/auth');
+		}
+
+		// 更新进度条
+		const progressBar = document.getElementById('progress-bar');
+		if (progressBar) {
 			loadingProgress.subscribe((value) => {
 				requestAnimationFrame(() => {
 					if (progressBar) {
-						progressBar.style.width = `${value}%`;
+						progressBar.style.width = `${Math.min(value, 100)}%`;
 					}
 				});
 			});
 			await loadingProgress.set(100);
 		}
+
+		// 移除启动画面
 		document.getElementById('splash-screen')?.remove();
 
+		// 设置加载完成标志
 		loaded = true;
 
+		// 清理函数，移除事件监听器
 		return () => {
-			window.removeEventListener('resize', onResize);
+			window.removeEventListener('resize', updateMobileFlag);
 		};
 	});
 </script>
