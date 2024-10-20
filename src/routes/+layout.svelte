@@ -3,7 +3,7 @@
 	import { tweened } from 'svelte/motion';
 
 	let loadingProgress = tweened(0, {
-		duration: 500
+		duration: 1000
 	});
 
 	import { onMount, tick, setContext } from 'svelte';
