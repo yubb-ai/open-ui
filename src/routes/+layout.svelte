@@ -139,12 +139,10 @@
 				// 如果会话无效，重定向到 /auth 页面
 				localStorage.removeItem('token');
 				await goto('/auth');
-				return;
 			}
 		} else if ($page.url.pathname !== '/auth') {
 			// 如果不在认证页面，重定向到 /auth
 			await goto('/auth');
-			return;
 		}
 
 		// 更新进度条
