@@ -122,11 +122,15 @@
 		</div>
 
 		<div id="splash-screen">
-			<img id="logo" src="/favicon.png" class="animate-pulse-fast" alt="logo">
-			<div id="progress-container">
-				<div id="progress-background"></div>
-				<div id="progress-bar"></div>
-			</div>
+			<img id="logo" style="
+				position: absolute;
+				width: auto;
+				height: 6rem;
+				top: 44%;
+				left: 50%;
+				border-radius: 50%;
+				transform: translateX(-50%);
+			" src="/favicon.png" />
 		</div>
 	</body>
 
@@ -158,48 +162,6 @@
 		justify-content: center;
 		align-items: center;
 		background: #fff;
-	}
-
-	#progress-container {
-		width: 24rem;
-		position: relative;
-	}
-
-	#progress-bar {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 0;
-		height: 0.6rem;
-		border-radius: 9999px;
-		background: linear-gradient(90deg, #4fd1c5 0%, #63b3ed 100%);
-		transition: width 0.1s linear;
-	}
-
-	#logo {
-		width: auto;
-		height: 9rem;
-		margin-bottom: 3rem;
-		border-radius: 50%;
-	}
-
-	#progress-background {
-		width: 100%;
-		height: 0.6rem;
-		border-radius: 9999px;
-		background-color: rgba(0, 0, 0, 0.1);
-	}
-
-	@media (max-width: 768px) {
-		#logo {
-			height: 7rem;
-			margin-bottom: 2rem;
-		}
-
-		#progress-container {
-			width: 60%;
-			max-width: 20rem;
-		}
 	}
 
 	@keyframes pulse {

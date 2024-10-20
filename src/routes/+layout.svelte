@@ -1,10 +1,5 @@
 <script>
 	import { io } from 'socket.io-client';
-	import { tweened } from 'svelte/motion';
-
-	let loadingProgress = tweened(0, {
-		duration: 1000
-	});
 
 	import { onMount, tick, setContext } from 'svelte';
 	import {
@@ -142,18 +137,6 @@
 		} else if ($page.url.pathname !== '/auth') {
 			// 如果不在认证页面，重定向到 /auth
 			await goto('/auth');
-		}
-
-		// 更新进度条
-		const progressBar = document.getElementById('progress-bar');
-		if (progressBar) {
-			const unsubscribe = loadingProgress.subscribe((value) => {
-				progressBar.style.width = `${Math.min(value, 100)}%`;
-			});
-
-			await loadingProgress.set(100);
-
-			unsubscribe();
 		}
 
 		// 移除启动画面
