@@ -86,59 +86,59 @@
 		updateMobileFlag();
 		window.addEventListener('resize', updateMobileFlag);
 
-		const backendConfigPromise = getBackendConfig();
-		const languagesPromise = getLanguages();
-
-		initI18n();
-
-		if (!localStorage.locale) {
-			const [languages, backendConfig] = await Promise.all([
-				languagesPromise,
-				backendConfigPromise.catch(() => null)
-			]);
-			const browserLanguages = navigator.languages || [
-				navigator.language || navigator.userLanguage
-			];
-			const lang =
-				backendConfig?.default_locale || bestMatchingLanguage(languages, browserLanguages, 'zh-CN');
-			$i18n.changeLanguage(lang);
-		}
-
-		let backendConfig = null;
 		try {
-			backendConfig = await backendConfigPromise;
-			console.log('后端配置:', backendConfig);
-		} catch (error) {
-			console.error('加载后端配置时出错:', error);
-			await goto('/error');
-			return;
-		}
+			const backendConfig = await getBackendConfig();
+			console.log('Backend config:', backendConfig);
 
-		config.set(backendConfig);
-		WEBUI_NAME.set(backendConfig.name);
-		// 设置 WebSocket 连接
-		setupSocket();
+			initI18n();
 
-		if (localStorage.token) {
-			// 获取会话用户信息
-			const sessionUser = await getSessionUser(localStorage.token).catch((error) => {
-				toast.error(error);
-				return null;
-			});
-
-			if (sessionUser) {
-				// 将会话用户保存到 store
-				user.set(sessionUser);
-				config.set(backendConfig);
-			} else {
-				// 如果会话无效，重定向到 /auth 页面
-				localStorage.removeItem('token');
-				await goto('/auth');
+			if (!localStorage.locale) {
+				const languages = await getLanguages();
+				const browserLanguages = navigator.languages || [
+					navigator.language || navigator.userLanguage
+				];
+				const lang =
+					backendConfig?.default_locale ||
+					bestMatchingLanguage(languages, browserLanguages, 'zh-CN');
+				$i18n.changeLanguage(lang);
 			}
-		} else if ($page.url.pathname !== '/auth') {
-			// 如果不在认证页面，重定向到 /auth
-			await goto('/auth');
+
+			// 保存后台配置到 store，并设置 WEBUI_NAME，使用默认值防止 null 错误
+			await Promise.all([
+				config.set(backendConfig),
+				WEBUI_NAME.set(backendConfig?.name || 'Yubb Chat')
+			]);
+
+			if ($config) {
+				setupSocket();
+
+				if (localStorage.token) {
+					try {
+						const sessionUser = await getSessionUser(localStorage.token);
+						if (sessionUser) {
+							await Promise.all([
+								user.set(sessionUser),
+								config.set(await getBackendConfig()),
+								WEBUI_NAME.set(backendConfig?.name || 'Yubb Chat')
+							]);
+						} else {
+							throw new Error('Invalid session user');
+						}
+					} catch (error) {
+						console.error('Error fetching session user:', error);
+						localStorage.removeItem('token');
+						await goto('/auth');
+					}
+				} else if ($page.url.pathname !== '/auth') {
+					await goto('/auth');
+				}
+			}
+		} catch (error) {
+			console.error('Error loading backend config or initializing:', error);
+			await goto('/error');
 		}
+
+		await tick();
 
 		// 移除启动画面
 		document.getElementById('splash-screen')?.remove();
