@@ -472,6 +472,20 @@ async def image_generations(
                 "response_format": "b64_json",
             }
 
+            if "FLUX.1" in app.state.config.MODEL:
+                data = {
+                    "model": (
+                        app.state.config.MODEL
+                        if app.state.config.MODEL != ""
+                        else "dall-e-2"
+                    ),
+                    "prompt": form_data.prompt,
+                    "image_size": (
+                        form_data.size if form_data.size else app.state.config.IMAGE_SIZE
+                    ),
+                }
+
+
             # Use asyncio.to_thread for the requests.post call
             r = await asyncio.to_thread(
                 requests.post,
@@ -485,13 +499,24 @@ async def image_generations(
 
             images = []
 
-            for image in res["data"]:
-                image_filename = save_b64_image(image["b64_json"])
-                images.append({"url": f"/cache/image/generations/{image_filename}"})
-                file_body_path = IMAGE_CACHE_DIR.joinpath(f"{image_filename}.json")
+            if "FLUX.1" in app.state.config.MODEL:
+                for image in res["data"]:
+                    image_filename = save_url_image(image["url"])
+                    images.append({"url": f"/cache/image/generations/{image_filename}"})
+                    file_body_path = IMAGE_CACHE_DIR.joinpath(f"{image_filename}.json")
 
-                with open(file_body_path, "w") as f:
-                    json.dump(data, f)
+                    with open(file_body_path, "w") as f:
+                        json.dump(form_data.model_dump(exclude_none=True), f)
+                log.debug(f"images: {images}")
+            
+            else:
+                for image in res["data"]:
+                    image_filename = save_b64_image(image["b64_json"])
+                    images.append({"url": f"/cache/image/generations/{image_filename}"})
+                    file_body_path = IMAGE_CACHE_DIR.joinpath(f"{image_filename}.json")
+
+                    with open(file_body_path, "w") as f:
+                        json.dump(data, f)
 
             return images
 
