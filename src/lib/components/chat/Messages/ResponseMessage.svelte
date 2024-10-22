@@ -788,18 +788,12 @@
 									<Tooltip
 										content={message.info.openai
 											? message.info.usage
-												? `<pre>${sanitizeResponseContent(
-														JSON.stringify(message.info.usage, null, 2)
-															.replace(/"([^(")"]+)":/g, '$1:')
-															.slice(1, -1)
-															.split('\n')
-															.map((line) => line.slice(2))
-															.map((line) => (line.endsWith(',') ? line.slice(0, -1) : line))
-															.join('\n')
-													)}</pre>`
-												: `prompt_tokens: ${message.info.prompt_tokens ?? 'N/A'}<br/>
-													completion_tokens: ${message.info.completion_tokens ?? 'N/A'}<br/>
-													total_tokens: ${message.info.total_tokens ?? 'N/A'}`
+												? `${$i18n.t('prompt_tokens')}: ${message.info.usage.prompt_tokens ?? 'N/A'}<br/>
+													${$i18n.t('completion_tokens')}: ${message.info.usage.completion_tokens ?? 'N/A'}<br/>
+													${$i18n.t('total_tokens')}: ${message.info.usage.total_tokens ?? 'N/A'}`
+												: `${$i18n.t('prompt_tokens')}: ${message.info.prompt_tokens ?? 'N/A'}<br/>
+													${$i18n.t('completion_tokens')}: ${message.info.completion_tokens ?? 'N/A'}<br/>
+													${$i18n.t('total_tokens')}: ${message.info.total_tokens ?? 'N/A'}`
 											: `response_token/s: ${
 													`${
 														Math.round(
