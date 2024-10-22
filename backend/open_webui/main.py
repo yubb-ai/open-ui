@@ -875,8 +875,8 @@ app.mount("/api/v1", webui_app)
 
 webui_app.state.EMBEDDING_FUNCTION = rag_app.state.EMBEDDING_FUNCTION
 
-# create TTLCache，exprite in 10 min
-cache = TTLCache(maxsize=1, ttl=600)
+# create TTLCache，exprite in 1 min
+cache = TTLCache(maxsize=1, ttl=60)
 cache_lock = asyncio.Lock()
 
 async def get_all_models():
