@@ -233,6 +233,7 @@ def merge_models_lists(model_lists):
                             "reranker",
                             "gizmo-g*",
                             "g-*",
+                            "black-forest-labs",
                             "SenseVoiceSmall",
                         ]
                     )
