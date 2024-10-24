@@ -220,8 +220,10 @@
 										dispatch('submit', e.detail);
 									}}
 									on:action={async (e) => {
-										if (messageId != _messageId) {
-											let currentMessageId = _messageId;
+										const { id, event } = e.detail;
+										const messageId = event?.data?.messageId ?? null;
+										if (messageId && messageId != _messageId) {
+											let currentMessageId = messageId;
 											let messageChildrenIds = history.messages[currentMessageId].childrenIds;
 											while (messageChildrenIds.length !== 0) {
 												currentMessageId = messageChildrenIds.at(-1);
