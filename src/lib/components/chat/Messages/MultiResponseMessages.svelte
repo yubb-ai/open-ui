@@ -220,19 +220,6 @@
 										dispatch('submit', e.detail);
 									}}
 									on:action={async (e) => {
-										const { id, event } = e.detail;
-										const messageId = event?.data?.messageId ?? null;
-										if (messageId && messageId != _messageId) {
-											let currentMessageId = messageId;
-											let messageChildrenIds = history.messages[currentMessageId].childrenIds;
-											while (messageChildrenIds.length !== 0) {
-												currentMessageId = messageChildrenIds.at(-1);
-												messageChildrenIds = history.messages[currentMessageId].childrenIds;
-											}
-											history.currentId = currentMessageId;
-											dispatch('change');
-										}
-										await tick();
 										dispatch('action', e.detail);
 									}}
 									on:update={async (e) => {
