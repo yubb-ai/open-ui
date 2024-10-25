@@ -82,27 +82,31 @@ async def new_number_sign_up_notice(name, role, email):
 
 
 async def daily_send_usage():
-    data = await prepare_usage_to_wechatapp()
-    await send_message_to_wechatapp(data)
+    datas = await prepare_usage_to_wechatapp()
+    for data in datas:
+        await send_message_to_wechatapp(data)
 
 
 async def prepare_usage_to_wechatapp():
     if app.state.config.SEND_FILTER_MESSAGE_TYPE.lower() == "markdown":
-        data = {
-            "msgtype": "markdown",
-            "markdown": {
-                "content": await init_markdown_usages(),
-                "mentioned_list": [],
-            }
-        }
+        contents = await init_markdown_usages()
+        msg_type = "markdown"
     else:
-        data = {
-            "msgtype": "text",
-            "text": {
-                "content": await init_usages()
+        contents = await init_usages()
+        msg_type = "text"
+
+    datas = [
+        {
+            "msgtype": msg_type,
+            msg_type: {
+                "content": content,
+                "mentioned_list": [] if msg_type == "markdown" else None,
             }
         }
-    return data
+        for content in contents
+    ]
+
+    return datas
 
 
 async def notice_newnumber_signup_to_wechatapp(name, role, email):
@@ -120,8 +124,8 @@ async def notice_newnumber_signup_to_wechatapp(name, role, email):
     return data
 
 
-async def prepare_data_to_wechatapp(share_id, user, type: str, content: str):
-    if type.lower() == "markdown":
+async def prepare_data_to_wechatapp(share_id, user, replyType: str, content: str):
+    if replyType.lower() == "markdown":
         data = {
             "msgtype": "news",
             "news": {
@@ -202,7 +206,7 @@ async def app_start():
 
     if app.state.config.ENABLE_WECHAT_NOTICE:
         log.info("WeChat notice enabled.")
-        scheduler.add_job(reset_usage, 'cron', hour=0, minute=0, id='reset_usage')
+        scheduler.add_job(reset_usage, 'cron', day_of_week='sun', hour=0, minute=0, id='reset_usage')
         log.info("Added reset_usage job.")
         if app.state.config.ENABLE_DAILY_USAGES_NOTICE:
             log.info("Daily usages notice enabled.")
@@ -307,7 +311,8 @@ async def init_markdown_usages():
     usage_strings = []
     now = datetime.datetime.now()
     formatted_now = now.strftime("%Y年%m月%d日 %H时%M分")
-    reply_text = f"### 📅 **{formatted_now}**\n\n### 🤖 **{WEBUI_NAME} 使用情况如下：**\n"
+    reply_text = f"### 📅 **{formatted_now}**\n\n### 🤖 **{WEBUI_NAME} 使用情况如下：**"
+    usage_strings.append(reply_text)
 
     if isinstance(user_usage, RedisDict):
         all_users = user_usage.keys()
@@ -322,14 +327,16 @@ async def init_markdown_usages():
         usage_string = f"⭐用户 {user_name} \n" + "\n".join(model_usage_list)
         usage_strings.append(usage_string)
 
-    return f"{reply_text}\n\n" + "\n\n".join(usage_strings) + f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+    usage_strings.append(f"{app.state.config.WECHAT_NOTICE_SUFFIX}")
+    return usage_strings
 
 
 async def init_usages():
     usage_strings = []
     now = datetime.datetime.now()
     formatted_now = now.strftime("%Y年%m月%d日 %H时%M分")
-    reply_text = f"📅{formatted_now}\n\n🤖{WEBUI_NAME}使用如下："
+    reply_text = f"📅 {formatted_now}\n\n🤖 {WEBUI_NAME}使用如下："
+    usage_strings.append(reply_text)
 
     if isinstance(user_usage, RedisDict):
         all_users = user_usage.keys()
@@ -344,7 +351,8 @@ async def init_usages():
         usage_string = f"⭐用户 {user_name} \n" + "\n".join(model_usage_list)
         usage_strings.append(usage_string)
 
-    return f"{reply_text}\n\n" + "\n\n".join(usage_strings) + f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+    usage_strings.append(f"{app.state.config.WECHAT_NOTICE_SUFFIX}")
+    return usage_strings
 
 
 async def process_user_usage(model, user):
