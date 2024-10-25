@@ -351,14 +351,17 @@ async def process_user_usage(model, user):
     global user_usage
     model_name = model.get("name", "")
     user_name = user.name
-    # 获取用户的使用数据，如果不存在则初始化
-    async with usage_lock:
-        if isinstance(user_usage, RedisDict):
-            user_data = user_usage.get(user_name, {})
-            user_data[model_name] = user_data.get(model_name, 0) + 1
-            user_usage[user_name] = user_data
-        else:
-            user_usage[user_name][model_name] += 1
+    try:
+        # 获取用户的使用数据，如果不存在则初始化
+        async with usage_lock:
+            if isinstance(user_usage, RedisDict):
+                user_data = user_usage.get(user_name, {})
+                user_data[model_name] = user_data.get(model_name, 0) + 1
+                user_usage[user_name] = user_data
+            else:
+                user_usage[user_name][model_name] += 1
+    except Exception as e:
+        log.error(f"处理用户使用数据时发生错误: {e}")
 
 
 @app.post("/usages")
@@ -412,7 +415,7 @@ async def content_filter_message(payload: dict, content: str, user):
                         }
                         await send_message_to_wechatapp(data)
                 except Exception as e:
-                    log.error(f"Failed to send message to WeChat app: {e}")
+                    log.error(f"发送消息到微信应用失败: {e}")
 
             if not app.state.config.ENABLE_REPLACE_FILTER_WORDS:
                 detail_message = (
