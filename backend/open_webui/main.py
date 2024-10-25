@@ -1093,7 +1093,7 @@ async def generate_chat_completions(form_data: dict, user=Depends(get_verified_u
             return convert_response_ollama_to_openai(response)
     else:
         try:
-            await filter_message(form_data, user, model)
+            await filter_message(form_data, user)
             return await generate_openai_chat_completion(form_data, user=user)
         except Exception as e:
             raise HTTPException(status_code=503, detail=str(e))

@@ -9,9 +9,8 @@ import aiohttp
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-
 from open_webui.apps.filter.wordsSearch import wordsSearch
+from open_webui.apps.socket.utils import RedisDict
 from open_webui.apps.webui.routers.chats import request_share_chat_by_id, request_get_chat_by_id
 from open_webui.config import (
     AppConfig,
@@ -26,10 +25,11 @@ from open_webui.config import (
     WECHAT_NOTICE_SUFFIX,
     WECHAT_APP_SECRET,
 )
-from open_webui.env import DATA_DIR, SRC_LOG_LEVELS, WEBUI_URL, WEBUI_NAME
+from open_webui.env import DATA_DIR, SRC_LOG_LEVELS, WEBUI_URL, WEBUI_NAME, WEBSOCKET_REDIS_URL, WEBSOCKET_MANAGER
 from open_webui.utils.utils import (
     get_admin_user,
 )
+from pydantic import BaseModel
 
 log = logging.getLogger(__name__)
 log.setLevel(SRC_LOG_LEVELS["FILTER"])
@@ -59,13 +59,21 @@ app.state.config.WECHAT_NOTICE_SUFFIX = WECHAT_NOTICE_SUFFIX
 
 file_path = os.path.join(DATA_DIR, app.state.config.CHAT_FILTER_WORDS_FILE)
 user_usage = defaultdict(lambda: defaultdict(int))
+redis_client = None
+if WEBSOCKET_REDIS_URL and WEBSOCKET_MANAGER == "redis":
+    user_usage = RedisDict(
+        "open-webui:user_usage", redis_url=WEBSOCKET_REDIS_URL
+    )
 usage_lock = asyncio.Lock()
 search = None
 
 
 async def reset_usage():
     global user_usage
-    user_usage = defaultdict(lambda: defaultdict(int))
+    if isinstance(user_usage, RedisDict):
+        user_usage.clear()
+    else:
+        user_usage = defaultdict(lambda: defaultdict(int))
 
 
 async def new_number_sign_up_notice(name, role, email):
@@ -299,28 +307,58 @@ async def init_markdown_usages():
     usage_strings = []
     now = datetime.datetime.now()
     formatted_now = now.strftime("%Y年%m月%d日 %H时%M分")
-    replyText = f"### 📅 **{formatted_now}**\n\n### 🤖 **{WEBUI_NAME} 使用情况如下：**\n"
+    reply_text = f"### 📅 **{formatted_now}**\n\n### 🤖 **{WEBUI_NAME} 使用情况如下：**\n"
 
-    for user_name, models in user_usage.items():
-        model_usage_list = [f"> - {model}: {count}" for model, count in sorted(models.items())]
-        usage_string = f"### ⭐ **User {user_name}**\n" + "\n".join(model_usage_list)
+    if isinstance(user_usage, RedisDict):
+        all_users = user_usage.keys()
+        users_data = ((user_name, user_usage.get(user_name, {})) for user_name in all_users)
+    else:
+        users_data = user_usage.items()
+
+    for user_name, models in users_data:
+        if not models:
+            continue
+        model_usage_list = [f"{model}: {count}" for model, count in sorted(models.items())]
+        usage_string = f"⭐用户 {user_name} \n" + "\n".join(model_usage_list)
         usage_strings.append(usage_string)
 
-    return f"{replyText}\n" + "\n\n".join(usage_strings) + f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+    return f"{reply_text}\n\n" + "\n\n".join(usage_strings) + f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
 
 
 async def init_usages():
     usage_strings = []
     now = datetime.datetime.now()
     formatted_now = now.strftime("%Y年%m月%d日 %H时%M分")
-    replyText = f"📅{formatted_now}\n\n🤖{WEBUI_NAME}使用如下："
+    reply_text = f"📅{formatted_now}\n\n🤖{WEBUI_NAME}使用如下："
 
-    for user_name, models in user_usage.items():
+    if isinstance(user_usage, RedisDict):
+        all_users = user_usage.keys()
+        users_data = ((user_name, user_usage.get(user_name, {})) for user_name in all_users)
+    else:
+        users_data = user_usage.items()
+
+    for user_name, models in users_data:
+        if not models:
+            continue
         model_usage_list = [f"{model}: {count}" for model, count in sorted(models.items())]
-        usage_string = f"⭐User {user_name} \n" + "\n".join(model_usage_list)
+        usage_string = f"⭐用户 {user_name} \n" + "\n".join(model_usage_list)
         usage_strings.append(usage_string)
 
-    return f"{replyText}\n\n" + "\n\n".join(usage_strings) + f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+    return f"{reply_text}\n\n" + "\n\n".join(usage_strings) + f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+
+
+async def process_user_usage(model, user):
+    global user_usage
+    model_name = model.get("name", "")
+    user_name = user.name
+    # 获取用户的使用数据，如果不存在则初始化
+    async with usage_lock:
+        if isinstance(user_usage, RedisDict):
+            user_data = user_usage.get(user_name, {})
+            user_data[model_name] = user_data.get(model_name, 0) + 1
+            user_usage[user_name] = user_data
+        else:
+            user_usage[user_name][model_name] += 1
 
 
 @app.post("/usages")
@@ -389,15 +427,7 @@ async def content_filter_message(payload: dict, content: str, user):
     return content
 
 
-async def process_user_usage(model, user):
-    global user_usage
-    model_name = model.get("name", "")
-
-    async with usage_lock:
-        user_usage[user.name][model_name] += 1
-
-
-async def filter_message(payload: dict, user, model):
+async def filter_message(payload: dict, user):
     messages = payload.get("messages", None)
 
     if app.state.config.ENABLE_MESSAGE_FILTER and search:
