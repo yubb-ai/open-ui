@@ -225,7 +225,7 @@
 							downloadJSONExport();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('Export chat (.json)')}</div>
+						<div class="flex items-center line-clamp-1">{$i18n.t('Export chat')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
@@ -234,7 +234,7 @@
 							downloadTxt();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('Plain text (.txt)')}</div>
+						<div class="flex items-center line-clamp-1">{$i18n.t('Plain text')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
@@ -243,7 +243,7 @@
 							downloadMd();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('Plain markdown (.md)')}</div>
+						<div class="flex items-center line-clamp-1">{$i18n.t('Plain markdown')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
@@ -252,7 +252,7 @@
 							downloadPdf();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('PDF document (.pdf)')}</div>
+						<div class="flex items-center line-clamp-1">{$i18n.t('PDF document')}</div>
 					</DropdownMenu.Item>
 				</DropdownMenu.SubContent>
 			</DropdownMenu.Sub>
