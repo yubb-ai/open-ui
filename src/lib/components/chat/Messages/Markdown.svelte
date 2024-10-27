@@ -2,7 +2,6 @@
 	import { marked } from 'marked';
 	import { replaceTokens, processResponseContent } from '$lib/utils';
 	import { user } from '$lib/stores';
-	import 'katex/dist/katex.min.css';
 	import { throttle } from 'lodash';
 
 	import markedKatexExtension from '$lib/utils/marked/katex-extension';

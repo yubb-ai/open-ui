@@ -788,6 +788,7 @@
 	"You can only chat with a maximum of {{maxCount}} file(s) at a time.": "您一次最多只能與 {{maxCount}} 個文件聊天。",
 	"You can personalize your interactions with LLMs by adding memories through the 'Manage' button below, making them more helpful and tailored to you.": "您可以透過下方的「管理」按鈕新增記憶，將您與大型語言模型的互動個人化，讓它們更有幫助並更符合您的需求。",
 	"You cannot clone a base model": "您無法複製基礎模型",
+	"You cannot upload an empty file.": "您無法上傳空檔案",
 	"You have no archived conversations.": "您沒有已封存的對話。",
 	"You have shared this chat": "您已分享此對話",
 	"You're a helpful assistant.": "您是一位樂於助人的助手。",
