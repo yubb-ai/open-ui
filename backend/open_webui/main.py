@@ -1501,20 +1501,20 @@ Prompt: {{prompt:middletruncate:8000}}"""
     if model_id in OPENAI_API_NOSTREAM_MODELS:
         log.info(f"Model {model_id} needs token argument patching in generate_title")
         # patch max_tokens -> max_completion_tokens and stream if 🍓
-        token_args = {"max_completion_tokens": 50}
+        token_args = {"max_completion_tokens": 20}
     else:
         log.info(f"Model {model_id} does not need token argument patching in generate_title")
-        token_args = {"max_tokens": 50}
+        token_args = {"max_tokens": 20}
 
     payload = {
         "model": task_model_id,
         "messages": [{"role": "user", "content": content}],
         "stream": False,
         **(
-            {"max_tokens": 50}
+            {"max_tokens": 20}
             if app.state.MODELS[task_model_id]["owned_by"] == "ollama"
             else {
-                "max_completion_tokens": 50,
+                "max_completion_tokens": 20,
             }
         ),
         "chat_id": form_data.get("chat_id", None),

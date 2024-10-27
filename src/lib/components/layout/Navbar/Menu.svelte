@@ -51,6 +51,16 @@
 		saveAs(blob, `chat-${chat.chat.title}.txt`);
 	};
 
+	const downloadMd = async () => {
+		const chatText = await getChatAsText();
+
+		const blob = new Blob([chatText], {
+			type: 'text/markdown'
+		});
+
+		saveAs(blob, `chat-${chat.chat.title}..md`);
+	};
+
 	const downloadPdf = async () => {
 		const _chat = chat.chat;
 		const messages = createMessagesList(_chat.history, _chat.history.currentId);
@@ -97,13 +107,13 @@
 
 	<div slot="content">
 		<DropdownMenu.Content
-			class="w-full max-w-[200px] rounded-xl px-1 py-1.5 border border-gray-300/30 dark:border-gray-700/50 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg"
+			class="max-w-[200px] rounded-xl px-1 py-1.5 border border-gray-300/30 dark:border-gray-700/50 z-50 bg-white dark:bg-gray-850 dark:text-white shadow-lg"
 			sideOffset={8}
 			side="bottom"
 			align="end"
 			transition={flyAndScale}
 		>
-			<!-- <DropdownMenu.Item
+			<DropdownMenu.Item
 				class="flex gap-2 items-center px-3 py-2 text-sm  cursor-pointer dark:hover:bg-gray-800 rounded-md"
 				on:click={async () => {
 					await showSettings.set(!$showSettings);
@@ -129,7 +139,7 @@
 					/>
 				</svg>
 				<div class="flex items-center">{$i18n.t('Settings')}</div>
-			</DropdownMenu.Item> -->
+			</DropdownMenu.Item>
 
 			{#if $mobile}
 				<DropdownMenu.Item
@@ -245,6 +255,7 @@
 					>
 						<div class="flex items-center line-clamp-1">{$i18n.t('Export chat (.json)')}</div>
 					</DropdownMenu.Item>
+
 					<DropdownMenu.Item
 						class="flex gap-2 items-center px-3 py-2 text-sm  cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
 						on:click={() => {
@@ -252,6 +263,15 @@
 						}}
 					>
 						<div class="flex items-center line-clamp-1">{$i18n.t('Plain text (.txt)')}</div>
+					</DropdownMenu.Item>
+
+					<DropdownMenu.Item
+						class="flex gap-2 items-center px-3 py-2 text-sm  cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+						on:click={() => {
+							downloadMd();
+						}}
+					>
+						<div class="flex items-center line-clamp-1">{$i18n.t('Plain markdown (.md)')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
