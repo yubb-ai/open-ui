@@ -925,7 +925,7 @@
 				// Prepare the base message object
 				const baseMessage = {
 					role: message.role,
-					content: message?.merged?.content ?? message.content
+					content: message.content
 				};
 
 				// Extract and format image URLs if any exist
@@ -1387,7 +1387,10 @@
 										content: [
 											{
 												type: 'text',
-												text: message?.merged?.content ?? message.content
+												text:
+													arr.length - 1 !== idx
+														? message.content
+														: (message?.raContent ?? message.content)
 											},
 											...message.files
 												.filter((file) => file.type === 'image' || (file?.base64 ?? false))
@@ -1400,7 +1403,10 @@
 										]
 									}
 								: {
-										text: message?.merged?.content ?? message.content
+										content:
+											arr.length - 1 !== idx
+												? message.content
+												: (message?.raContent ?? message.content)
 									})
 						})),
 					seed: params?.seed ?? $settings?.params?.seed ?? undefined,
