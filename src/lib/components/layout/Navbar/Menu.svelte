@@ -18,9 +18,7 @@
 	import Clipboard from '$lib/components/icons/Clipboard.svelte';
 	import AdjustmentsHorizontal from '$lib/components/icons/AdjustmentsHorizontal.svelte';
 	import Cube from '$lib/components/icons/Cube.svelte';
-
 	import Showdown from 'showdown';
-	import htmlDocx from '$lib/utils/markdownToDocx';
 
 	const i18n = getContext('i18n');
 
@@ -127,7 +125,7 @@
 </script>
 
 <svelte:head>
-	<script src="/html-docx.js"></script>
+	<script src="/markdownToDocx.js"></script>
 </svelte:head>
 
 <Dropdown
