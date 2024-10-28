@@ -93,7 +93,7 @@
 		const chatText = await getChatAsText();
 
 		// Convert Markdown to HTML
-		var converter = new showdown.Converter({
+		var converter = new Showdown.Converter({
 			tables: true,
 			literalMidWordUnderscores: true
 		});
