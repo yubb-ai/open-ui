@@ -115,7 +115,7 @@
 			'</html>';
 		// Convert HTML to Word document
 		var file = htmlDocx.asBlob(html);
-		saveAs(file, 'output.docx');
+		saveAs(file, `chat-export-${Date.now()}.docx`);
 	};
 
 	const downloadJSONExport = async () => {
