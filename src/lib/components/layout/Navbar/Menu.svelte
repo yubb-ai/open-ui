@@ -126,6 +126,10 @@
 	};
 </script>
 
+<svelte:head>
+	<script src="/html-docx.js"></script>
+</svelte:head>
+
 <Dropdown
 	on:change={(e) => {
 		if (e.detail === false) {
