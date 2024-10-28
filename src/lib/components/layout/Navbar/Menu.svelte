@@ -19,6 +19,9 @@
 	import AdjustmentsHorizontal from '$lib/components/icons/AdjustmentsHorizontal.svelte';
 	import Cube from '$lib/components/icons/Cube.svelte';
 
+	import Showdown from 'showdown';
+	import htmlDocx from '$lib/utils/html-utils';
+
 	const i18n = getContext('i18n');
 
 	export let shareEnabled: boolean = false;
@@ -86,6 +89,33 @@
 
 		// Revoke the URL to release memory
 		window.URL.revokeObjectURL(url);
+	};
+
+	const downloadDocx = async () => {
+		const chatText = await getChatAsText();
+
+		// Convert Markdown to HTML
+		var converter = new showdown.Converter({
+			tables: true,
+			literalMidWordUnderscores: true
+		});
+
+		var markdownHtml = converter.makeHtml(chatText);
+
+		var html =
+			'<!DOCTYPE html>\n' +
+			'<html lang="en">\n' +
+			'<head>\n' +
+			'  <meta charset="UTF-8">\n' +
+			'  <title>Title</title>\n' +
+			'</head>\n' +
+			'<body>\n' +
+			markdownHtml +
+			'</body>\n' +
+			'</html>';
+		// Convert HTML to Word document
+		var file = htmlDocx.asBlob(html);
+		saveAs(file, 'output.docx');
 	};
 
 	const downloadJSONExport = async () => {
@@ -244,6 +274,15 @@
 						}}
 					>
 						<div class="flex items-center line-clamp-1">{$i18n.t('Plain markdown')}</div>
+					</DropdownMenu.Item>
+
+					<DropdownMenu.Item
+						class="flex gap-2 items-center px-3 py-2 text-sm  cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md"
+						on:click={() => {
+							downloadDocx();
+						}}
+					>
+						<div class="flex items-center line-clamp-1">{$i18n.t('Docx document')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
