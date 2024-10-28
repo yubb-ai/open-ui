@@ -20,7 +20,7 @@
 	import Cube from '$lib/components/icons/Cube.svelte';
 
 	import Showdown from 'showdown';
-	import htmlDocx from '$lib/utils/html-utils';
+	import htmlDocx from '$lib/utils/markdownToDocx';
 
 	const i18n = getContext('i18n');
 
