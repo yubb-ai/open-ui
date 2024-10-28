@@ -85,6 +85,7 @@
 		"paneforge": "^0.0.6",
 		"panzoom": "^9.4.3",
 		"pyodide": "^0.26.1",
+		"showdown": "^2.1.0",
 		"socket.io-client": "^4.2.0",
 		"sortablejs": "^1.15.2",
 		"svelte-sonner": "^0.3.19",
