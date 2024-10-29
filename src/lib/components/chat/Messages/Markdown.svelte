@@ -25,7 +25,7 @@
 
 	marked.use(markedKatexExtension(options));
 
-	const throttledBufferTime = Number(bufferTime) || 50;
+	const throttledBufferTime = Number(bufferTime) || 30;
 
 	let previousProcessedContent = '';
 	let previousMessageContent = '';
@@ -46,10 +46,6 @@
 
 	$: (async () => {
 		if (content) {
-			tokens = marked.lexer(
-				replaceTokens(processResponseContent(content), model?.name, $user?.name)
-			);
-		} else {
 			processContentThrottled();
 		}
 	})();
