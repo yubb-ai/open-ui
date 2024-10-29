@@ -27,19 +27,8 @@
 
 	const throttledBufferTime = Number(bufferTime) || 30;
 
-	let previousProcessedContent = '';
-	let previousMessageContent = '';
-	let processedContent = '';
-
 	const processContentThrottled = throttle(() => {
-		if (Math.abs(content.length - previousProcessedContent.length) > 20) {
-			processedContent = replaceTokens(processResponseContent(content), model?.name, $user?.name);
-			previousProcessedContent = content;
-		} else {
-			processedContent += content.slice(previousMessageContent.length);
-		}
-		previousMessageContent = content;
-		tokens = marked.lexer(processedContent);
+		tokens = marked.lexer(replaceTokens(processResponseContent(content), model?.name, $user?.name));
 	}, throttledBufferTime);
 
 	$: (async () => {
