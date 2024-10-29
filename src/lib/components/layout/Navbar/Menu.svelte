@@ -284,7 +284,7 @@
 							downloadDocx();
 						}}
 					>
-						<div class="flex items-center line-clamp-1">{$i18n.t('Docx document')}</div>
+						<div class="flex items-center line-clamp-1">{$i18n.t('DOCX document')}</div>
 					</DropdownMenu.Item>
 
 					<DropdownMenu.Item
