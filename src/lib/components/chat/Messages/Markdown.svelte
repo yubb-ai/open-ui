@@ -45,6 +45,11 @@
 	$: (async () => {
 		if (content) {
 			processContentThrottled();
+		} else {
+			// 当消息为空或者消息收到Done返回"" 的时候，直接显示
+			tokens = marked.lexer(
+				replaceTokens(processResponseContent(content), model?.name, $user?.name)
+			);
 		}
 	})();
 </script>
