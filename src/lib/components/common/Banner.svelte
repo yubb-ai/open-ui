@@ -1,8 +1,9 @@
 <script lang="ts">
 	import type { Banner } from '$lib/types';
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount, createEventDispatcher, getContext } from 'svelte';
 	import { fade } from 'svelte/transition';
 
+	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
 	export let banner: Banner = {
@@ -48,7 +49,7 @@
 						class=" text-xs font-bold {classNames[banner.type] ??
 							classNames['info']}  w-fit px-2 rounded uppercase line-clamp-1 mr-0.5"
 					>
-						{banner.type}
+						{$i18n.t(banner.type)}
 					</div>
 
 					{#if banner.url}
