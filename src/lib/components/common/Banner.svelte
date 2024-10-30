@@ -49,7 +49,7 @@
 						class=" text-xs font-bold {classNames[banner.type] ??
 							classNames['info']}  w-fit px-2 rounded uppercase line-clamp-1 mr-0.5"
 					>
-						{$i18n.t(banner.type)}
+						{$i18n.t(banner.type[0]?.toUpperCase() + banner.type.slice(1))}
 					</div>
 
 					{#if banner.url}
