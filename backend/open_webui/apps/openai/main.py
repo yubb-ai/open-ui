@@ -230,6 +230,7 @@ def merge_models_lists(model_lists):
                             "whisper",
                             "swap",
                             "BAAI",
+                            "fishaudio",
                             "reranker",
                             "gizmo-g*",
                             "g-*",
