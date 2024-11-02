@@ -10,7 +10,7 @@
 
 	// 提取url
 	const get_url = (url: string) => {
-		const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/;
+		const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/g;
 		const match = url.match(urlRegex);
 
 		if (match) {
