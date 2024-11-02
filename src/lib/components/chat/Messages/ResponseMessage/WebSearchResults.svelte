@@ -3,9 +3,25 @@
 	import ChevronUp from '$lib/components/icons/ChevronUp.svelte';
 	import MagnifyingGlass from '$lib/components/icons/MagnifyingGlass.svelte';
 	import Collapsible from '$lib/components/common/Collapsible.svelte';
+	import Markdown from './Markdown.svelte';
 
 	export let status = { urls: [], query: '' };
 	let state = false;
+
+	// 提取url
+	const get_url = (url: string) => {
+		const urlRegex = /https?:\/\/[^\s/$.?#].[^\s]*/;
+		const match = url.match(urlRegex);
+
+		if (match) {
+			const url = match[0];
+			console.log('提取出的网址是:', url);
+			return url;
+		} else {
+			console.log('未找到网址');
+			return url;
+		}
+	};
 </script>
 
 <Collapsible bind:open={state} className="w-full space-y-1">
@@ -60,14 +76,14 @@
 
 		{#each status.urls as url, urlIdx}
 			<a
-				href={url}
+				href={get_url(url)}
 				target="_blank"
 				class="flex w-full items-center p-3 px-4 {urlIdx === status.urls.length - 1
 					? ''
 					: 'border-b border-gray-300/30 dark:border-gray-700/50'} group/item justify-between font-normal text-gray-800 dark:text-gray-300"
 			>
 				<div class=" line-clamp-1">
-					{url}
+					<Markdown content={url} />
 				</div>
 
 				<div
