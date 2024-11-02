@@ -6,7 +6,7 @@
 	import Markdown from '$lib/components/chat/Messages/Markdown.svelte';
 
 	export let status = { urls: [], query: '' };
-	let state = false;
+	let state = true;
 
 	// 提取url
 	const get_url = (url: string) => {
