@@ -18,7 +18,7 @@ import requests
 
 #add for Cache Models
 import asyncio
-# from cachetools import TTLCache
+from cachetools import TTLCache
 
 from open_webui.apps.audio.main import app as audio_app
 from open_webui.apps.filter.main import app as filter_app
@@ -876,15 +876,15 @@ app.mount("/api/v1", webui_app)
 webui_app.state.EMBEDDING_FUNCTION = rag_app.state.EMBEDDING_FUNCTION
 
 # create TTLCache，exprite in 0.5 min
-# cache = TTLCache(maxsize=1, ttl=30)
-# cache_lock = asyncio.Lock()
+cache = TTLCache(maxsize=1, ttl=30)
+cache_lock = asyncio.Lock()
 
 async def get_all_models():
     # TODO: Optimize this function
     # Check Cache
-    # async with cache_lock:
-    #     if 'models' in cache:
-    #         return cache['models']
+    async with cache_lock:
+        if 'models' in cache:
+            return cache['models']
     pipe_models = []
     openai_models = []
     ollama_models = []
@@ -1027,8 +1027,8 @@ async def get_all_models():
     app.state.MODELS = {model["id"]: model for model in models}
     webui_app.state.MODELS = app.state.MODELS
     # save models to  Cache
-    # async with cache_lock:
-    #     cache['models'] = models
+    async with cache_lock:
+        cache['models'] = models
     return models
 
 
