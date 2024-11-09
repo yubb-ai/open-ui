@@ -37,20 +37,10 @@
 
 	let showDeleteConfirmDialog = false;
 	let showAddUserModal = false;
+	let showUpdateRoleConfirmDialog = false;
 
 	let showUserChatsModal = false;
 	let showEditUserModal = false;
-
-	const updateRoleHandler = async (id, role) => {
-		const res = await updateUserRole(localStorage.token, id, role).catch((error) => {
-			toast.error(error);
-			return null;
-		});
-
-		if (res) {
-			users = await getUsers(localStorage.token);
-		}
-	};
 
 	const editUserPasswordHandler = async (id, password) => {
 		const res = await deleteUserById(localStorage.token, id).catch((error) => {
@@ -71,6 +61,28 @@
 		if (res) {
 			users = await getUsers(localStorage.token);
 		}
+	};
+
+	const updateRole = async (id, role) => {
+		const res = await updateUserRole(localStorage.token, id, role).catch((error) => {
+			toast.error(error);
+			return null;
+		});
+
+		if (res) {
+			users = await getUsers(localStorage.token);
+		}
+	};
+
+	const updateRoleHandler = async (id, role) => {
+		let newRole = '';
+		const currentIndex = roleMap.indexOf(role);
+		if (currentIndex !== -1 && currentIndex < roleMap.length - 1) {
+			newRole = roleMap[currentIndex + 1];
+		} else {
+			newRole = roleMap[0];
+		}
+		updateRole(id, newRole);
 	};
 
 	onMount(async () => {
@@ -103,6 +115,13 @@
 	bind:show={showDeleteConfirmDialog}
 	on:confirm={() => {
 		deleteUserHandler(selectedUser.id);
+	}}
+/>
+
+<ConfirmDialog
+	bind:show={showUpdateRoleConfirmDialog}
+	on:confirm={() => {
+		updateRoleHandler(selectedUser.id, selectedUser.role);
 	}}
 />
 
@@ -271,14 +290,8 @@
 									'svip' && 'text-yellow-700 dark:text-yellow-200 bg-yellow-500/20'} {user.role ===
 									'pending' && 'text-gray-600 dark:text-gray-200 bg-gray-200/30'}"
 								on:click={() => {
-									let newRole = '';
-									const currentIndex = roleMap.indexOf(user.role);
-									if (currentIndex !== -1 && currentIndex < roleMap.length - 1) {
-										newRole = roleMap[currentIndex + 1];
-									} else {
-										newRole = roleMap[0];
-									}
-									updateRoleHandler(user.id, newRole);
+									showUpdateRoleConfirmDialog = true;
+									selectedUser = user;
 								}}
 							>
 								<div
