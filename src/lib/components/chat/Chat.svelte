@@ -2103,6 +2103,7 @@
 							{createMessagePair}
 							on:submit={async (e) => {
 								if (e.detail) {
+									prompt = ''
 									await tick();
 									submitPrompt(e.detail);
 								}
