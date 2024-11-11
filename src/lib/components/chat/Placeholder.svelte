@@ -207,7 +207,6 @@
 						placeholder={$i18n.t('How can I help you today?')}
 						on:submit={(e) => {
 							dispatch('submit', e.detail);
-							prompt = '';
 						}}
 					/>
 				</div>

@@ -690,6 +690,9 @@
 			);
 		} else {
 			// Reset chat input textarea
+			prompt = '';
+			await tick();
+			
 			const chatTextAreaElement = document.getElementById('chat-textarea');
 
 			if (chatTextAreaElement) {
