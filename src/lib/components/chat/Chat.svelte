@@ -2110,7 +2110,6 @@
 								if (e.detail) {
 									await tick();
 									submitPrompt(e.detail);
-									await tick();
 								}
 							}}
 						/>
