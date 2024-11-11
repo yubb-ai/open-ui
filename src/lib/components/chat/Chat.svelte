@@ -656,7 +656,10 @@
 			$models.map((m) => m.id).includes(modelId) ? modelId : ''
 		);
 
-		if (selectedModels.includes('')) {
+		if (userPrompt === '') {
+			toast.error($i18n.t('Please enter a prompt'));
+			return;
+		} else if (selectedModels.includes('')) {
 			toast.error($i18n.t('Model not selected'));
 		} else if (messages.length != 0 && messages.at(-1).done != true) {
 			// Response not done
@@ -709,7 +712,6 @@
 			);
 
 			files = [];
-			prompt = '';
 
 			// Create user message
 			let userMessageId = uuidv4();
@@ -732,6 +734,9 @@
 			if (messages.length !== 0) {
 				history.messages[messages.at(-1).id].childrenIds.push(userMessageId);
 			}
+
+			// Clear prompt
+			prompt = '';
 
 			// Wait until history/message have been updated
 			await tick();
@@ -2105,6 +2110,7 @@
 								if (e.detail) {
 									await tick();
 									submitPrompt(e.detail);
+									prompt = ''
 								}
 							}}
 						/>
