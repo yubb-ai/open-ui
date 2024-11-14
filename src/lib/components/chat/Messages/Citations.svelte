@@ -105,7 +105,7 @@
 								{idx + 1}
 							</div>
 						{/if}
-						<div class="flex-1 mx-2 line-clamp-1 truncate">
+						<div class="flex-1 mx-2 line-clamp-1">
 							{citation.source.name}
 						</div>
 					</button>
