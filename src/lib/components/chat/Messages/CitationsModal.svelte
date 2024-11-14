@@ -89,7 +89,7 @@
 									<a
 										class="hover:text-gray-500 hover:dark:text-gray-100 underline flex-grow"
 										href={document?.metadata?.file_id
-											? `/api/v1/files/${document?.metadata?.file_id}/content${document?.metadata?.page !== undefined ? `#page=${document.metadata.page + 1}` : ''}`
+											? `/api/v1/files/${document?.metadata?.file_id}/content`
 											: document.source?.url?.includes('http')
 												? document.source.url
 												: `#`}
