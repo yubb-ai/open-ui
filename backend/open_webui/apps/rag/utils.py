@@ -402,8 +402,8 @@ def get_rag_context(
         except Exception as e:
             log.exception(e)
 
-    print("contexts", contexts)
-    print("citations", citations)
+    # print("contexts", contexts)
+    # print("citations", citations)
 
     return contexts, citations
 
