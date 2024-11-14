@@ -361,10 +361,12 @@ def get_rag_context(
         except Exception as e:
             log.exception(e)
 
-        if context:
-            relevant_contexts.append({**context, "source": file})
-
         extracted_collections.extend(collection_names)
+
+        if context:
+            if "data" in file:
+                del file["data"]
+            relevant_contexts.append({**context, "file": file})
 
     contexts = []
     citations = []
