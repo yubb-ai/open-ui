@@ -167,9 +167,12 @@
 							return;
 						}
 
-						const speech_preview_json = getSpeechPreviewUrl(localStorage.token);
+						const speech_preview_json = await getSpeechPreviewUrl(localStorage.token);
 						if (speech_preview_json?.url) {
 							window.open(speech_preview_json.url, '_blank');
+						}
+						else{
+							toast.error('语音预览功能暂时不可用，请稍后再试！');
 						}
 					}}
 				>
