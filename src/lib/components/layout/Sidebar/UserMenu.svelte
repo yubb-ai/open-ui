@@ -84,7 +84,6 @@
 					class="flex rounded-md py-2.5 px-3.5 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
 					on:click={() => {
 						window.open($config?.instructions_url, '_blank');
-						showDropdown = false;
 					}}
 				>
 					<div class=" self-center mr-3">
@@ -112,7 +111,6 @@
 					class="flex rounded-md py-2.5 px-3.5 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
 					on:click={() => {
 						window.open($config?.model_status, '_blank');
-						showDropdown = false;
 					}}
 				>
 					<div class=" self-center mr-3">
@@ -138,7 +136,6 @@
 					class="flex rounded-md py-2.5 px-3.5 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
 					on:click={() => {
 						window.open($config?.lobeChat_url, '_blank');
-						showDropdown = false;
 					}}
 				>
 					<div class="self-center mr-3">
@@ -166,7 +163,6 @@
 						const allowedRoles = ['admin', 'svip', 'vip'];
 						if (allowedRoles.includes(role)) {
 							window.open($config?.midjourney_url, '_blank');
-							showDropdown = false;
 						} else {
 							toast.error('快找小羊升级您的等级体验Midjourney吧！');
 						}
@@ -205,8 +201,6 @@
 						if (speech_preview_json?.url) {
 							window.open(speech_preview_json.url, '_blank');
 						}
-
-						showDropdown = false;
 					}}
 				>
 					<div class=" self-center mr-3">
