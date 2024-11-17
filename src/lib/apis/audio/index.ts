@@ -38,7 +38,7 @@ export const getSpeechPreviewUrl = async (token: string, url: string) => {
 			Authorization: `Bearer ${token}`
 		},
 		body: JSON.stringify({
-			url: typeof url === 'string' ? url : ''
+			url: url
 		})
 	})
 		.then(async (res) => {

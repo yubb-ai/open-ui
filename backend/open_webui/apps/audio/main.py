@@ -382,7 +382,7 @@ async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
         r = requests.post(
             url=f"{app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL}/backend-api/voice_token",
             headers=headers,
-            data=body,
+            json=body,
         )
         r.raise_for_status()
         data = r.json()
