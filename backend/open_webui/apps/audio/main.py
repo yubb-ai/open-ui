@@ -91,6 +91,8 @@ class TTSConfigForm(BaseModel):
     SPLIT_ON: str
     AZURE_SPEECH_REGION: str
     AZURE_SPEECH_OUTPUT_FORMAT: str
+    SPEECH_PREVIEW_BASE_URL: str
+    SPEECH_PREVIEW_API_KEYS: str
 
 
 class STTConfigForm(BaseModel):
