@@ -175,6 +175,7 @@ type Config = {
 	version: string;
 	file: File;
 	model_status: string;
+	speech_preview: boolean;
 	instructions_url: string;
 	lobeChat_url: string;
 	midjourney_url: string;

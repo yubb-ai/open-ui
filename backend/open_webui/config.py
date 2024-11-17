@@ -499,6 +499,8 @@ CUSTOM_NAME = os.environ.get("CUSTOM_NAME", "")
 
 MODEL_STATUS = os.environ.get("MODEL_STATUS", "")
 
+SPEECH_PREVIEW = int(os.environ.get("SPEECH_PREVIEW", "True") == "true")
+
 INSTRUCTIONS_URL = os.environ.get("INSTRUCTIONS_URL", "")
 
 LOBECHAT_URL = os.environ.get("LOBECHAT_URL", "")
@@ -1549,6 +1551,18 @@ AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT = PersistentConfig(
     os.getenv(
         "AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT", "audio-24khz-160kbitrate-mono-mp3"
     ),
+)
+
+AUDIO_SPEECH_PREVIEW_BASE_URL = PersistentConfig(
+    "AUDIO_SPEECH_PREVIEW_BASE_URL",
+    "audio.tts.speech_preview_base_url",
+    os.getenv("AUDIO_SPEECH_PREVIEW_BASE_URL", ""),
+)
+
+AUDIO_SPEECH_PREVIEW_API_KEYS = PersistentConfig(
+    "AUDIO_TTS_OPENAI_API_KEYS",
+    "audio.speech_preview.api_keys",
+    os.getenv("AUDIO_SPEECH_PREVIEW_API_KEYS", ""),
 )
 
 ####################################

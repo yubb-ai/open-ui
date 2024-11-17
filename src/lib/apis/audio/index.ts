@@ -28,6 +28,33 @@ export const getAudioConfig = async (token: string) => {
 	return res;
 };
 
+const getSpeechPreviewUrl = async () => {
+	let error = null;
+
+	const res = await fetch(`${AUDIO_API_BASE_URL}/speech/preview`, {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		}
+	})
+		.then(async (res) => {
+			if (!res.ok) throw await res.json();
+			return res.json();
+		})
+		.catch((err) => {
+			console.log(err);
+			error = err.detail;
+			return null;
+		});
+
+	if (error) {
+		throw error;
+	}
+
+	return res;
+};
+
 type OpenAIConfigForm = {
 	url: string;
 	key: string;

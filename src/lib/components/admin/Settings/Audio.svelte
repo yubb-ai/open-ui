@@ -33,6 +33,8 @@
 	let TTS_SPLIT_ON: TTS_RESPONSE_SPLIT = TTS_RESPONSE_SPLIT.PUNCTUATION;
 	let TTS_AZURE_SPEECH_REGION = '';
 	let TTS_AZURE_SPEECH_OUTPUT_FORMAT = '';
+	let SPEECH_PREVIEW_BASE_URL = '';
+	let SPEECH_PREVIEW_API_KEYS = '';
 
 	let STT_OPENAI_API_BASE_URL = '';
 	let STT_OPENAI_API_KEY = '';
@@ -91,7 +93,9 @@
 				VOICE: TTS_VOICE,
 				SPLIT_ON: TTS_SPLIT_ON,
 				AZURE_SPEECH_REGION: TTS_AZURE_SPEECH_REGION,
-				AZURE_SPEECH_OUTPUT_FORMAT: TTS_AZURE_SPEECH_OUTPUT_FORMAT
+				AZURE_SPEECH_OUTPUT_FORMAT: TTS_AZURE_SPEECH_OUTPUT_FORMAT,
+				SPEECH_PREVIEW_BASE_URL: SPEECH_PREVIEW_BASE_URL,
+				SPEECH_PREVIEW_API_KEYS: SPEECH_PREVIEW_API_KEYS
 			},
 			stt: {
 				OPENAI_API_BASE_URL: STT_OPENAI_API_BASE_URL,
@@ -126,6 +130,8 @@
 
 			TTS_AZURE_SPEECH_OUTPUT_FORMAT = res.tts.AZURE_SPEECH_OUTPUT_FORMAT;
 			TTS_AZURE_SPEECH_REGION = res.tts.AZURE_SPEECH_REGION;
+			SPEECH_PREVIEW_BASE_URL = res.tts.SPEECH_PREVIEW_BASE_URL;
+			SPEECH_PREVIEW_API_KEYS = res.tts.SPEECH_PREVIEW_API_KEYS;
 
 			STT_OPENAI_API_BASE_URL = res.stt.OPENAI_API_BASE_URL;
 			STT_OPENAI_API_KEY = res.stt.OPENAI_API_KEY;
@@ -428,6 +434,24 @@
 						</div>
 					</div>
 				{/if}
+
+				<hr class="dark:border-gray-850 my-2" />
+
+				<div>
+					<div class="mt-1 flex gap-2 mb-1">
+						<input
+							class="flex-1 w-full rounded-lg py-2 pl-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+							placeholder={$i18n.t('Preview Speech Base URL')}
+							bind:value={SPEECH_PREVIEW_BASE_URL}
+							required
+						/>
+
+						<SensitiveInput
+							placeholder={$i18n.t('Preview Speech API Keys')}
+							bind:value={SPEECH_PREVIEW_API_KEYS}
+						/>
+					</div>
+				</div>
 
 				<hr class="dark:border-gray-850 my-2" />
 
