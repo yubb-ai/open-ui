@@ -70,8 +70,8 @@ app.state.config.TTS_SPLIT_ON = AUDIO_TTS_SPLIT_ON
 
 app.state.config.TTS_AZURE_SPEECH_REGION = AUDIO_TTS_AZURE_SPEECH_REGION
 app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT = AUDIO_TTS_AZURE_SPEECH_OUTPUT_FORMAT
-app.state.config.SPEECH_PREVIEW_BASE_URL = AUDIO_SPEECH_PREVIEW_BASE_URL
-app.state.config.SPEECH_PREVIEW_API_KEYS = AUDIO_SPEECH_PREVIEW_API_KEYS
+app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL = AUDIO_SPEECH_PREVIEW_BASE_URL
+app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS = AUDIO_SPEECH_PREVIEW_API_KEYS
 
 # setting device type for whisper model
 whisper_device_type = DEVICE_TYPE if DEVICE_TYPE and DEVICE_TYPE == "cuda" else "cpu"
@@ -91,8 +91,8 @@ class TTSConfigForm(BaseModel):
     SPLIT_ON: str
     AZURE_SPEECH_REGION: str
     AZURE_SPEECH_OUTPUT_FORMAT: str
-    SPEECH_PREVIEW_BASE_URL: str
-    SPEECH_PREVIEW_API_KEYS: str
+    AUDIO_SPEECH_PREVIEW_BASE_URL: str
+    AUDIO_SPEECH_PREVIEW_API_KEYS: str
 
 
 class STTConfigForm(BaseModel):
@@ -147,8 +147,8 @@ async def get_audio_config(user=Depends(get_admin_user)):
             "SPLIT_ON": app.state.config.TTS_SPLIT_ON,
             "AZURE_SPEECH_REGION": app.state.config.TTS_AZURE_SPEECH_REGION,
             "AZURE_SPEECH_OUTPUT_FORMAT": app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT,
-            "SPEECH_PREVIEW_BASE_URL": app.state.config.SPEECH_PREVIEW_BASE_URL,
-            "SPEECH_PREVIEW_API_KEYS": app.state.config.SPEECH_PREVIEW_API_KEYS,
+            "AUDIO_SPEECH_PREVIEW_BASE_URL": app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL,
+            "AUDIO_SPEECH_PREVIEW_API_KEYS": app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS,
         },
         "stt": {
             "OPENAI_API_BASE_URL": app.state.config.STT_OPENAI_API_BASE_URL,
@@ -174,8 +174,8 @@ async def update_audio_config(
     app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT = (
         form_data.tts.AZURE_SPEECH_OUTPUT_FORMAT
     )
-    app.state.config.SPEECH_PREVIEW_BASE_URL = form_data.tts.SPEECH_PREVIEW_BASE_URL
-    app.state.config.SPEECH_PREVIEW_API_KEYS = form_data.tts.SPEECH_PREVIEW_API_KEYS
+    app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL = form_data.tts.AUDIO_SPEECH_PREVIEW_BASE_URL
+    app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS = form_data.tts.AUDIO_SPEECH_PREVIEW_API_KEYS
 
     app.state.config.STT_OPENAI_API_BASE_URL = form_data.stt.OPENAI_API_BASE_URL
     app.state.config.STT_OPENAI_API_KEY = form_data.stt.OPENAI_API_KEY
@@ -193,8 +193,8 @@ async def update_audio_config(
             "SPLIT_ON": app.state.config.TTS_SPLIT_ON,
             "AZURE_SPEECH_REGION": app.state.config.TTS_AZURE_SPEECH_REGION,
             "AZURE_SPEECH_OUTPUT_FORMAT": app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT,
-            "SPEECH_PREVIEW_BASE_URL": app.state.config.SPEECH_PREVIEW_BASE_URL,
-            "SPEECH_PREVIEW_API_KEYS": app.state.config.SPEECH_PREVIEW_API_KEYS,
+            "AUDIO_SPEECH_PREVIEW_BASE_URL": app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL,
+            "AUDIO_SPEECH_PREVIEW_API_KEYS": app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS,
         },
         "stt": {
             "OPENAI_API_BASE_URL": app.state.config.STT_OPENAI_API_BASE_URL,
@@ -371,7 +371,7 @@ async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
     if user.role not in ["vip", "svip", "admin"]:
         return {"error": "You are not authorized to use this endpoint."}
     
-    speech_api_keys = app.state.config.SPEECH_PREVIEW_API_KEYS.split(",")
+    speech_api_keys = [key.strip() for key in app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS.split(",") if key.strip()]
     headers = {
         "Authorization": f"Bearer {random.choice(speech_api_keys)}",
         "Content-Type": "application/json",
@@ -379,7 +379,7 @@ async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
 
     try:
         r = requests.post(
-            url=f"{app.state.config.SPEECH_PREVIEW_BASE_URL}/backend-api/voice_token",
+            url=f"{app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL}/backend-api/voice_token",
             headers=headers,
         )
         r.raise_for_status()

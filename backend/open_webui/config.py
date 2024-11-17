@@ -1560,7 +1560,7 @@ AUDIO_SPEECH_PREVIEW_BASE_URL = PersistentConfig(
 )
 
 AUDIO_SPEECH_PREVIEW_API_KEYS = PersistentConfig(
-    "AUDIO_TTS_OPENAI_API_KEYS",
+    "AUDIO_SPEECH_PREVIEW_API_KEYS",
     "audio.speech_preview.api_keys",
     os.getenv("AUDIO_SPEECH_PREVIEW_API_KEYS", ""),
 )
