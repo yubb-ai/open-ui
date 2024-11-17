@@ -172,7 +172,7 @@
 								// await 等待异步获取语音预览URL
 								const speechPreviewJson = await getSpeechPreviewUrl(
 									localStorage.token,
-									page.url.href
+									$page.url.href
 								);
 
 								if (speechPreviewJson?.url) {
