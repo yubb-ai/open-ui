@@ -159,20 +159,29 @@
 			{#if $config?.speech_preview}
 				<button
 					class="flex rounded-md py-2.5 px-3.5 w-full hover:bg-gray-100 dark:hover:bg-gray-800 transition"
-					on:click={() => {
-						const allowedRoles = ['admin', 'svip', 'vip'];
+					on:click={async () => {
+						try {
+							const allowedRoles = ['admin', 'svip', 'vip'];
+							if (!allowedRoles.includes(role)) {
+								toast.error('快找小羊升级您的等级体验语音预览吧！');
+								return;
+							}
 
-						if (!allowedRoles.includes(role)) {
-							toast.error('快找小羊升级您的等级体验语音预览吧！');
-							return;
-						}
+							try {
+								// await 等待异步获取语音预览URL
+								const speech_preview_json = await getSpeechPreviewUrl(localStorage.token);
 
-						const speech_preview_json = await getSpeechPreviewUrl(localStorage.token);
-						if (speech_preview_json?.url) {
-							window.open(speech_preview_json.url, '_blank');
-						}
-						else{
-							toast.error('语音预览功能暂时不可用，请稍后再试！');
+								if (speech_preview_json?.url) {
+									window.open(speech_preview_json.url, '_blank');
+								} else {
+									toast.error('语音预览功能暂时不可用，请稍后再试！');
+								}
+							} catch (error) {
+								toast.error('网络错误，请检查网络连接');
+								console.error(error);
+							}
+						} catch (error) {
+							console.error('点击事件发生错误', error);
 						}
 					}}
 				>
