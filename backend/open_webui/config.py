@@ -499,7 +499,7 @@ CUSTOM_NAME = os.environ.get("CUSTOM_NAME", "")
 
 MODEL_STATUS = os.environ.get("MODEL_STATUS", "")
 
-SPEECH_PREVIEW = int(os.environ.get("SPEECH_PREVIEW", "True") == "true")
+SPEECH_PREVIEW = os.environ.get("SPEECH_PREVIEW", "True").lower() == "true",
 
 INSTRUCTIONS_URL = os.environ.get("INSTRUCTIONS_URL", "")
 

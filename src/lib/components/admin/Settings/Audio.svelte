@@ -438,6 +438,7 @@
 				<hr class="dark:border-gray-850 my-2" />
 
 				<div>
+					<div class=" mb-1 text-sm font-medium">{$i18n.t('Preview Speech Settings')}</div>
 					<div class="mt-1 flex gap-2 mb-1">
 						<input
 							class="flex-1 w-full rounded-lg py-2 pl-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
