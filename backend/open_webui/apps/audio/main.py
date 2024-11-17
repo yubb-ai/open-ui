@@ -366,8 +366,9 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                 status_code=500, detail=f"Error synthesizing speech - {response.reason}"
             )
 
-@app.get("/speech/preview")
+@app.post("/speech/preview")
 async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
+    body = await request.json()
     if user.role not in ["vip", "svip", "admin"]:
         return {"error": "You are not authorized to use this endpoint."}
     
@@ -381,6 +382,7 @@ async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
         r = requests.post(
             url=f"{app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL}/backend-api/voice_token",
             headers=headers,
+            data=body,
         )
         r.raise_for_status()
         data = r.json()

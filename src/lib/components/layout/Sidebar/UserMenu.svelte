@@ -16,6 +16,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import { getSpeechPreviewUrl } from '$lib/apis/audio';
+	import { page } from '$app/stores';
 
 	const i18n = getContext('i18n');
 
@@ -169,7 +170,10 @@
 
 							try {
 								// await 等待异步获取语音预览URL
-								const speechPreviewJson = await getSpeechPreviewUrl(localStorage.token);
+								const speechPreviewJson = await getSpeechPreviewUrl(
+									localStorage.token,
+									page.url.href
+								);
 
 								if (speechPreviewJson?.url) {
 									window.location.href = speechPreviewJson.url;

@@ -28,15 +28,18 @@ export const getAudioConfig = async (token: string) => {
 	return res;
 };
 
-export const getSpeechPreviewUrl = async (token: string) => {
+export const getSpeechPreviewUrl = async (token: string, url: string) => {
 	let error = null;
 
 	const res = await fetch(`${AUDIO_API_BASE_URL}/speech/preview`, {
-		method: 'GET',
+		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json',
 			Authorization: `Bearer ${token}`
-		}
+		},
+		body: JSON.stringify({
+			url: typeof url === 'string' ? url : ''
+		})
 	})
 		.then(async (res) => {
 			if (!res.ok) throw await res.json();
