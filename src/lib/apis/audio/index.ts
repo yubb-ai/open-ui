@@ -28,7 +28,7 @@ export const getAudioConfig = async (token: string) => {
 	return res;
 };
 
-const getSpeechPreviewUrl = async () => {
+export const getSpeechPreviewUrl = async (token: string) => {
 	let error = null;
 
 	const res = await fetch(`${AUDIO_API_BASE_URL}/speech/preview`, {

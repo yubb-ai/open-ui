@@ -201,7 +201,7 @@
 							return;
 						}
 
-						const speech_preview_json = getSpeechPreviewUrl();
+						const speech_preview_json = getSpeechPreviewUrl(localStorage.token);
 						if (speech_preview_json?.url) {
 							window.open(speech_preview_json.url, '_blank');
 						}
