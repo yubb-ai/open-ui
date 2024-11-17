@@ -185,6 +185,7 @@
 								console.error(error);
 							}
 						} catch (error) {
+							toast.error('语音预览功能暂时不可用，请稍后再试！');
 							console.error('点击事件发生错误', error);
 						}
 					}}
