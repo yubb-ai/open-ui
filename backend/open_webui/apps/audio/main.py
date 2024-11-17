@@ -174,8 +174,8 @@ async def update_audio_config(
     app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT = (
         form_data.tts.AZURE_SPEECH_OUTPUT_FORMAT
     )
-    app.state.config.SPEECH_PREVIEW_BASE_URL = form_data.tts.AUDIO_SPEECH_PREVIEW_BASE_URL
-    app.state.config.SPEECH_PREVIEW_API_KEYS = form_data.tts.AUDIO_SPEECH_PREVIEW_API_KEYS
+    app.state.config.SPEECH_PREVIEW_BASE_URL = form_data.tts.SPEECH_PREVIEW_BASE_URL
+    app.state.config.SPEECH_PREVIEW_API_KEYS = form_data.tts.SPEECH_PREVIEW_API_KEYS
 
     app.state.config.STT_OPENAI_API_BASE_URL = form_data.stt.OPENAI_API_BASE_URL
     app.state.config.STT_OPENAI_API_KEY = form_data.stt.OPENAI_API_KEY
