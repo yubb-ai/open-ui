@@ -770,6 +770,7 @@
 	"variable": "變數",
 	"variable to have them replaced with clipboard content.": "變數，以便將其替換為剪貼簿內容。",
 	"Version": "版本",
+	"Version {{selectedVersion}} of {{totalVersions}}": "版本 {{selectedVersion}} / {{totalVersions}}",
 	"Voice": "語音",
 	"Warning": "警告",
 	"Warning:": "警告：",
