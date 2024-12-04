@@ -416,7 +416,7 @@ async def content_filter_message(payload: dict, content: str, user):
                             "text": {
                                 "content": f"🚨🚨🚨 警告"
                                            f"\n\n{user.name}提问敏感消息！"
-                                           f"\n\n😅 {content}"
+                                           f"\n\n😅 {content[:100]}"
                                            f"\n\n💢 为了API的正常运行，赶紧点开看看吧！"
                                            f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
                             }
