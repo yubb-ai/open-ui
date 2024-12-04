@@ -273,19 +273,19 @@ def get_file_response(directory: str, filename: str) -> FileResponse:
 
 # Model Images
 @router.get("/model/images/{filename}", response_model=Optional[FileModel])
-async def get_model_image_by_filename(filename: str, user=Depends(get_verified_user)):
+async def get_model_image_by_filename(filename: str):
     return get_file_response(MODEL_IMAGES_DIR, filename)
 
 
 # Background Images
 @router.get("/background/images/{filename}", response_model=Optional[FileModel])
-async def get_background_image_by_filename(filename: str, user=Depends(get_verified_user)):
+async def get_background_image_by_filename(filename: str):
     return get_file_response(BACKGROUND_IMAGES_DIR, filename)
 
 
 # User Images
 @router.get("/user/images/{filename}", response_model=Optional[FileModel])
-async def get_user_image_by_filename(filename: str, user=Depends(get_verified_user)):
+async def get_user_image_by_filename(filename: str):
     return get_file_response(USER_IMAGES_DIR, filename)
 
 
