@@ -1,9 +1,10 @@
 <script lang="ts">
 	import type { Banner } from '$lib/types';
-	import { onMount, createEventDispatcher, getContext } from 'svelte';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import DOMPurify from 'dompurify';
+	import { marked } from 'marked';
 
-	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
 
 	export let banner: Banner = {
@@ -82,7 +83,7 @@
 				</div>
 
 				<div class="flex-1 text-xs text-gray-700 dark:text-white">
-					{banner.content}
+					{@html marked.parse(DOMPurify.sanitize(banner.content))}
 				</div>
 			</div>
 
