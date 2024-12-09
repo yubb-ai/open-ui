@@ -6,7 +6,7 @@
 	import { marked } from 'marked';
 
 	const dispatch = createEventDispatcher();
- const i18n = getContext('i18n');
+  const i18n = getContext('i18n');
 
 	export let banner: Banner = {
 		id: '',
