@@ -18,18 +18,32 @@
 		});
 	}
 
-	function downloadSVGAsPNG() {
+	async function downloadSVGAsPNG() {
 		if (!sceneElement) return;
-		html2canvas(sceneElement).then((canvas) => {
-			canvas.toBlob((blob) => {
-				const link = document.createElement('a');
-				const url = URL.createObjectURL(blob);
-				link.href = url;
-				link.download = `mermaid_${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
-				link.click();
-				URL.revokeObjectURL(url);
-			}, 'image/png');
-		});
+		try {
+			const canvas = await html2canvas(sceneElement);
+			const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
+			if (!blob) throw new Error('Blob creation failed');
+
+			const blobUrl = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			const date = new Date();
+			const timestamp = date.getFullYear() +
+				('0' + (date.getMonth() + 1)).slice(-2) +
+				('0' + date.getDate()).slice(-2) + '_' +
+				('0' + date.getHours()).slice(-2) +
+				('0' + date.getMinutes()).slice(-2);
+
+			a.href = blobUrl;
+			a.download = `mermaid_${timestamp}.png`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(blobUrl);
+		} catch (error) {
+			console.error('图片下载失败:', error);
+			alert('图片下载失败，请稍后重试');
+		}
 	}
 </script>
 
