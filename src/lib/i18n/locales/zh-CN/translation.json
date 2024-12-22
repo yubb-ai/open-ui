@@ -744,7 +744,7 @@
 	"TTS Voice": "文本转语音音色",
 	"Type": "类型",
 	"Type Hugging Face Resolve (Download) URL": "输入 Hugging Face 解析（下载）URL",
-	"Uh-oh! There was an issue connecting to {{provider}}.": "糟糕！连接到 {{provider}} 时出现问题",
+	"Uh-oh! There was an issue connecting to {{provider}}.": "糟糕！连接到 {{provider}} 时出现问题，请重新再试，如还有问题，请联系客服！",
 	"UI": "界面",
 	"Unknown file type '{{file_type}}'. Proceeding with the file upload anyway.": "未知文件类型“{{file_type}}”，将无视继续上传文件",
 	"Unpin": "取消置顶",
