@@ -73,6 +73,7 @@
 		"file-saver": "^2.0.5",
 		"fuse.js": "^7.0.0",
 		"highlight.js": "^11.9.0",
+		"html2canvas": "^1.4.1",
 		"i18next": "^23.10.0",
 		"i18next-browser-languagedetector": "^7.2.0",
 		"i18next-resources-to-backend": "^1.2.0",
