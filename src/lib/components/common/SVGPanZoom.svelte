@@ -21,10 +21,14 @@
 	function downloadSVGAsPNG() {
 		if (!sceneElement) return;
 		html2canvas(sceneElement).then((canvas) => {
-			const link = document.createElement('a');
-			link.href = canvas.toDataURL('image/png');
-			link.download = `mermaid_${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
-			link.click();
+			canvas.toBlob((blob) => {
+				const link = document.createElement('a');
+				const url = URL.createObjectURL(blob);
+				link.href = url;
+				link.download = `mermaid_${new Date().toISOString().replace(/[:.]/g, '-')}.png`;
+				link.click();
+				URL.revokeObjectURL(url);
+			}, 'image/png');
 		});
 	}
 </script>
