@@ -19,6 +19,7 @@
 	}
 
 	function downloadSVGAsPNG() {
+		if (!sceneElement) return;
 		html2canvas(sceneElement).then((canvas) => {
 			const link = document.createElement('a');
 			link.href = canvas.toDataURL('image/png');
@@ -28,7 +29,7 @@
 	}
 </script>
 
-<div bind:this={sceneParentElement} class={className}>
+<div bind:this={sceneParentElement} class={className} style="position: relative;">
 	<button class="download-btn" on:click={downloadSVGAsPNG}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
 			<path
@@ -58,6 +59,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		z-index: 10;
 	}
 
 	.download-btn svg {
@@ -68,5 +70,15 @@
 
 	.download-btn:hover {
 		background-color: rgba(100, 100, 100, 0.7);
+	}
+
+	.relative {
+		width: 100%;
+		height: 100%;
+	}
+
+	svg {
+		width: 100%;
+		height: auto;
 	}
 </style>
