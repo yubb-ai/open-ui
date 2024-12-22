@@ -23,23 +23,35 @@
 		try {
 			const canvas = await html2canvas(sceneElement);
 			const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
-			if (!blob) throw new Error('Blob creation failed');
+			if (!blob) return;
 
 			const blobUrl = URL.createObjectURL(blob);
-			const a = document.createElement('a');
 			const date = new Date();
-			const timestamp = date.getFullYear() +
+			const timestamp =
+				date.getFullYear() +
 				('0' + (date.getMonth() + 1)).slice(-2) +
-				('0' + date.getDate()).slice(-2) + '_' +
+				('0' + date.getDate()).slice(-2) +
+				'_' +
 				('0' + date.getHours()).slice(-2) +
 				('0' + date.getMinutes()).slice(-2);
 
-			a.href = blobUrl;
-			a.download = `mermaid_${timestamp}.png`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-			URL.revokeObjectURL(blobUrl);
+			const imageName = `mermaid_${timestamp}.png`;
+
+			if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+				const newWindow = window.open(blobUrl);
+				if (newWindow) {
+					newWindow.document.title = imageName;
+					newWindow.document.body.innerHTML = `<img src="${blobUrl}" style="max-width: 100%;" alt="Mermaid Diagram"/><p>长按图片保存</p>`;
+				}
+			} else {
+				const a = document.createElement('a');
+				a.href = blobUrl;
+				a.download = imageName;
+				document.body.appendChild(a);
+				a.click();
+				a.remove();
+				URL.revokeObjectURL(blobUrl);
+			}
 		} catch (error) {
 			console.error('图片下载失败:', error);
 			alert('图片下载失败，请稍后重试');
