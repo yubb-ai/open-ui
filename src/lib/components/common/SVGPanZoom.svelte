@@ -2,11 +2,12 @@
 	import { onMount } from 'svelte';
 	import panzoom from 'panzoom';
 	import html2canvas from 'html2canvas';
+	import { saveAs } from 'file-saver';
+
 	export let className = '';
 	export let svg = '';
 
 	let instance;
-
 	let sceneParentElement: HTMLElement;
 	let sceneElement: HTMLElement;
 
@@ -36,28 +37,7 @@
 
 			const imageName = `mermaid_${timestamp}.png`;
 
-			if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-				const reader = new FileReader();
-				reader.onloadend = function () {
-					const base64data = reader.result;
-					const link = document.createElement('a');
-					link.href = base64data as string;
-					link.download = imageName;
-					document.body.appendChild(link);
-					link.click();
-					document.body.removeChild(link);
-				};
-				reader.readAsDataURL(blob);
-			} else {
-				const blobUrl = URL.createObjectURL(blob);
-				const a = document.createElement('a');
-				a.href = blobUrl;
-				a.download = imageName;
-				document.body.appendChild(a);
-				a.click();
-				a.remove();
-				URL.revokeObjectURL(blobUrl);
-			}
+			saveAs(blob, imageName);
 		} catch (error) {
 			console.error('图片下载失败:', error);
 			alert('图片下载失败，请稍后重试');
@@ -65,7 +45,11 @@
 	}
 </script>
 
-<div bind:this={sceneParentElement} class={className} style="position: relative;">
+<div
+	bind:this={sceneParentElement}
+	class={className}
+	style="position: relative; min-height: 100px;"
+>
 	<button class="download-btn" on:click={downloadSVGAsPNG}>
 		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6">
 			<path

@@ -869,6 +869,12 @@ ADMIN_EMAIL = PersistentConfig(
     os.environ.get("ADMIN_EMAIL", None),
 )
 
+ADMIN_URL = PersistentConfig(
+    "ADMIN_URL",
+    "auth.admin.email",
+    os.environ.get("ADMIN_URL", None),
+)
+
 ####################################
 # TASKS
 ####################################

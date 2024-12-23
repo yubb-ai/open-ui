@@ -341,6 +341,7 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
 async def get_admin_details(request: Request, user=Depends(get_current_user)):
     if request.app.state.config.SHOW_ADMIN_DETAILS:
         admin_email = request.app.state.config.ADMIN_EMAIL
+        admin_url = request.app.state.config.ADMIN_URL
         admin_name = None
 
         print(admin_email, admin_name)
@@ -358,6 +359,7 @@ async def get_admin_details(request: Request, user=Depends(get_current_user)):
         return {
             "name": admin_name,
             "email": admin_email,
+            "url": admin_url,
         }
     else:
         raise HTTPException(400, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
