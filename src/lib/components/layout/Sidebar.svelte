@@ -130,6 +130,9 @@
 
 		function checkDirection() {
 			const screenWidth = window.innerWidth;
+			if (touchend?.screenX === undefined || touchstart?.screenX === undefined) {
+				return;
+			}
 			const swipeDistance = Math.abs(touchend.screenX - touchstart.screenX);
 			if (touchstart.clientX < 40 && swipeDistance >= screenWidth / 8) {
 				if (touchend.screenX < touchstart.screenX) {
