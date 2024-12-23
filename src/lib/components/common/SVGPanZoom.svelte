@@ -25,7 +25,6 @@
 			const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
 			if (!blob) return;
 
-			const blobUrl = URL.createObjectURL(blob);
 			const date = new Date();
 			const timestamp =
 				date.getFullYear() +
@@ -38,8 +37,19 @@
 			const imageName = `mermaid_${timestamp}.png`;
 
 			if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-				window.location.href = blobUrl;
+				const reader = new FileReader();
+				reader.onloadend = function () {
+					const base64data = reader.result;
+					const link = document.createElement('a');
+					link.href = base64data as string;
+					link.download = imageName;
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				};
+				reader.readAsDataURL(blob);
 			} else {
+				const blobUrl = URL.createObjectURL(blob);
 				const a = document.createElement('a');
 				a.href = blobUrl;
 				a.download = imageName;
