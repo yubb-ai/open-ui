@@ -38,47 +38,7 @@
 			const imageName = `mermaid_${timestamp}.png`;
 
 			if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-				// 创建一个容器来显示图片
-				const imageContainer = document.createElement('div');
-				imageContainer.style.position = 'relative'; // 设置容器为相对定位，以便放置关闭按钮
-				imageContainer.style.marginBottom = '20px'; // 添加底部间距，避免图片贴着页面底部
-
-				// 创建图片元素
-				const img = document.createElement('img');
-				img.src = blobUrl; // 使用生成的 Blob URL
-				img.style.maxWidth = '100%'; // 图片最大宽度为 100%
-				img.alt = imageName;
-
-				// 创建提示信息
-				const message = document.createElement('p');
-				message.textContent = '长按图片保存';
-
-				// 创建关闭按钮
-				const closeButton = document.createElement('button');
-				closeButton.textContent = '关闭';
-				closeButton.style.position = 'absolute';
-				closeButton.style.top = '10px';
-				closeButton.style.right = '10px';
-				closeButton.style.padding = '5px 10px';
-				closeButton.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
-				closeButton.style.color = 'white';
-				closeButton.style.border = 'none';
-				closeButton.style.cursor = 'pointer';
-				closeButton.style.borderRadius = '5px';
-				closeButton.style.zIndex = '1000'; // 确保按钮在图片上面
-
-				// 添加点击事件，点击后关闭图片
-				closeButton.addEventListener('click', function () {
-					imageContainer.remove(); // 移除图片容器
-				});
-
-				// 将图片、提示信息和关闭按钮添加到容器中
-				imageContainer.appendChild(img);
-				imageContainer.appendChild(message);
-				imageContainer.appendChild(closeButton);
-
-				// 将容器插入到页面中
-				document.body.appendChild(imageContainer);
+				window.location.href = blobUrl;
 			} else {
 				const a = document.createElement('a');
 				a.href = blobUrl;
