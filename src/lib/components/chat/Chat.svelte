@@ -203,6 +203,8 @@
 				message.content += data.content;
 			} else if (type === 'replace') {
 				message.content = data.content;
+			} else if (type === 'replace_content') {
+				message.content.replace(data.replace, data.with);
 			} else if (type === 'action') {
 				if (data.action === 'continue') {
 					const continueButton = document.getElementById('continue-response-button');
