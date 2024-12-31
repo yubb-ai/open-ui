@@ -158,6 +158,23 @@
 
 				<div class=" w-full justify-between">
 					<div class="flex w-full justify-between">
+						<div class=" self-center text-xs font-medium">{$i18n.t('Renewal URL')}</div>
+					</div>
+
+					<div class="flex mt-2 space-x-2">
+						<input
+							class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+							type="text"
+							placeholder={''}
+							bind:value={adminConfig.ADMIN_URL}
+						/>
+					</div>
+				</div>
+
+				<hr class=" dark:border-gray-850 my-2" />
+
+				<div class=" w-full justify-between">
+					<div class="flex w-full justify-between">
 						<div class=" self-center text-xs font-medium">{$i18n.t('Webhook URL')}</div>
 					</div>
 

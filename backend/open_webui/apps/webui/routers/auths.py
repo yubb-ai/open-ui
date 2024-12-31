@@ -397,6 +397,7 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
         "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
         "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
+        "ADMIN_URL": request.app.state.config.ADMIN_URL,
     }
 
 
@@ -409,6 +410,7 @@ class AdminConfig(BaseModel):
     JWT_EXPIRES_IN: str
     ENABLE_COMMUNITY_SHARING: bool
     ENABLE_MESSAGE_RATING: bool
+    ADMIN_URL: str
 
 
 @router.post("/admin/config")
@@ -417,6 +419,7 @@ async def update_admin_config(
 ):
     request.app.state.config.SHOW_ADMIN_DETAILS = form_data.SHOW_ADMIN_DETAILS
     request.app.state.config.ENABLE_SIGNUP = form_data.ENABLE_SIGNUP
+    request.app.state.config.ADMIN_URL = form_data.ADMIN_URL
 
     if form_data.DEFAULT_USER_ROLE in ["pending", "user", "vip", "svip", "admin"]:
         request.app.state.config.DEFAULT_USER_ROLE = form_data.DEFAULT_USER_ROLE
@@ -439,6 +442,7 @@ async def update_admin_config(
     request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
 
     return {
+        "ADMIN_URL": request.app.state.config.ADMIN_UR,
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "DEFAULT_USER_ROLE": request.app.state.config.DEFAULT_USER_ROLE,
