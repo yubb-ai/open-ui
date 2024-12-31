@@ -461,7 +461,7 @@ async def update_admin_config(
 
 # create api key
 @router.post("/api_key", response_model=ApiKey)
-async def create_api_key_(user=Depends(get_current_user)):
+async def create_api_key_(user=Depends(get_admin_user)):
     api_key = create_api_key()
     success = Users.update_user_api_key_by_id(user.id, api_key)
     if success:
@@ -474,14 +474,14 @@ async def create_api_key_(user=Depends(get_current_user)):
 
 # delete api key
 @router.delete("/api_key", response_model=bool)
-async def delete_api_key(user=Depends(get_current_user)):
+async def delete_api_key(user=Depends(get_admin_user)):
     success = Users.update_user_api_key_by_id(user.id, None)
     return success
 
 
 # get api key
 @router.get("/api_key", response_model=ApiKey)
-async def get_api_key(user=Depends(get_current_user)):
+async def get_api_key(user=Depends(get_admin_user)):
     api_key = Users.get_user_api_key_by_id(user.id)
     if api_key:
         return {
