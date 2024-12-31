@@ -5,7 +5,7 @@ Revises:
 Create Date: 2024-06-24 13:15:33.808998
 
 """
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Sequence, Union
 
 import sqlalchemy as sa
@@ -187,6 +187,7 @@ def upgrade() -> None:
         conn = op.get_bind()
         inspector = sa.inspect(conn)
         user_table_columns = [column['name'] for column in inspector.get_columns("user")]
+        print(user_table_columns)
 
         if "expire_at" not in user_table_columns:
             # Get the current datetime
