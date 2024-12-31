@@ -237,7 +237,7 @@
 	"Enable Web Search Query Generation": "Увімкнути генерацію запитів для веб-пошуку",
 	"Enabled": "Увімкнено",
 	"Engine": "Рушій",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Переконайтеся, що ваш CSV-файл містить 4 колонки в такому порядку: Ім'я, Email, Пароль, Роль.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Переконайтеся, що ваш CSV-файл містить 4 колонки в такому порядку: Ім'я, Email, Пароль, Роль.",
 	"Enter {{role}} message here": "Введіть повідомлення {{role}} тут",
 	"Enter a detail about yourself for your LLMs to recall": "Введіть відомості про себе для запам'ятовування вашими LLM.",
 	"Enter api auth string (e.g. username:password)": "Введіть рядок авторизації api (напр, ім'я користувача:пароль)",

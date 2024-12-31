@@ -6,6 +6,7 @@
 
 	import Modal from '../common/Modal.svelte';
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import dayjs from 'dayjs';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();
@@ -20,7 +21,8 @@
 		name: '',
 		email: '',
 		password: '',
-		role: 'user'
+		role: 'user',
+		expire_at: dayjs().format('YYYY-MM-DDTHH:mm'),
 	};
 
 	$: if (show) {
@@ -28,7 +30,8 @@
 			name: '',
 			email: '',
 			password: '',
-			role: 'user'
+			role: 'user',
+			expire_at: dayjs().format('YYYY-MM-DDTHH:mm'),
 		};
 	}
 
@@ -40,13 +43,15 @@
 
 		if (tab === '') {
 			loading = true;
+			_user.expire_at = dayjs(_user.expire_at).unix();
 
 			const res = await addUser(
 				localStorage.token,
 				_user.name,
 				_user.email,
 				_user.password,
-				_user.role
+				_user.role,
+				_user.expire_at,
 			).catch((error) => {
 				toast.error(error);
 			});
@@ -74,7 +79,7 @@
 
 						if (idx > 0) {
 							if (
-								columns.length === 4 &&
+								columns.length === 5 &&
 								['admin', 'user', 'vip', 'svip', 'pending'].includes(columns[3].toLowerCase())
 							) {
 								const res = await addUser(
@@ -82,7 +87,8 @@
 									columns[0],
 									columns[1],
 									columns[2],
-									columns[3].toLowerCase()
+									columns[3].toLowerCase(),
+									columns[4],
 								).catch((error) => {
 									toast.error(`Row ${idx + 1}: ${error}`);
 									return null;
@@ -230,6 +236,18 @@
 									/>
 								</div>
 							</div>
+
+							<div class="flex flex-col w-full mt-2">
+								<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Expire at')}</div>
+								<div class="flex-1">
+									<input
+										class="w-full rounded py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-none"
+										type="datetime-local"
+										bind:value={_user.expire_at}
+										required
+									/>
+								</div>
+							</div>
 						{:else if tab === 'import'}
 							<div>
 								<div class="mb-3 w-full">
@@ -258,7 +276,7 @@
 
 								<div class=" text-xs text-gray-500">
 									ⓘ {$i18n.t(
-										'Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.'
+										'Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.'
 									)}
 									<a
 										class="underline dark:text-gray-200"

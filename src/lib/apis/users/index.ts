@@ -304,13 +304,14 @@ export const deleteUserById = async (token: string, userId: string) => {
 };
 
 type UserUpdateForm = {
+	role: string;
 	profile_image_url: string;
 	email: string;
 	name: string;
 	password: string;
 };
 
-export const updateUserById = async (token: string, userId: string, user: UserUpdateForm) => {
+export const updateUserById = async (token: string, userId: string, user: UserUpdateForm, expire_at: number) => {
 	let error = null;
 
 	const res = await fetch(`${WEBUI_API_BASE_URL}/users/${userId}/update`, {
@@ -320,10 +321,12 @@ export const updateUserById = async (token: string, userId: string, user: UserUp
 			Authorization: `Bearer ${token}`
 		},
 		body: JSON.stringify({
+			role: user.role,
 			profile_image_url: user.profile_image_url,
 			email: user.email,
 			name: user.name,
-			password: user.password !== '' ? user.password : undefined
+			password: user.password !== '' ? user.password : undefined,
+			expire_at: expire_at
 		})
 	})
 		.then(async (res) => {

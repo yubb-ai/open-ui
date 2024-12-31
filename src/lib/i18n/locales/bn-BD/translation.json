@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "",
 	"Engine": "",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "আপনার সিএসভি ফাইলটিতে এই ক্রমে 4 টি কলাম অন্তর্ভুক্ত রয়েছে তা নিশ্চিত করুন: নাম, ইমেল, পাসওয়ার্ড, ভূমিকা।.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "আপনার সিএসভি ফাইলটিতে এই ক্রমে 4 টি কলাম অন্তর্ভুক্ত রয়েছে তা নিশ্চিত করুন: নাম, ইমেল, পাসওয়ার্ড, ভূমিকা।.",
 	"Enter {{role}} message here": "{{role}} মেসেজ এখানে লিখুন",
 	"Enter a detail about yourself for your LLMs to recall": "আপনার এলএলএমগুলি স্মরণ করার জন্য নিজের সম্পর্কে একটি বিশদ লিখুন",
 	"Enter api auth string (e.g. username:password)": "",

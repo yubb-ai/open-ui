@@ -63,6 +63,7 @@ async def get_session_user(
         "name": user.name,
         "role": user.role,
         "profile_image_url": user.profile_image_url,
+        "expire_at": user.expire_at
     }
 
 
@@ -184,6 +185,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
             "name": user.name,
             "role": user.role,
             "profile_image_url": user.profile_image_url,
+            "expire_at": user.expire_at,
         }
     else:
         raise HTTPException(400, detail=ERROR_MESSAGES.INVALID_CRED)
@@ -235,6 +237,14 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             if Users.get_num_users() == 0
             else request.app.state.config.DEFAULT_USER_ROLE
         )
+
+        if role in ["pending", "admin"]:
+            expire_duration = 10
+            expire_unit = "year"
+        else:
+            expire_duration = request.app.state.config.DEFAULT_USER_EXPIRE_DURATION
+            expire_unit = request.app.state.config.DEFAULT_USER_EXPIRE_UNIT
+            
         hashed = get_password_hash(form_data.password)
         user = Auths.insert_new_auth(
             form_data.email.lower(),
@@ -242,6 +252,9 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             form_data.name,
             form_data.profile_image_url,
             role,
+            expire_at=None,
+            expire_duration=expire_duration,
+            expire_unit=expire_unit,
         )
 
         if user:
@@ -281,6 +294,7 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
                 "email": user.email,
                 "name": user.name,
                 "role": user.role,
+                "expire_at": user.expire_at,
                 "profile_image_url": user.profile_image_url,
             }
         else:
@@ -313,6 +327,7 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
             form_data.name,
             form_data.profile_image_url,
             form_data.role,
+            form_data.expire_at
         )
 
         if user:
@@ -324,6 +339,7 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
                 "email": user.email,
                 "name": user.name,
                 "role": user.role,
+                "expire_at": user.expire_at,
                 "profile_image_url": user.profile_image_url,
             }
         else:
@@ -376,6 +392,8 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "DEFAULT_USER_ROLE": request.app.state.config.DEFAULT_USER_ROLE,
+        "DEFAULT_USER_EXPIRE_DURATION": request.app.state.config.DEFAULT_USER_EXPIRE_DURATION,
+        "DEFAULT_USER_EXPIRE_UNIT": request.app.state.config.DEFAULT_USER_EXPIRE_UNIT,
         "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
         "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
@@ -386,6 +404,8 @@ class AdminConfig(BaseModel):
     SHOW_ADMIN_DETAILS: bool
     ENABLE_SIGNUP: bool
     DEFAULT_USER_ROLE: str
+    DEFAULT_USER_EXPIRE_DURATION: int
+    DEFAULT_USER_EXPIRE_UNIT: str
     JWT_EXPIRES_IN: str
     ENABLE_COMMUNITY_SHARING: bool
     ENABLE_MESSAGE_RATING: bool
@@ -400,6 +420,12 @@ async def update_admin_config(
 
     if form_data.DEFAULT_USER_ROLE in ["pending", "user", "vip", "svip", "admin"]:
         request.app.state.config.DEFAULT_USER_ROLE = form_data.DEFAULT_USER_ROLE
+
+    if form_data.DEFAULT_USER_EXPIRE_DURATION > 0:
+        request.app.state.config.DEFAULT_USER_EXPIRE_DURATION = form_data.DEFAULT_USER_EXPIRE_DURATION
+
+    if form_data.DEFAULT_USER_EXPIRE_UNIT in ["day", "week", "month", "year"]:
+        request.app.state.config.DEFAULT_USER_EXPIRE_UNIT = form_data.DEFAULT_USER_EXPIRE_UNIT
 
     pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"
 
@@ -416,6 +442,8 @@ async def update_admin_config(
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "DEFAULT_USER_ROLE": request.app.state.config.DEFAULT_USER_ROLE,
+        "DEFAULT_USER_EXPIRE_DURATION": request.app.state.config.DEFAULT_USER_EXPIRE_DURATION,
+        "DEFAULT_USER_EXPIRE_UNIT": request.app.state.config.DEFAULT_USER_EXPIRE_UNIT,
         "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
         "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,

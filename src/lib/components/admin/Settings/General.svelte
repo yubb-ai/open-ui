@@ -54,22 +54,59 @@
 					<Switch bind:state={adminConfig.ENABLE_SIGNUP} />
 				</div>
 
-				<div class="  my-3 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Default User Role')}</div>
-					<div class="flex items-center relative">
-						<select
-							class="dark:bg-gray-900 w-fit pr-8 rounded px-2 text-xs bg-transparent outline-none text-right"
-							bind:value={adminConfig.DEFAULT_USER_ROLE}
-							placeholder="Select a role"
-						>
-							<option value="pending">{$i18n.t('pending')}</option>
-							<option value="user">{$i18n.t('user')}</option>
-							<option value="vip">{$i18n.t('vip')}</option>
-							<option value="svip">{$i18n.t('svip')}</option>
-							<option value="admin">{$i18n.t('admin')}</option>
-						</select>
+				{#if adminConfig.ENABLE_SIGNUP}
+					<div class="  my-3 flex w-full justify-between">
+						<div class=" self-center text-xs font-medium">{$i18n.t('Default User Role')}</div>
+						<div class="flex items-center relative">
+							<select
+								class="dark:bg-gray-900 w-fit pr-8 rounded px-2 text-xs bg-transparent outline-none text-right"
+								bind:value={adminConfig.DEFAULT_USER_ROLE}
+								placeholder="Select a role"
+							>
+								<option value="pending">{$i18n.t('pending')}</option>
+								<option value="user">{$i18n.t('user')}</option>
+								<option value="vip">{$i18n.t('vip')}</option>
+								<option value="svip">{$i18n.t('svip')}</option>
+								<option value="admin">{$i18n.t('admin')}</option>
+							</select>
+						</div>
 					</div>
-				</div>
+
+					<hr class=" dark:border-gray-850 my-2" />
+
+					<div class="w-full flex flex-col space-y-4">
+						<div class="flex flex-col space-y-2">
+							<div class="text-xs font-medium">
+								{$i18n.t('Default User Expire Duration')}
+							</div>
+							<input
+								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:bg-gray-850 dark:text-gray-300 outline-none"
+								type="number"
+								placeholder="1"
+								bind:value={adminConfig.DEFAULT_USER_EXPIRE_DURATION}
+								min="1"
+							/>
+						</div>
+
+						<div class="  my-3 flex w-full justify-between">
+							<div class=" self-center text-xs font-medium">
+								{$i18n.t('Default User Expire Unit')}
+							</div>
+							<div class="flex items-center relative">
+								<select
+									class="dark:bg-gray-900 w-fit pr-8 rounded px-2 text-xs bg-transparent outline-none text-right"
+									bind:value={adminConfig.DEFAULT_USER_EXPIRE_UNIT}
+									placeholder="Select User Expire Unit"
+								>
+									<option value="year">{$i18n.t('year')}</option>
+									<option value="month">{$i18n.t('month')}</option>
+									<option value="week">{$i18n.t('week')}</option>
+									<option value="day">{$i18n.t('day')}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				{/if}
 
 				<hr class=" dark:border-gray-850 my-2" />
 

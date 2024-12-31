@@ -240,9 +240,11 @@ async def update_user_by_id(
         updated_user = Users.update_user_by_id(
             user_id,
             {
+                "role": form_data.role,
                 "name": form_data.name,
                 "email": form_data.email.lower(),
                 "profile_image_url": form_data.profile_image_url,
+                "expire_at": form_data.expire_at
             },
         )
 

@@ -18,6 +18,8 @@ import requests
 
 #add for Cache Models
 import asyncio
+
+import uvicorn
 from cachetools import TTLCache
 
 from open_webui.apps.audio.main import app as audio_app
@@ -2354,6 +2356,8 @@ async def oauth_callback(provider: str, request: Request, response: Response):
                 if Users.get_num_users() == 0
                 else webui_app.state.config.DEFAULT_USER_ROLE
             )
+            expire_duration = webui_app.state.config.DEFAULT_USER_EXPIRE_DURATION
+            expire_unit = webui_app.state.config.DEFAULT_USER_EXPIRE_UNIT
             user = Auths.insert_new_auth(
                 email=email,
                 password=get_password_hash(
@@ -2362,6 +2366,8 @@ async def oauth_callback(provider: str, request: Request, response: Response):
                 name=user_data.get(username_claim, "User"),
                 profile_image_url=picture_url,
                 role=role,
+                expire_duration=expire_duration,
+                expire_unit=expire_unit,
                 oauth_sub=provider_sub,
             )
 

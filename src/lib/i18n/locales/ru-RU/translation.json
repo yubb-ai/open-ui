@@ -237,7 +237,7 @@
 	"Enable Web Search Query Generation": "Включить генерацию веб-поисковых запросов",
 	"Enabled": "Включено",
 	"Engine": "Движок",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Убедитесь, что ваш CSV-файл включает в себя 4 столбца в следующем порядке: Имя, Электронная почта, Пароль, Роль.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Убедитесь, что ваш CSV-файл включает в себя 4 столбца в следующем порядке: Имя, Электронная почта, Пароль, Роль.",
 	"Enter {{role}} message here": "Введите сообщение {{role}} здесь",
 	"Enter a detail about yourself for your LLMs to recall": "Введите детали о себе, чтобы LLMs могли запомнить",
 	"Enter api auth string (e.g. username:password)": "Введите строку авторизации api (например, username:password)",

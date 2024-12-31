@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "Web Arama Sorgusu Oluşturmayı Etkinleştir",
 	"Enabled": "Etkin",
 	"Engine": "Motor",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "CSV dosyanızın şu sırayla 4 sütun içerdiğinden emin olun: İsim, E-posta, Şifre, Rol.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "CSV dosyanızın şu sırayla 4 sütun içerdiğinden emin olun: İsim, E-posta, Şifre, Rol.",
 	"Enter {{role}} message here": "Buraya {{role}} mesajını girin",
 	"Enter a detail about yourself for your LLMs to recall": "LLM'lerinizin hatırlaması için kendiniz hakkında bir bilgi girin",
 	"Enter api auth string (e.g. username:password)": "Api auth dizesini girin (örn. kullanıcı adı:parola)",

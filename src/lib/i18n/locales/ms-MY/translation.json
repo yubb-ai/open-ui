@@ -237,7 +237,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "Dibenarkan",
 	"Engine": "Enjin",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "astikan fail CSV anda mengandungi 4 lajur dalam susunan ini: Nama, E-mel, Kata Laluan, Peranan.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "astikan fail CSV anda mengandungi 4 lajur dalam susunan ini: Nama, E-mel, Kata Laluan, Peranan.",
 	"Enter {{role}} message here": "Masukkan mesej {{role}} di sini",
 	"Enter a detail about yourself for your LLMs to recall": "Masukkan butiran tentang diri anda untuk diingati oleh LLM anda",
 	"Enter api auth string (e.g. username:password)": "Masukkan kekunci auth api ( cth nama pengguna:kata laluan )",

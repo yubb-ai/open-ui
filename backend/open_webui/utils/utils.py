@@ -1,6 +1,8 @@
 import logging
 import uuid
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
+
+
 from typing import Optional, Union
 
 import aiohttp
@@ -17,6 +19,7 @@ logging.getLogger("passlib").setLevel(logging.ERROR)
 
 SESSION_SECRET = WEBUI_SECRET_KEY
 ALGORITHM = "HS256"
+UTC = timezone.utc
 
 ##############
 # Auth Utils
@@ -78,24 +81,24 @@ def get_current_user(
 ):
     token = None
 
-    if auth_token is not None:
+    if (auth_token is not None):
         token = auth_token.credentials
 
-    if token is None and "token" in request.cookies:
+    if (token is None and "token" in request.cookies):
         token = request.cookies.get("token")
 
-    if token is None:
+    if (token is None):
         raise HTTPException(status_code=403, detail="Not authenticated")
 
     # auth by api key
-    if token.startswith("sk-"):
+    if (token.startswith("sk-")):
         return get_current_user_by_api_key(token)
 
     # auth by jwt token
     data = decode_token(token)
-    if data is not None and "id" in data:
+    if (data is not None and "id" in data):
         user = Users.get_user_by_id(data["id"])
-        if user is None:
+        if (user is None):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail=ERROR_MESSAGES.INVALID_TOKEN,
@@ -113,7 +116,7 @@ def get_current_user(
 def get_current_user_by_api_key(api_key: str):
     user = Users.get_user_by_api_key(api_key)
 
-    if user is None:
+    if (user is None):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ERROR_MESSAGES.INVALID_TOKEN,
@@ -125,7 +128,9 @@ def get_current_user_by_api_key(api_key: str):
 
 
 def get_verified_user(user=Depends(get_current_user)):
-    if user.role == "pending":
+    if user.role == "pending" or (
+        user.expire_at and datetime.fromtimestamp(user.expire_at, UTC) < datetime.now(UTC)
+    ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
@@ -134,7 +139,7 @@ def get_verified_user(user=Depends(get_current_user)):
 
 
 def get_admin_user(user=Depends(get_current_user)):
-    if user.role != "admin":
+    if (user.role != "admin"):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=ERROR_MESSAGES.ACCESS_PROHIBITED,
@@ -143,7 +148,7 @@ def get_admin_user(user=Depends(get_current_user)):
 
 
 async def validate_token(token, secret):
-    if not token or not secret:
+    if (not token or not secret):
         return {
             'success': False,
             'error': 'Unexpected error: token or secret is None or empty'

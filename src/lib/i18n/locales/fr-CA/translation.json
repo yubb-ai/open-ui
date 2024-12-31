@@ -237,7 +237,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "",
 	"Engine": "Moteur",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Vérifiez que votre fichier CSV comprenne les 4 colonnes dans cet ordre : Name, Email, Password, Role.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Vérifiez que votre fichier CSV comprenne les 4 colonnes dans cet ordre : Name, Email, Password, Role.",
 	"Enter {{role}} message here": "Entrez le message {{role}} ici",
 	"Enter a detail about yourself for your LLMs to recall": "Saisissez un détail sur vous-même que vos LLMs pourront se rappeler",
 	"Enter api auth string (e.g. username:password)": "Entrez la chaîne d'authentification de l'API (par ex. nom d'utilisateur:mot de passe)",

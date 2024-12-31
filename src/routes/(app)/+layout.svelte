@@ -42,6 +42,7 @@
 	import AccountPending from '$lib/components/layout/Overlay/AccountPending.svelte';
 	import { getFunctions } from '$lib/apis/functions';
 	import { page } from '$app/stores';
+	import dayjs from 'dayjs';
 
 	const i18n = getContext('i18n');
 
@@ -56,7 +57,10 @@
 	onMount(async () => {
 		if ($user === undefined) {
 			await goto('/auth');
-		} else if ($user.role !== 'pending') {
+		} else if (
+			$user.role !== 'pending' ||
+			($user.expire_at !== null && $user.expire_at < dayjs().unix())
+		) {
 			await Promise.all([
 				(async () => {
 					try {
@@ -236,7 +240,7 @@
 		class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row"
 	>
 		{#if loaded}
-			{#if $user.role === 'pending'}
+			{#if $user.role === 'pending' || ($user.expire_at !== null && $user.expire_at < dayjs().unix())}
 				<AccountPending />
 			{:else if localDBChats.length > 0}
 				<div class="fixed w-full h-full flex z-50">

@@ -237,7 +237,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "Activat",
 	"Engine": "Motor",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Asigurați-vă că fișierul CSV include 4 coloane în această ordine: Nume, Email, Parolă, Rol.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Asigurați-vă că fișierul CSV include 4 coloane în această ordine: Nume, Email, Parolă, Rol.",
 	"Enter {{role}} message here": "Introduceți mesajul pentru {{role}} aici",
 	"Enter a detail about yourself for your LLMs to recall": "Introduceți un detaliu despre dvs. pe care LLM-urile să-l rețină",
 	"Enter api auth string (e.g. username:password)": "Introduceți șirul de autentificare API (de ex. username:password)",

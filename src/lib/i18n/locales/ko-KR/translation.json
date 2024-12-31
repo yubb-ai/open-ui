@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "",
 	"Engine": "",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "CSV 파일에 이름, 이메일, 비밀번호, 역할 4개의 컬럼이 순서대로 포함되어 있는지 확인하세요.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "CSV 파일에 이름, 이메일, 비밀번호, 역할 4개의 컬럼이 순서대로 포함되어 있는지 확인하세요.",
 	"Enter {{role}} message here": "여기에 {{role}} 메시지 입력",
 	"Enter a detail about yourself for your LLMs to recall": "자신에 대한 세부사항을 입력하여 LLM들이 기억할 수 있도록 하세요.",
 	"Enter api auth string (e.g. username:password)": "",

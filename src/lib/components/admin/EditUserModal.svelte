@@ -15,14 +15,25 @@
 	export let sessionUser;
 
 	let _user = {
+		role: 'user',
 		profile_image_url: '',
 		name: '',
 		email: '',
-		password: ''
+		password: '',
+		expire_at: ''
 	};
+	let expire_at = '';
 
 	const submitHandler = async () => {
-		const res = await updateUserById(localStorage.token, selectedUser.id, _user).catch((error) => {
+		// 将日期和时间转换为时间戳
+		const expireAtTimestamp = dayjs(expire_at).unix();
+
+		const res = await updateUserById(
+			localStorage.token,
+			selectedUser.id,
+			_user,
+			expireAtTimestamp
+		).catch((error) => {
 			toast.error(error);
 		});
 
@@ -30,12 +41,15 @@
 			dispatch('save');
 			show = false;
 		}
+		toast.success($i18n.t('User updated successfully'));
 	};
 
 	onMount(() => {
 		if (selectedUser) {
 			_user = selectedUser;
 			_user.password = '';
+			_user.role = selectedUser.role;
+			expire_at = dayjs(_user.expire_at * 1000).format('YYYY-MM-DDTHH:mm');
 		}
 	});
 </script>
@@ -95,6 +109,24 @@
 
 					<div class=" flex flex-col space-y-1.5">
 						<div class="flex flex-col w-full">
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Enter Your Role')}</div>
+							<div class="flex-1">
+								<select
+									class="w-full rounded py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-none"
+									bind:value={_user.role}
+									placeholder={$i18n.t('Enter Your Role')}
+									required
+								>
+									<option value="pending"> {$i18n.t('pending')} </option>
+									<option value="user"> {$i18n.t('user')} </option>
+									<option value="vip">{$i18n.t('vip')}</option>
+									<option value="svip">{$i18n.t('svip')}</option>
+									<option value="admin"> {$i18n.t('admin')} </option>
+								</select>
+							</div>
+						</div>
+
+						<div class="flex flex-col w-full">
 							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Email')}</div>
 
 							<div class="flex-1">
@@ -132,6 +164,18 @@
 									type="password"
 									bind:value={_user.password}
 									autocomplete="new-password"
+								/>
+							</div>
+						</div>
+
+						<div class="flex flex-col w-full">
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Expire at')}</div>
+							<div class="flex-1">
+								<input
+									class="w-full rounded py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-none"
+									type="datetime-local"
+									bind:value={expire_at}
+									required
 								/>
 							</div>
 						</div>

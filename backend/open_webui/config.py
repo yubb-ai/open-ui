@@ -571,7 +571,7 @@ Path(FUNCTIONS_DIR).mkdir(parents=True, exist_ok=True)
 ENABLE_OLLAMA_API = PersistentConfig(
     "ENABLE_OLLAMA_API",
     "ollama.enable",
-    os.environ.get("ENABLE_OLLAMA_API", "True").lower() == "true",
+    os.environ.get("ENABLE_OLLAMA_API", "False").lower() == "true",
 )
 
 OLLAMA_API_BASE_URL = os.environ.get(
@@ -744,6 +744,18 @@ DEFAULT_USER_ROLE = PersistentConfig(
     os.getenv("DEFAULT_USER_ROLE", "pending"),
 )
 
+DEFAULT_USER_EXPIRE_DURATION = PersistentConfig(
+    "DEFAULT_USER_EXPIRE_DURATION",
+    "ui.default_user_expire_duration",
+    os.getenv("DEFAULT_USER_EXPIRE_DURATION", 1),
+)
+
+DEFAULT_USER_EXPIRE_UNIT = PersistentConfig(
+    "DEFAULT_USER_EXPIRE_UNIT",
+    "ui.default_user_expire_unit",
+    os.getenv("DEFAULT_USER_EXPIRE_UNIT", "day"),
+)
+
 USER_PERMISSIONS_CHAT_DELETION = (
         os.environ.get("USER_PERMISSIONS_CHAT_DELETION", "True").lower() == "true"
 )
@@ -827,9 +839,9 @@ def validate_cors_origin(origin):
 # For production, you should only need one host as
 # fastapi serves the svelte-kit built frontend and backend from the same host and port.
 # To test CORS_ALLOW_ORIGIN locally, you can set something like
-# CORS_ALLOW_ORIGIN=http://localhost:5173;http://localhost:8080
+CORS_ALLOW_ORIGIN="http://localhost:5173;http://localhost:8080".split(";")
 # in your .env file depending on your frontend port, 5173 in this case.
-CORS_ALLOW_ORIGIN = os.environ.get("CORS_ALLOW_ORIGIN", "*").split(";")
+# CORS_ALLOW_ORIGIN = os.environ.get("CORS_ALLOW_ORIGIN", "*").split(";")
 
 if "*" in CORS_ALLOW_ORIGIN:
     log.warning(

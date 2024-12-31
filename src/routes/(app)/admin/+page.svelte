@@ -259,6 +259,18 @@
 							<span class="invisible">▲</span>
 						{/if}
 					</th>
+					<th
+						scope="col"
+						class="px-3 py-2 cursor-pointer select-none"
+						on:click={() => setSortKey('expire_at')}
+					>
+						{$i18n.t('Expire at')}
+						{#if sortKey === 'expire_at'}
+							{sortOrder === 'asc' ? '▲' : '▼'}
+						{:else}
+							<span class="invisible">▲</span>
+						{/if}
+					</th>
 
 					<th scope="col" class="px-3 py-2 text-right" />
 				</tr>
@@ -286,8 +298,8 @@
 								class=" flex items-center gap-2 text-xs px-3 py-0.5 rounded-lg {user.role ===
 									'admin' && 'text-sky-600 dark:text-sky-200 bg-sky-200/30'} {user.role ===
 									'user' && 'text-green-600 dark:text-green-200 bg-green-200/30'} {user.role ===
-									'vip' && 'text-indigo-600 dark:text-indigo-300 bg-indigo-300/10'} {user.role ===
-									'svip' && 'text-yellow-700 dark:text-yellow-200 bg-yellow-500/20'} {user.role ===
+									'vip' && 'text-indigo-600 dark:text-indigo-300 bg-indigo-200/30'} {user.role ===
+									'svip' && 'text-yellow-600 dark:text-yellow-200 bg-yellow-200/30'} {user.role ===
 									'pending' && 'text-gray-600 dark:text-gray-200 bg-gray-200/30'}"
 								on:click={() => {
 									showUpdateRoleConfirmDialog = true;
@@ -298,8 +310,8 @@
 									class="w-1 h-1 rounded-full {user.role === 'admin' &&
 										'bg-sky-600 dark:bg-sky-300'} {user.role === 'user' &&
 										'bg-green-600 dark:bg-green-300'} {user.role === 'vip' &&
-										'bg-indigo-500 dark:bg-indigo-400'} {user.role === 'svip' &&
-										'bg-yellow-600 dark:bg-red-400'} {user.role === 'pending' &&
+										'bg-indigo-600 dark:bg-indigo-300'} {user.role === 'svip' &&
+										'bg-yellow-600 dark:bg-red-300'} {user.role === 'pending' &&
 										'bg-gray-600 dark:bg-gray-300'}"
 								/>
 								{$i18n.t(user.role)}</button
@@ -330,6 +342,23 @@
 
 						<td class=" px-3 py-2">
 							{dayjs(user.created_at * 1000).format($i18n.t('MMMM DD, YYYY'))}
+						</td>
+
+						<td class="px-3 py-2 min-w-[7rem] w-28">
+							<button
+								class="flex items-center gap-2 text-xs px-3 py-0.5 rounded-lg
+									{dayjs().isAfter(dayjs(user.expire_at * 1000))
+									? 'text-red-600 dark:text-red-200 bg-red-200/30'
+									: 'text-green-600 dark:text-green-200 bg-green-200/30'}"
+							>
+								<div
+									class="w-1 h-1 rounded-full
+										{dayjs().isAfter(dayjs(user.expire_at * 1000))
+										? 'bg-red-600 dark:bg-red-300'
+										: 'bg-green-600 dark:bg-green-300'}"
+								/>
+								{dayjs(user.expire_at * 1000).format($i18n.t('MMMM DD, YYYY'))}
+							</button>
 						</td>
 
 						{#if isProAdmin}
@@ -407,7 +436,7 @@
 
 	{#if isProAdmin}
 		<div class=" text-gray-500 text-xs mt-2 text-right">
-			ⓘ {$i18n.t("Click on the user role button to change a user's role.")}
+			{$i18n.t("Click on the user role button to change a user's role.")}
 		</div>
 	{/if}
 

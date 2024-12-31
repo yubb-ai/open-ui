@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "Đã bật",
 	"Engine": "",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Đảm bảo tệp CSV của bạn bao gồm 4 cột theo thứ tự sau: Name, Email, Password, Role.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Đảm bảo tệp CSV của bạn bao gồm 4 cột theo thứ tự sau: Name, Email, Password, Role.",
 	"Enter {{role}} message here": "Nhập yêu cầu của {{role}} ở đây",
 	"Enter a detail about yourself for your LLMs to recall": "Nhập chi tiết về bản thân của bạn để LLMs có thể nhớ",
 	"Enter api auth string (e.g. username:password)": "Nhập chuỗi xác thực api (ví dụ: username: mật khẩu)",

@@ -237,7 +237,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "เปิดใช้งาน",
 	"Engine": "เครื่องยนต์",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "ตรวจสอบว่าไฟล์ CSV ของคุณมี 4 คอลัมน์ในลำดับนี้: ชื่อ, อีเมล, รหัสผ่าน, บทบาท",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "ตรวจสอบว่าไฟล์ CSV ของคุณมี 4 คอลัมน์ในลำดับนี้: ชื่อ, อีเมล, รหัสผ่าน, บทบาท",
 	"Enter {{role}} message here": "ใส่ข้อความ {{role}} ที่นี่",
 	"Enter a detail about yourself for your LLMs to recall": "ใส่รายละเอียดเกี่ยวกับตัวคุณสำหรับ LLMs ของคุณให้จดจำ",
 	"Enter api auth string (e.g. username:password)": "ใส่สตริงการตรวจสอบ API (เช่น username:password)",

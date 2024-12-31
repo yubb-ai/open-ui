@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "Activa la generació de consultes de cerca web",
 	"Enabled": "Habilitat",
 	"Engine": "Motor",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Assegura't que els teus fitxers CSV inclouen 4 columnes en aquest ordre: Nom, Correu electrònic, Contrasenya, Rol.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Assegura't que els teus fitxers CSV inclouen 4 columnes en aquest ordre: Nom, Correu electrònic, Contrasenya, Rol.",
 	"Enter {{role}} message here": "Introdueix aquí el missatge de {{role}}",
 	"Enter a detail about yourself for your LLMs to recall": "Introdueix un detall sobre tu què els teus models de llenguatge puguin recordar",
 	"Enter api auth string (e.g. username:password)": "Entra la cadena d'autenticació api (p. ex. nom d'usuari:contrasenya)",

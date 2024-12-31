@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "",
 	"Engine": "",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "सुनिश्चित करें कि आपकी CSV फ़ाइल में इस क्रम में 4 कॉलम शामिल हैं: नाम, ईमेल, पासवर्ड, भूमिका।",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "सुनिश्चित करें कि आपकी CSV फ़ाइल में इस क्रम में 4 कॉलम शामिल हैं: नाम, ईमेल, पासवर्ड, भूमिका।",
 	"Enter {{role}} message here": "यहां {{role}} संदेश दर्ज करें",
 	"Enter a detail about yourself for your LLMs to recall": "अपने एलएलएम को याद करने के लिए अपने बारे में एक विवरण दर्ज करें",
 	"Enter api auth string (e.g. username:password)": "",

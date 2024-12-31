@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "",
 	"Engine": "",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Pastikan file CSV Anda menyertakan 4 kolom dengan urutan sebagai berikut: Nama, Email, Kata Sandi, Peran.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Pastikan file CSV Anda menyertakan 4 kolom dengan urutan sebagai berikut: Nama, Email, Kata Sandi, Peran.",
 	"Enter {{role}} message here": "Masukkan pesan {{role}} di sini",
 	"Enter a detail about yourself for your LLMs to recall": "Masukkan detail tentang diri Anda untuk diingat oleh LLM Anda",
 	"Enter api auth string (e.g. username:password)": "Masukkan string pengesahan API (misalnya nama pengguna: kata sandi)",

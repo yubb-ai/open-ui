@@ -2,10 +2,12 @@
 	import { DropdownMenu } from 'bits-ui';
 	import { createEventDispatcher, getContext, onMount } from 'svelte';
 	import { toast } from 'svelte-sonner';
+	import dayjs from 'dayjs';
 
 	import { goto } from '$app/navigation';
 	import ArchiveBox from '$lib/components/icons/ArchiveBox.svelte';
 	import {
+		user,
 		showSettings,
 		activeUserCount,
 		USAGE_POOL,
@@ -23,6 +25,12 @@
 	export let show = false;
 	export let role = '';
 	export let className = 'max-w-[240px]';
+
+	function getDaysLeft(expireAt: number): number {
+		const now = dayjs();
+		const expiryDate = dayjs(expireAt);
+		return expiryDate.diff(now, 'day') + (expiryDate.diff(now, 'hour') % 24 > 0 ? 1 : 0);
+	}
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -43,7 +51,7 @@
 			sideOffset={8}
 			side="bottom"
 			align="start"
-			transition={(e) => fade(e, { duration: 100 })}
+			transition={(e) => slide(e, { duration: 100 })}
 		>
 			<button
 				class="flex rounded-md py-2 px-3 w-full hover:bg-gray-50 dark:hover:bg-gray-800 transition"
@@ -348,7 +356,33 @@
 				<div class=" self-center font-medium">{$i18n.t('Sign Out')}</div>
 			</button>
 
-			{#if $activeUserCount}
+			{#if $activeUserCount && $user?.role === 'admin'}
+				<hr class=" dark:border-gray-800 my-1.5 p-0" />
+
+				<Tooltip>
+					<div class="flex rounded-md py-1.5 px-3 text-xs gap-2.5 items-center">
+						<div class=" flex items-center">
+							<span class="relative flex size-2">
+								<span
+									class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
+								/>
+								<span class="relative inline-flex rounded-full size-2 bg-green-500" />
+							</span>
+						</div>
+
+						<div class=" ">
+							<span class=" font-medium">
+								{$i18n.t('Active Users')} :
+							</span>
+							<span class=" font-semibold">
+								{$activeUserCount}
+							</span>
+						</div>
+					</div>
+				</Tooltip>
+			{/if}
+
+			{#if $user?.role !== 'admin'}
 				<hr class=" dark:border-gray-800 my-1.5 p-0" />
 
 				<Tooltip
@@ -368,10 +402,10 @@
 
 						<div class=" ">
 							<span class=" font-medium">
-								{$i18n.t('Active Users')}:
+								{$i18n.t('Remaining Days')} :
 							</span>
 							<span class=" font-semibold">
-								{$activeUserCount}
+								{Math.abs(getDaysLeft($user.expire_at))}
 							</span>
 						</div>
 					</div>

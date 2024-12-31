@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "",
 	"Engine": "",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Уверите се да ваша CSV датотека укључује 4 колоне у овом редоследу: Име, Е-пошта, Лозинка, Улога.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Уверите се да ваша CSV датотека укључује 4 колоне у овом редоследу: Име, Е-пошта, Лозинка, Улога.",
 	"Enter {{role}} message here": "Унесите {{role}} поруку овде",
 	"Enter a detail about yourself for your LLMs to recall": "Унесите детаље за себе да ће LLMs преузимати",
 	"Enter api auth string (e.g. username:password)": "",

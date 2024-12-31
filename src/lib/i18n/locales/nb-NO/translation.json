@@ -242,7 +242,7 @@
 	"Enable Web Search Query Generation": "",
 	"Enabled": "Aktivert",
 	"Engine": "Motor",
-	"Ensure your CSV file includes 4 columns in this order: Name, Email, Password, Role.": "Sørg for at CSV-filen din inkluderer 4 kolonner i denne rekkefølgen: Navn, E-post, Passord, Rolle.",
+	"Ensure your CSV file includes 5 columns in this order: Name, Email, Password, Role, Expire_At.": "Sørg for at CSV-filen din inkluderer 4 kolonner i denne rekkefølgen: Navn, E-post, Passord, Rolle.",
 	"Enter {{role}} message here": "Skriv inn {{role}} melding her",
 	"Enter a detail about yourself for your LLMs to recall": "Skriv inn en detalj om deg selv som språkmodellene dine kan huske",
 	"Enter api auth string (e.g. username:password)": "Skriv inn api-autentiseringsstreng (f.eks. brukernavn:passord)",
