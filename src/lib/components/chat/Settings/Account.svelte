@@ -256,7 +256,7 @@
 		</div>
 
 		{#if showAPIKeys}
-			<if class="flex flex-col gap-4">
+			<div class="flex flex-col gap-4">
 				<div class="justify-between w-full">
 					<div class="flex justify-between w-full">
 						<div class="self-center text-xs font-medium">{$i18n.t('JWT Token')}</div>
@@ -401,7 +401,7 @@
 							{/if}
 						</div>
 					</div>
-				</if>
+				{/if}
 			</div>
 		{/if}
 	</div>
