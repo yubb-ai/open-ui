@@ -28,8 +28,8 @@
 
 	function getDaysLeft(expireAt: number): number {
 		const now = dayjs();
-		const expiryDate = dayjs(expireAt);
-		return expiryDate.diff(now, 'day') + (expiryDate.diff(now, 'hour') % 24 > 0 ? 1 : 0);
+		const expiryDate = dayjs(expireAt * 1000);
+		return Math.abs(expiryDate.diff(now, 'day') + (expiryDate.diff(now, 'hour') % 24 > 0 ? 1 : 0));
 	}
 
 	const dispatch = createEventDispatcher();
@@ -405,7 +405,7 @@
 								{$i18n.t('Remaining Days')} :
 							</span>
 							<span class=" font-semibold">
-								{Math.abs(getDaysLeft($user.expire_at))}
+								{getDaysLeft($user.expire_at)}
 							</span>
 						</div>
 					</div>
