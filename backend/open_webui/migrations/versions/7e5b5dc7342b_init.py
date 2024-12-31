@@ -200,7 +200,7 @@ def upgrade() -> None:
             one_year_from_now_timestamp = int(one_year_from_now.timestamp())
 
             op.add_column("user",
-                          sa.Column("expire_at", sa.BigInteger(), nullable=True, default=one_year_from_now_timestamp))
+                          sa.Column("expire_at", sa.BigInteger(), nullable=False, default=one_year_from_now_timestamp))
 
             # Optional: Update existing rows with default value (if needed)
             # This is if you want to set a default for existing rows, not just future ones

@@ -51,7 +51,7 @@ def migrate(migrator: Migrator, database: pw.Database, *, fake=False):
         created_at=pw.BigIntegerField(null=True),  # Allow null for transition
         updated_at=pw.BigIntegerField(null=True),  # Allow null for transition
         last_active_at=pw.BigIntegerField(null=True),  # Allow null for transition
-        expire_at=pw.BigIntegerField(null=True, default=one_year_from_now_timestamp),  # Allow null for transition
+        expire_at=pw.BigIntegerField(null=False, default=one_year_from_now_timestamp),  # Allow null for transition
     )
 
     # Populate the new fields from an existing 'timestamp' field
@@ -68,7 +68,7 @@ def migrate(migrator: Migrator, database: pw.Database, *, fake=False):
         created_at=pw.BigIntegerField(null=False),
         updated_at=pw.BigIntegerField(null=False),
         last_active_at=pw.BigIntegerField(null=False),
-        expire_at=pw.BigIntegerField(null=False),
+        expire_at=pw.BigIntegerField(null=False, default=one_year_from_now_timestamp),  # Allow null for transition
     )
 
 

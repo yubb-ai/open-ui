@@ -43,7 +43,7 @@ def migrate(migrator: Migrator, database: pw.Database, *, fake=False):
 
     migrator.add_fields(
         "user",
-        expire_at=pw.BigIntegerField(null=True, default=one_year_from_now_timestamp),
+        expire_at=pw.BigIntegerField(null=False, default=one_year_from_now_timestamp),
     )
 
 def rollback(migrator: Migrator, database: pw.Database, *, fake=False):
