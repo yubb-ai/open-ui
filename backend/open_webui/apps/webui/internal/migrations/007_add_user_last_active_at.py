@@ -25,38 +25,29 @@ Some examples (model - class or model name)::
 """
 
 from contextlib import suppress
-from datetime import datetime, timedelta
 
 import peewee as pw
 from peewee_migrate import Migrator
 
+
 with suppress(ImportError):
-    pass
+    import playhouse.postgres_ext as pw_pext
 
 
 def migrate(migrator: Migrator, database: pw.Database, *, fake=False):
     """Write your migrations here."""
-    # Get the current datetime
-    now = datetime.now()
 
-    # Calculate the datetime one year from now
-    one_year_from_now = now + timedelta(days=365)  # Corrected here
-
-    # Convert the datetime object to a timestamp (seconds) and then to an integer
-    one_year_from_now_timestamp = int(one_year_from_now.timestamp())
-    
     # Adding fields created_at and updated_at to the 'user' table
     migrator.add_fields(
         "user",
         created_at=pw.BigIntegerField(null=True),  # Allow null for transition
         updated_at=pw.BigIntegerField(null=True),  # Allow null for transition
         last_active_at=pw.BigIntegerField(null=True),  # Allow null for transition
-        expire_at=pw.BigIntegerField(null=False, default=one_year_from_now_timestamp),  # Allow null for transition
     )
 
     # Populate the new fields from an existing 'timestamp' field
     migrator.sql(
-        'UPDATE "user" SET created_at = timestamp, updated_at = timestamp, last_active_at = timestamp, expire_at = timestamp WHERE timestamp IS NOT NULL'
+        'UPDATE "user" SET created_at = timestamp, updated_at = timestamp, last_active_at = timestamp WHERE timestamp IS NOT NULL'
     )
 
     # Now that the data has been copied, remove the original 'timestamp' field
@@ -68,7 +59,6 @@ def migrate(migrator: Migrator, database: pw.Database, *, fake=False):
         created_at=pw.BigIntegerField(null=False),
         updated_at=pw.BigIntegerField(null=False),
         last_active_at=pw.BigIntegerField(null=False),
-        expire_at=pw.BigIntegerField(null=False, default=one_year_from_now_timestamp),  # Allow null for transition
     )
 
 
