@@ -181,7 +181,7 @@ async def speech(request: Request, user=Depends(get_verified_user)):
 
 
 async def fetch_url(url, key):
-    timeout = aiohttp.ClientTimeout(total=5)
+    timeout = aiohttp.ClientTimeout(total=10)
     try:
         headers = {"Authorization": f"Bearer {key}"}
         async with aiohttp.ClientSession(timeout=timeout, trust_env=True) as session:
@@ -334,8 +334,10 @@ async def get_models(url_idx: Optional[int] = None, user=Depends(get_verified_us
 
         r = None
 
+        timeout_duration = 10
+
         try:
-            r = requests.request(method="GET", url=f"{url}/models", headers=headers)
+            r = requests.request(method="GET", url=f"{url}/models", headers=headers, timeout=timeout_duration)
             r.raise_for_status()
 
             response_data = r.json()
