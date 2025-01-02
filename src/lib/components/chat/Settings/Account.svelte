@@ -14,6 +14,7 @@
 	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import { uploadUserImage, base64ToFile } from '$lib/apis/files';
 	import { v4 as uuidv4 } from 'uuid';
+	import dayjs from 'dayjs';
 
 	const i18n = getContext('i18n');
 
@@ -21,6 +22,7 @@
 
 	let profileImageUrl = '';
 	let name = '';
+	let expireAt = '';
 
 	let showAPIKeys = false;
 
@@ -63,6 +65,7 @@
 	onMount(async () => {
 		name = $user.name;
 		profileImageUrl = $user.profile_image_url;
+		expireAt = dayjs($user.expire_at * 1000).format('YYYY-MM-DD HH:mm');
 
 		APIKey = await getAPIKey(localStorage.token).catch((error) => {
 			console.log(error);
@@ -182,8 +185,21 @@
 				</div>
 
 				<div class="flex-1 flex flex-col self-center gap-0.5">
-					<div class=" mb-0.5 text-sm font-medium">{$i18n.t('Profile Image')}</div>
-
+					<div class="mb-0.5 text-sm font-medium flex items-center space-x-2">
+						<span>{$i18n.t('Profile Image')}</span>
+						<span
+							class="px-2 py-0.5 rounded-full text-white
+							{$user.role === 'user'
+								? 'bg-blue-500'
+								: $user.role === 'vip'
+									? 'bg-green-500'
+									: $user.role === 'svip'
+										? 'bg-red-500'
+										: 'bg-gray-500'}"
+						>
+							{$user.role}
+						</span>
+					</div>
 					<div>
 						<button
 							class=" text-xs text-center text-gray-800 dark:text-gray-400 rounded-full px-4 py-0.5 bg-gray-100 dark:bg-gray-850"
@@ -236,81 +252,96 @@
 					</div>
 				</div>
 			</div>
+
+			<div class="pt-0.5">
+				<div class="flex flex-col w-full">
+					<div class=" mb-1 text-xs font-medium">{$i18n.t('Expire at')}</div>
+
+					<div class="flex-1">
+						<input
+							class="w-full rounded-lg py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-850 outline-none"
+							type="text"
+							bind:value={expireAt}
+							readonly
+						/>
+					</div>
+				</div>
+			</div>
 		</div>
 
 		<div class="py-0.5">
 			<UpdatePassword />
 		</div>
 
-		<hr class=" dark:border-gray-850 my-4" />
+		{#if $user.role === 'admin'}
+			<hr class=" dark:border-gray-850 my-4" />
 
-		<div class="flex justify-between items-center text-sm">
-			<div class="  font-medium">{$i18n.t('API keys')}</div>
-			<button
-				class=" text-xs font-medium text-gray-500"
-				type="button"
-				on:click={() => {
-					showAPIKeys = !showAPIKeys;
-				}}>{showAPIKeys ? $i18n.t('Hide') : $i18n.t('Show')}</button
-			>
-		</div>
+			<div class="flex justify-between items-center text-sm">
+				<div class="  font-medium">{$i18n.t('API keys')}</div>
+				<button
+					class=" text-xs font-medium text-gray-500"
+					type="button"
+					on:click={() => {
+						showAPIKeys = !showAPIKeys;
+					}}>{showAPIKeys ? $i18n.t('Hide') : $i18n.t('Show')}</button
+				>
+			</div>
 
-		{#if showAPIKeys}
-			<div class="flex flex-col gap-4">
-				<div class="justify-between w-full">
-					<div class="flex justify-between w-full">
-						<div class="self-center text-xs font-medium">{$i18n.t('JWT Token')}</div>
+			{#if showAPIKeys}
+				<div class="flex flex-col gap-4">
+					<div class="justify-between w-full">
+						<div class="flex justify-between w-full">
+							<div class="self-center text-xs font-medium">{$i18n.t('JWT Token')}</div>
+						</div>
+
+						<div class="flex mt-2">
+							<SensitiveInput value={localStorage.token} readOnly={true} />
+
+							<button
+								class="ml-1.5 px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
+								on:click={() => {
+									copyToClipboard(localStorage.token);
+									JWTTokenCopied = true;
+									setTimeout(() => {
+										JWTTokenCopied = false;
+									}, 2000);
+								}}
+							>
+								{#if JWTTokenCopied}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+										class="w-4 h-4"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								{:else}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 16 16"
+										fill="currentColor"
+										class="w-4 h-4"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M11.986 3H12a2 2 0 0 1 2 2v6a2 2 0 0 1-1.5 1.937V7A2.5 2.5 0 0 0 10 4.5H4.063A2 2 0 0 1 6 3h.014A2.25 2.25 0 0 1 8.25 1h1.5a2.25 2.25 0 0 1 2.236 2ZM10.5 4v-.75a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75V4h3Z"
+											clip-rule="evenodd"
+										/>
+										<path
+											fill-rule="evenodd"
+											d="M3 6a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm1.75 2.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5ZM4 11.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z"
+											clip-rule="evenodd"
+										/>
+									</svg>
+								{/if}
+							</button>
+						</div>
 					</div>
-
-					<div class="flex mt-2">
-						<SensitiveInput value={localStorage.token} readOnly={true} />
-
-						<button
-							class="ml-1.5 px-1.5 py-1 dark:hover:bg-gray-850 transition rounded-lg"
-							on:click={() => {
-								copyToClipboard(localStorage.token);
-								JWTTokenCopied = true;
-								setTimeout(() => {
-									JWTTokenCopied = false;
-								}, 2000);
-							}}
-						>
-							{#if JWTTokenCopied}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 20 20"
-									fill="currentColor"
-									class="w-4 h-4"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							{:else}
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									viewBox="0 0 16 16"
-									fill="currentColor"
-									class="w-4 h-4"
-								>
-									<path
-										fill-rule="evenodd"
-										d="M11.986 3H12a2 2 0 0 1 2 2v6a2 2 0 0 1-1.5 1.937V7A2.5 2.5 0 0 0 10 4.5H4.063A2 2 0 0 1 6 3h.014A2.25 2.25 0 0 1 8.25 1h1.5a2.25 2.25 0 0 1 2.236 2ZM10.5 4v-.75a.75.75 0 0 0-.75-.75h-1.5a.75.75 0 0 0-.75.75V4h3Z"
-										clip-rule="evenodd"
-									/>
-									<path
-										fill-rule="evenodd"
-										d="M3 6a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1H3Zm1.75 2.5a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5ZM4 11.75a.75.75 0 0 1 .75-.75h3.5a.75.75 0 0 1 0 1.5h-3.5a.75.75 0 0 1-.75-.75Z"
-										clip-rule="evenodd"
-									/>
-								</svg>
-							{/if}
-						</button>
-					</div>
-				</div>
-				{#if $user.role === 'admin'}
 					<div class="justify-between w-full">
 						<div class="flex justify-between w-full">
 							<div class="self-center text-xs font-medium">{$i18n.t('API Key')}</div>
@@ -401,8 +432,8 @@
 							{/if}
 						</div>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
 		{/if}
 	</div>
 

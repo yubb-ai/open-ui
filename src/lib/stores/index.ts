@@ -216,4 +216,5 @@ type SessionUser = {
 	role: string;
 	profile_image_url: string;
 	expire_at: number;
+	created_at: number;
 };
