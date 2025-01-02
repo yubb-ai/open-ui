@@ -86,4 +86,5 @@ pytest~=8.3.2
 pytest-docker~=3.1.1
 
 ## 农历时间
-lunardate
+lunardate~=0.2.2
+oss2==2.19.1
