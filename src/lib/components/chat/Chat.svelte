@@ -1647,6 +1647,10 @@
 			errorMessage = innerError.message;
 		}
 
+		const errorMessageTemplate =
+			'请您重新刷新页面，在移动端聊天的时候，不要长时间将网站后台运行，以免出现加载失败的问题！';
+		errorMessage = errorMessage.replace('Load failed', errorMessageTemplate);
+
 		responseMessage.error = {
 			content:
 				$i18n.t(`Uh-oh! There was an issue connecting to {{provider}}.`, {
