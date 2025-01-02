@@ -45,7 +45,7 @@
 		base_model_id: null,
 		name: '',
 		meta: {
-			profile_image_url: null,
+			profile_image_url: '',
 			description: '',
 			suggestion_prompts: [
 				{
@@ -322,11 +322,10 @@
 					// try to upload the image
 					const res = await uploadModelImage(localStorage.token, file);
 
-					// update the profile_image_url
-					info.meta.profile_image_url = res?.filename
-						? `/api/v1/files/model/images/${res.filename}`
-						: compressedSrc;
-
+					// Update the profile_image_url
+					info.meta.profile_image_url =
+						res?.meta?.oss_url ||
+						(res?.filename ? `/api/v1/files/model/images/${res.filename}` : compressedSrc);
 					inputFiles = null;
 				};
 			};

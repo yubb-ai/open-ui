@@ -128,11 +128,11 @@
 						const res = await uploadUserImage(localStorage.token, file);
 
 						// update the profile_image_url
-						profileImageUrl = res?.filename
-							? `/api/v1/files/user/images/${res.filename}`
-							: compressedSrc;
-
-						profileImageInputElement.files = null;
+						profileImageUrl =
+							res?.meta?.oss_url ||
+							(res?.filename ? `/api/v1/files/user/images/${res.filename}` : compressedSrc);
+						
+							profileImageInputElement.files = null;
 					};
 				};
 

@@ -1664,3 +1664,16 @@ TURNSTILE_LOGIN_CHECK = os.environ.get("TURNSTILE_LOGIN_CHECK", "false").lower()
 TURNSTILE_SITE_KEY = os.environ.get("TURNSTILE_SITE_KEY", "")
 
 TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "")
+
+
+####################################
+# OSS 配置
+####################################
+
+OSS_ACCESS_KEY_ID = os.environ.get("OSS_ACCESS_KEY_ID", "your-access-key-id")
+
+OSS_ACCESS_KEY_SECRET = os.environ.get("OSS_ACCESS_KEY_SECRET", "your-access")
+
+OSS_ENDPOINT = os.environ.get("OSS_ENDPOINT", "oss-cn-hangzhou.aliyuncs.com")
+
+OSS_BUCKET_NAME = os.environ.get("OSS_BUCKET_NAME", "your-bucket-name")

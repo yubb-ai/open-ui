@@ -226,9 +226,12 @@
 			reader.onload = async (event) => {
 				try {
 					const res = await uploadBackgroundImage(localStorage.token, file);
-					backgroundImageUrl = res?.filename
-						? `/api/v1/files/background/images/${res.filename}`
-						: event.target.result;
+					// Update the background_image_url
+					backgroundImageUrl =
+						res?.meta?.oss_url ||
+						(res?.filename
+							? `/api/v1/files/background/images/${res.filename}`
+							: event.target.result);
 					saveSettings({ backgroundImageUrl });
 				} catch (error) {
 					console.error('Error uploading image:', error);

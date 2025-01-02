@@ -1,16 +1,19 @@
 import logging
+import multiprocessing
 import os
 import shutil
 import uuid
+from datetime import time
 from pathlib import Path
 from typing import Optional
-import re
 
+import oss2
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from fastapi.responses import FileResponse
 
 from open_webui.apps.webui.models.files import Files, FileForm, FileModel
-from open_webui.config import UPLOAD_DIR, MODEL_IMAGES_DIR, BACKGROUND_IMAGES_DIR, USER_IMAGES_DIR, RAG_FILE_MAX_SIZE, AppConfig
+from open_webui.config import UPLOAD_DIR, MODEL_IMAGES_DIR, BACKGROUND_IMAGES_DIR, USER_IMAGES_DIR, RAG_FILE_MAX_SIZE, \
+    OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET, OSS_ENDPOINT, OSS_BUCKET_NAME, AppConfig
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.env import SRC_LOG_LEVELS
 from open_webui.utils.utils import get_verified_user, get_admin_user
@@ -48,7 +51,7 @@ def upload_file(file: UploadFile = File(...), user=Depends(get_verified_user)):
         filename = f"{id}_{filename}"
         file_path = os.path.join(UPLOAD_DIR, filename)
 
-        with file.file as source_file:  
+        with file.file as source_file:
             contents = source_file.read()
 
         with open(file_path, "wb") as f:
@@ -90,34 +93,68 @@ def upload_file(file: UploadFile = File(...), user=Depends(get_verified_user)):
         )
 
 
+# 创建 OSS Bucket 对象
+auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
+bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME, connect_timeout=10)
+
+
 # background Images
-def save_file(file: UploadFile, directory: str) -> dict:
+def save_file(file: UploadFile, oss_directory: str) -> dict:
     log.info(f"file.content_type: {file.content_type}")
     try:
+        # 获取文件名并拼接 OSS 路径
         filename = os.path.basename(file.filename)
-        file_path = os.path.join(directory, filename)
+        oss_file_path = os.path.join(oss_directory, filename)
 
-        with file.file as source_file:  
+        # 读取文件内容
+        with file.file as source_file:
             contents = source_file.read()
 
-        with open(file_path, "wb") as f:
+        with open(oss_file_path, "wb") as f:
             f.write(contents)
 
+        # 上传文件到 OSS，带有超时控制
+        bucket.put_object_from_file(filename, oss_file_path)
+
+        # 设置文件为公共读
+        bucket.put_object_acl(filename, 'public-read')
+
+        # 生成文件的 URL
+        oss_file_url = f"https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT.replace('https://', '')}/{filename}"
+
+        # 获取文件元信息
+        file_size = len(contents)
+        log.info(f"File uploaded to OSS: {oss_file_path}, Size: {file_size} bytes")
+
+        # 返回上传结果
+        return {
+            "filename": filename,
+            "meta": {
+                "name": filename,
+                "content_type": file.content_type,
+                "size": file_size,
+                "path": oss_file_path,
+                "oss_path": oss_file_path,
+                "oss_url": oss_file_url,
+            },
+        }
+
+    except oss2.exceptions.RequestError as e:
+        log.error(f"File upload request error: {str(e)}")
         return {
             "filename": filename,
             "meta": {
                 "name": filename,
                 "content_type": file.content_type,
                 "size": len(contents),
-                "path": file_path,
+                "path": oss_file_path,
             },
         }
-
     except Exception as e:
         log.exception(e)
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Error uploading image: {str(e)}",
+            detail=f"Error uploading file to OSS: {str(e)}",
         )
 
 
