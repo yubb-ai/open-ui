@@ -671,6 +671,7 @@
 												a[e.id] = {
 													name: e.name,
 													description: e.meta.description,
+													icon_url: e.meta?.manifest?.icon_url || null,
 													enabled: false
 												};
 											}
