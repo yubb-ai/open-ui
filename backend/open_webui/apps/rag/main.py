@@ -105,6 +105,11 @@ from open_webui.config import (
     TIKA_SERVER_URL,
     UPLOAD_DIR,
     YOUTUBE_LOADER_LANGUAGE,
+    OSS_ENABLE_STORAGE,
+    OSS_ACCESS_KEY,
+    OSS_ACCESS_SECRET,
+    OSS_BUCKET_NAME,
+    OSS_ENDPOINT,
     AppConfig,
 )
 from open_webui.config import SILICONFLOW_API_KEY, SILICONFLOW_API_BASE_URL, ENABLE_BASE64
@@ -132,6 +137,12 @@ app.state.config.TOP_K = RAG_TOP_K
 app.state.config.RELEVANCE_THRESHOLD = RAG_RELEVANCE_THRESHOLD
 app.state.config.FILE_MAX_SIZE = RAG_FILE_MAX_SIZE
 app.state.config.FILE_MAX_COUNT = RAG_FILE_MAX_COUNT
+
+app.state.config.OSS_ENABLE_STORAGE = OSS_ENABLE_STORAGE
+app.state.config.OSS_ACCESS_KEY = OSS_ACCESS_KEY
+app.state.config.OSS_ACCESS_SECRET = OSS_ACCESS_SECRET
+app.state.config.OSS_ENDPOINT = OSS_ENDPOINT
+app.state.config.OSS_BUCKET_NAME = OSS_BUCKET_NAME
 
 app.state.config.ENABLE_RAG_HYBRID_SEARCH = ENABLE_RAG_HYBRID_SEARCH
 
@@ -183,8 +194,8 @@ app.state.config.RAG_WEB_SEARCH_CONCURRENT_REQUESTS = RAG_WEB_SEARCH_CONCURRENT_
 
 
 def update_embedding_model(
-    embedding_model: str,
-    auto_update: bool = False,
+        embedding_model: str,
+        auto_update: bool = False,
 ):
     if embedding_model and app.state.config.RAG_EMBEDDING_ENGINE == "":
         import sentence_transformers
@@ -255,8 +266,8 @@ class Reranking(BaseModel):
 
 
 def update_reranking_model(
-    reranking_model: str,
-    auto_update: bool = False,
+        reranking_model: str,
+        auto_update: bool = False,
 ):
     if reranking_model:
         if any(model in reranking_model for model in ["jinaai/jina-colbert-v2"]):
@@ -281,14 +292,14 @@ def update_reranking_model(
                         colbert_config=ColBERTConfig(model_name=name),
                     ).to(self.device)
                     pass
-            
+
                 def calculate_similarity_scores(
-                    self, query_embeddings, document_embeddings
+                        self, query_embeddings, document_embeddings
                 ):
-            
+
                     query_embeddings = query_embeddings.to(self.device)
                     document_embeddings = document_embeddings.to(self.device)
-            
+
                     # Validate dimensions to ensure compatibility
                     if query_embeddings.dim() != 3:
                         raise ValueError(
@@ -302,7 +313,7 @@ def update_reranking_model(
                         raise ValueError(
                             "There should be either one query or queries equal to the number of documents."
                         )
-            
+
                     # Transpose the query embeddings to align for matrix multiplication
                     transposed_query_embeddings = query_embeddings.permute(0, 2, 1)
                     # Compute similarity scores using batch matrix multiplication
@@ -311,30 +322,30 @@ def update_reranking_model(
                     )
                     # Apply max pooling to extract the highest semantic similarity across each document's sequence
                     maximum_scores = torch.max(computed_scores, dim=1).values
-            
+
                     # Sum up the maximum scores across features to get the overall document relevance scores
                     final_scores = maximum_scores.sum(dim=1)
-            
+
                     normalized_scores = torch.softmax(final_scores, dim=0)
-            
+
                     return normalized_scores.detach().cpu().numpy().astype(np.float32)
-            
+
                 def predict(self, sentences):
-            
+
                     query = sentences[0][0]
                     docs = [i[1] for i in sentences]
-            
+
                     # Embedding the documents
                     embedded_docs = self.ckpt.docFromText(docs, bsize=32)[0]
                     # Embedding the queries
                     embedded_queries = self.ckpt.queryFromText([query], bsize=32)
                     embedded_query = embedded_queries[0]
-            
+
                     # Calculate retrieval scores for the query against all documents
                     scores = self.calculate_similarity_scores(
                         embedded_query.unsqueeze(0), embedded_docs
                     )
-            
+
                     return scores
 
             try:
@@ -575,6 +586,13 @@ async def get_rag_config(user=Depends(get_admin_user)):
                 "concurrent_requests": app.state.config.RAG_WEB_SEARCH_CONCURRENT_REQUESTS,
             },
         },
+        "oss": {
+            "enable_storage": app.state.config.OSS_ENABLE_STORAGE,
+            "access_key": app.state.config.OSS_ACCESS_KEY,
+            "access_secret": app.state.config.OSS_ACCESS_SECRET,
+            "endpoint": app.state.config.OSS_ENDPOINT,
+            "bucket_name": app.state.config.OSS_BUCKET_NAME,
+        },
     }
 
 
@@ -621,6 +639,14 @@ class WebConfig(BaseModel):
     web_loader_ssl_verification: Optional[bool] = None
 
 
+class OssConfig(BaseModel):
+    enable_storage: Optional[bool] = None
+    access_key: Optional[str] = None
+    access_secret: Optional[str] = None
+    endpoint: Optional[str] = None
+    bucket_name: Optional[str] = None
+
+
 class ConfigUpdateForm(BaseModel):
     pdf_extract_images: Optional[bool] = None
     file: Optional[FileConfig] = None
@@ -628,6 +654,7 @@ class ConfigUpdateForm(BaseModel):
     chunk: Optional[ChunkParamUpdateForm] = None
     youtube: Optional[YoutubeLoaderConfig] = None
     web: Optional[WebConfig] = None
+    oss: Optional[OssConfig] = None
 
 
 @app.post("/config/update")
@@ -638,7 +665,9 @@ async def update_rag_config(form_data: ConfigUpdateForm, user=Depends(get_admin_
         else app.state.config.PDF_EXTRACT_IMAGES
     )
 
-    if form_data.file is not None:
+    if (form_data.file is not None
+            and form_data.file.max_size is not None
+            and form_data.file.max_count is not None):
         app.state.config.FILE_MAX_SIZE = form_data.file.max_size
         app.state.config.FILE_MAX_COUNT = form_data.file.max_count
 
@@ -682,6 +711,13 @@ async def update_rag_config(form_data: ConfigUpdateForm, user=Depends(get_admin_
             form_data.web.search.concurrent_requests
         )
 
+    if form_data.oss is not None:
+        app.state.config.OSS_ENABLE_STORAGE = form_data.oss.enable_storage
+        app.state.config.OSS_ACCESS_KEY = form_data.oss.access_key
+        app.state.config.OSS_ACCESS_SECRET = form_data.oss.access_secret
+        app.state.config.OSS_ENDPOINT = form_data.oss.endpoint
+        app.state.config.OSS_BUCKET_NAME = form_data.oss.bucket_name
+
     return {
         "status": True,
         "pdf_extract_images": app.state.config.PDF_EXTRACT_IMAGES,
@@ -720,6 +756,13 @@ async def update_rag_config(form_data: ConfigUpdateForm, user=Depends(get_admin_
                 "result_count": app.state.config.RAG_WEB_SEARCH_RESULT_COUNT,
                 "concurrent_requests": app.state.config.RAG_WEB_SEARCH_CONCURRENT_REQUESTS,
             },
+        },
+        "oss": {
+            "enable_storage": app.state.config.OSS_ENABLE_STORAGE,
+            "access_key": app.state.config.OSS_ACCESS_KEY,
+            "access_secret": app.state.config.OSS_ACCESS_SECRET,
+            "endpoint": app.state.config.OSS_ENDPOINT,
+            "bucket_name": app.state.config.OSS_BUCKET_NAME,
         },
     }
 

@@ -1670,10 +1670,32 @@ TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "")
 # OSS 配置
 ####################################
 
-OSS_ACCESS_KEY_ID = os.environ.get("OSS_ACCESS_KEY_ID", "your-access-key-id")
+OSS_ENABLE_STORAGE = PersistentConfig(
+    "OSS_ENABLE_STORAGE",
+    "oss.oss_enable_storage",
+    os.environ.get("OSS_ENABLE_STORAGE", "false").lower() == "true",
+)
 
-OSS_ACCESS_KEY_SECRET = os.environ.get("OSS_ACCESS_KEY_SECRET", "your-access")
+OSS_ACCESS_KEY = PersistentConfig(
+    "OSS_ACCESS_KEY",
+    "oss.oss_access_key",
+    os.environ.get("OSS_ACCESS_KEY", "your-access"),
+)
 
-OSS_ENDPOINT = os.environ.get("OSS_ENDPOINT", "oss-cn-hangzhou.aliyuncs.com")
+OSS_ACCESS_SECRET = PersistentConfig(
+    "OSS_ACCESS_SECRET",
+    "oss.oss_access_secret",
+    os.environ.get("OSS_ACCESS_SECRET", "your-secret"),
+)
 
-OSS_BUCKET_NAME = os.environ.get("OSS_BUCKET_NAME", "your-bucket-name")
+OSS_ENDPOINT = PersistentConfig(
+    "OSS_ENDPOINT",
+    "oss.oss_endpoint",
+    os.environ.get("OSS_ENDPOINT", "your-endpoint"),
+)
+
+OSS_BUCKET_NAME = PersistentConfig(
+    "OSS_BUCKET_NAME",
+    "oss.oss_bucket_name",
+    os.environ.get("OSS_BUCKET_NAME", "your-bucket"),
+)

@@ -42,6 +42,14 @@ type YoutubeConfigForm = {
 	translation?: string | null;
 };
 
+type OssConfigForm = {
+    enable_storage: boolean;
+    access_key: string | null;
+    access_secret: string | null;
+    endpoint: string | null;
+    bucket_name: string | null;
+};
+
 type File = {
 	max_size: number;
 	max_count: number;
@@ -54,6 +62,7 @@ type RAGConfigForm = {
 	content_extraction?: ContentExtractConfigForm;
 	web_loader_ssl_verification?: boolean;
 	youtube?: YoutubeConfigForm;
+	oss?: OssConfigForm;
 };
 
 export const updateRAGConfig = async (token: string, payload: RAGConfigForm) => {

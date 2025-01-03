@@ -64,6 +64,14 @@
 		enableBase64: false
 	};
 
+	let ossSettings = {
+		enable_storage: false,
+		access_key: '',
+		access_secret: '',
+		endpoint: '',
+		bucket_name: ''
+	};
+
 	const scanHandler = async () => {
 		scanDirLoading = true;
 		const res = await scanDocs(localStorage.token);
@@ -192,6 +200,13 @@
 			content_extraction: {
 				engine: contentExtractionEngine,
 				tika_server_url: tikaServerUrl
+			},
+			oss: {
+				enable_storage: ossSettings.enable_storage,
+				access_key: ossSettings.access_key,
+				access_secret: ossSettings.access_secret,
+				endpoint: ossSettings.endpoint,
+				bucket_name: ossSettings.bucket_name
 			}
 		});
 		querySettings.max_file_count = fileMaxCount;
@@ -232,6 +247,10 @@
 		querySettings = await updateQuerySettings(localStorage.token, querySettings);
 	};
 
+	const toggleOssStorage = async () => {
+		ossSettings.enable_storage = !ossSettings.enable_storage;
+	};
+
 	onMount(async () => {
 		await setEmbeddingConfig();
 		await setRerankingConfig();
@@ -249,8 +268,11 @@
 			tikaServerUrl = res.content_extraction.tika_server_url;
 			showTikaServerUrl = contentExtractionEngine === 'tika';
 
-			fileMaxSize = res?.file.max_size ?? '';
-			fileMaxCount = res?.file.max_count ?? '';
+			fileMaxSize = res?.file.max_size ?? null;
+			fileMaxCount = res?.file.max_count ?? null;
+
+			ossSettings = res.oss;
+			console.log('ossSettings:', ossSettings);
 		}
 	});
 </script>
@@ -824,6 +846,102 @@
 					>
 				</div>
 			</div>
+		</div>
+
+		<hr class=" dark:border-gray-850" />
+
+		<div class="gap-1">
+			<div class=" mb-2 text-sm font-medium">{$i18n.t('Oss Storage')}</div>
+
+			<div class=" flex w-full justify-between">
+				<div class=" self-center text-xs font-medium">{$i18n.t('Oss Storage Enable')}</div>
+
+				<button
+					class="p-1 px-3 text-xs flex rounded transition"
+					on:click={() => {
+						toggleOssStorage();
+					}}
+					type="button"
+				>
+					{#if ossSettings.enable_storage === true}
+						<span class="ml-2 self-center">{$i18n.t('On')}</span>
+					{:else}
+						<span class="ml-2 self-center">{$i18n.t('Off')}</span>
+					{/if}
+				</button>
+			</div>
+
+			{#if ossSettings?.enable_storage === true}
+				<div class=" my-2 flex gap-1.5">
+					<div class="  w-full justify-between">
+						<div class="self-center text-xs font-medium min-w-fit mb-1">
+							{$i18n.t('Oss Access Key')}
+						</div>
+						<div class="self-center">
+							<input
+								class=" w-full rounded-lg py-1.5 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								type="text"
+								placeholder={$i18n.t('Oss Access Key')}
+								bind:value={ossSettings.access_key}
+								autocomplete="off"
+								min="0"
+							/>
+						</div>
+					</div>
+
+					<div class="w-full">
+						<div class=" self-center text-xs font-medium min-w-fit mb-1">
+							{$i18n.t('Oss Access Secret')}
+						</div>
+
+						<div class="self-center">
+							<input
+								class="w-full rounded-lg py-1.5 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								type="text"
+								placeholder={$i18n.t('Oss Access Secret')}
+								bind:value={ossSettings.access_secret}
+								autocomplete="off"
+								min="0"
+							/>
+						</div>
+					</div>
+				</div>
+
+				<div class=" my-2 flex gap-1.5">
+					<div class="  w-full justify-between">
+						<div class="self-center text-xs font-medium min-w-fit mb-1">
+							{$i18n.t('Oss Bucket Name')}
+						</div>
+						<div class="self-center">
+							<input
+								class=" w-full rounded-lg py-1.5 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								type="text"
+								placeholder={$i18n.t('Oss Bucket Name')}
+								bind:value={ossSettings.bucket_name}
+								autocomplete="off"
+								min="0"
+							/>
+						</div>
+					</div>
+
+					<div class="w-full">
+						<div class=" self-center text-xs font-medium min-w-fit mb-1">
+							{$i18n.t('Oss Endpoint URL')}
+						</div>
+
+						<div class="self-center">
+							<input
+								class="w-full rounded-lg py-1.5 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								type="text"
+								placeholder={$i18n.t('Oss Endpoint URL')}
+								bind:value={ossSettings.endpoint}
+								autocomplete="off"
+								min="0"
+							/>
+						</div>
+					</div>
+				</div>
+			{/if}
 		</div>
 
 		<hr class=" dark:border-gray-850" />

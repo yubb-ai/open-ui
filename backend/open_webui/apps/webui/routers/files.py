@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse
 
 from open_webui.apps.webui.models.files import Files, FileForm, FileModel
 from open_webui.config import UPLOAD_DIR, MODEL_IMAGES_DIR, BACKGROUND_IMAGES_DIR, USER_IMAGES_DIR, RAG_FILE_MAX_SIZE, \
-    OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET, OSS_ENDPOINT, OSS_BUCKET_NAME, AppConfig
+    OSS_ENABLE_STORAGE, OSS_ACCESS_KEY, OSS_ACCESS_SECRET, OSS_ENDPOINT, OSS_BUCKET_NAME, AppConfig
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.env import SRC_LOG_LEVELS
 from open_webui.utils.utils import get_verified_user, get_admin_user
@@ -24,7 +24,16 @@ log.setLevel(SRC_LOG_LEVELS["MODELS"])
 router = APIRouter()
 config = AppConfig()
 config.FILE_MAX_SIZE = RAG_FILE_MAX_SIZE
+config.OSS_ENABLE_STORAGE = OSS_ENABLE_STORAGE
+config.OSS_ACCESS_KEY = OSS_ACCESS_KEY
+config.OSS_ACCESS_SECRET = OSS_ACCESS_SECRET
+config.OSS_ENDPOINT = OSS_ENDPOINT
+config.OSS_BUCKET_NAME = OSS_BUCKET_NAME
 
+
+# 创建 OSS Bucket 对象
+auth = oss2.Auth(config.OSS_ACCESS_KEY, config.OSS_ACCESS_SECRET)
+bucket = oss2.Bucket(auth, config.OSS_ENDPOINT, config.OSS_BUCKET_NAME, connect_timeout=10)
 
 ############################
 # Upload File
@@ -93,11 +102,6 @@ def upload_file(file: UploadFile = File(...), user=Depends(get_verified_user)):
         )
 
 
-# 创建 OSS Bucket 对象
-auth = oss2.Auth(OSS_ACCESS_KEY_ID, OSS_ACCESS_KEY_SECRET)
-bucket = oss2.Bucket(auth, OSS_ENDPOINT, OSS_BUCKET_NAME, connect_timeout=10)
-
-
 # background Images
 def save_file(file: UploadFile, oss_directory: str) -> dict:
     log.info(f"file.content_type: {file.content_type}")
@@ -113,31 +117,44 @@ def save_file(file: UploadFile, oss_directory: str) -> dict:
         with open(oss_file_path, "wb") as f:
             f.write(contents)
 
-        # 上传文件到 OSS，带有超时控制
-        bucket.put_object_from_file(filename, oss_file_path)
-
-        # 设置文件为公共读
-        bucket.put_object_acl(filename, 'public-read')
-
-        # 生成文件的 URL
-        oss_file_url = f"https://{OSS_BUCKET_NAME}.{OSS_ENDPOINT.replace('https://', '')}/{filename}"
-
         # 获取文件元信息
         file_size = len(contents)
-        log.info(f"File uploaded to OSS: {oss_file_path}, Size: {file_size} bytes")
 
-        # 返回上传结果
-        return {
-            "filename": filename,
-            "meta": {
-                "name": filename,
-                "content_type": file.content_type,
-                "size": file_size,
-                "path": oss_file_path,
-                "oss_path": oss_file_path,
-                "oss_url": oss_file_url,
-            },
-        }
+        if config.OSS_ENABLE_STORAGE:
+            # 上传文件到 OSS，带有超时控制
+            bucket.put_object_from_file(filename, oss_file_path)
+
+            # 设置文件为公共读
+            bucket.put_object_acl(filename, 'public-read')
+
+            # 生成文件的 URL
+            oss_file_url = f"https://{config.OSS_ACCESS_KEY_ID}.{config.OSS_ENDPOINT.replace('https://', '')}/{filename}"
+
+            log.info(f"File uploaded to OSS: {oss_file_path}, Size: {file_size} bytes")
+
+            # 返回上传结果
+            return {
+                "filename": filename,
+                "meta": {
+                    "name": filename,
+                    "content_type": file.content_type,
+                    "size": file_size,
+                    "path": oss_file_path,
+                    "oss_path": oss_file_path,
+                    "oss_url": oss_file_url,
+                },
+            }
+        else:
+            return {
+                "filename": filename,
+                "meta": {
+                    "name": filename,
+                    "content_type": file.content_type,
+                    "size": len(contents),
+                    "path": oss_file_path,
+                },
+            }
+
 
     except oss2.exceptions.RequestError as e:
         log.error(f"File upload request error: {str(e)}")
