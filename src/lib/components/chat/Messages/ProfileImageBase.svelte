@@ -12,6 +12,7 @@
 		: src.startsWith(WEBUI_BASE_URL) ||
 			  src.startsWith('https://www.gravatar.com/avatar/') ||
 			  src.startsWith('data:') ||
+			  src.startsWith('http') ||
 			  src.startsWith('/')
 			? src
 			: `/user.png`}

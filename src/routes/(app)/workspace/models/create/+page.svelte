@@ -45,7 +45,7 @@
 		base_model_id: null,
 		name: '',
 		meta: {
-			profile_image_url: '',
+			profile_image_url: null,
 			description: '',
 			suggestion_prompts: [
 				{
