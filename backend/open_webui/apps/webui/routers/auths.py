@@ -442,7 +442,7 @@ async def update_admin_config(
     request.app.state.config.ENABLE_MESSAGE_RATING = form_data.ENABLE_MESSAGE_RATING
 
     return {
-        "ADMIN_URL": request.app.state.config.ADMIN_UR,
+        "ADMIN_URL": request.app.state.config.ADMIN_URL,
         "SHOW_ADMIN_DETAILS": request.app.state.config.SHOW_ADMIN_DETAILS,
         "ENABLE_SIGNUP": request.app.state.config.ENABLE_SIGNUP,
         "DEFAULT_USER_ROLE": request.app.state.config.DEFAULT_USER_ROLE,
