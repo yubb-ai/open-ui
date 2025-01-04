@@ -169,7 +169,7 @@
 						</div>
 
 						<div class="flex flex-col w-full">
-							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Expire at')}</div>
+							<div class=" mb-1 text-xs text-gray-500">{$i18n.t('Expire At')}</div>
 							<div class="flex-1">
 								<input
 									class="w-full rounded py-2 px-4 text-sm dark:text-gray-300 dark:bg-gray-800 outline-none"

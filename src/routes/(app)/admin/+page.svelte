@@ -264,7 +264,7 @@
 						class="px-3 py-2 cursor-pointer select-none"
 						on:click={() => setSortKey('expire_at')}
 					>
-						{$i18n.t('Expire at')}
+						{$i18n.t('Expire At')}
 						{#if sortKey === 'expire_at'}
 							{sortOrder === 'asc' ? '▲' : '▼'}
 						{:else}

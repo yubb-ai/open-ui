@@ -255,7 +255,7 @@
 
 			<div class="pt-0.5">
 				<div class="flex flex-col w-full">
-					<div class=" mb-1 text-xs font-medium">{$i18n.t('Expire at')}</div>
+					<div class=" mb-1 text-xs font-medium">{$i18n.t('Expire At')}</div>
 
 					<div class="flex-1">
 						<input
