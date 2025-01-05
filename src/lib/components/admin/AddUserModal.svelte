@@ -123,11 +123,10 @@
 		}
 	};
 
-	onMount(async () => {
-		if (expire_duration && expire_unit) {
+	$: if (expire_duration && expire_unit) {
 			_user.expire_at = dayjs().add(expire_duration, expire_unit).format('YYYY-MM-DDTHH:mm');
-		}
-	});
+	}
+
 </script>
 
 <Modal size="sm" bind:show>
