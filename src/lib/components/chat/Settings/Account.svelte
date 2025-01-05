@@ -65,7 +65,7 @@
 	onMount(async () => {
 		name = $user.name;
 		profileImageUrl = $user.profile_image_url;
-		expireAt = dayjs($user.expire_at * 1000).format('YYYY-MM-DD HH:mm');
+		expireAt = dayjs($user?.expire_at * 1000).format('YYYY-MM-DD HH:mm');
 
 		APIKey = await getAPIKey(localStorage.token).catch((error) => {
 			console.log(error);

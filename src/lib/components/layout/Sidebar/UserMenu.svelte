@@ -405,7 +405,7 @@
 								{$i18n.t('Remaining Days')} :
 							</span>
 							<span class=" font-semibold">
-								{getDaysLeft($user.expire_at)}
+								{getDaysLeft($user?.expire_at)}
 							</span>
 						</div>
 					</div>

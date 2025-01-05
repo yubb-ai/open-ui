@@ -59,7 +59,7 @@
 			await goto('/auth');
 		} else if (
 			$user.role !== 'pending' ||
-			($user.expire_at !== null && $user.expire_at < dayjs().unix())
+			($user?.expire_at !== null && $user?.expire_at < dayjs().unix())
 		) {
 			await Promise.all([
 				(async () => {
@@ -240,7 +240,7 @@
 		class=" text-gray-700 dark:text-gray-100 bg-white dark:bg-gray-900 h-screen max-h-[100dvh] overflow-auto flex flex-row"
 	>
 		{#if loaded}
-			{#if $user.role === 'pending' || ($user.expire_at !== null && $user.expire_at < dayjs().unix())}
+			{#if $user.role === 'pending' || ($user?.expire_at !== null && $user?.expire_at < dayjs().unix())}
 				<AccountPending />
 			{:else if localDBChats.length > 0}
 				<div class="fixed w-full h-full flex z-50">

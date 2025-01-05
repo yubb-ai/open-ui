@@ -47,7 +47,7 @@
 
 				<!-- 状态信息 -->
 				<div class="text-center text-sm text-gray-700 dark:text-gray-200 mb-6 mx-4">
-					{#if $user && ($user.role === 'pending' || ($user.expire_at !== null && Number($user.expire_at) < dayjs().unix()))}
+					{#if $user && ($user.role === 'pending' || ($user?.expire_at !== null && Number($user?.expire_at) < dayjs().unix()))}
 						{$i18n.t('你的账号已经过期。')}<br />
 						{$i18n.t(
 							'To access the WebUI, please reach out to the administrator. Admins can manage user statuses from the Admin Panel.'

@@ -116,6 +116,15 @@
 	let files = [];
 	let params = {};
 
+	let expireAt_banner = {
+		id: 'expire_at_banner',
+		type: 'warning',
+		title: '',
+		content: `😭 您的订阅将在 ${$user?.expire_at} 过期，请您提前续费`,
+		dismissable: true,
+		timestamp: Math.floor(Date.now() / 1000)
+	};
+
 	$: if (chatIdProp) {
 		(async () => {
 			console.log(chatIdProp);
@@ -2021,6 +2030,14 @@
 									}}
 								/>
 							{/each}
+							{#if $user?.expire_at !== null && $user?.expire_at < dayjs().unix() - 86400 * 3}
+								<Banner
+									banner={expireAt_banner}
+									on:dismiss={(e) => {
+										const bannerId = e.detail;
+									}}
+								/>
+							{/if}
 						</div>
 					</div>
 				{/if}
