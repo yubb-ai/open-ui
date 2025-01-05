@@ -121,7 +121,7 @@
 		id: 'expire_at_banner',
 		type: 'warning',
 		title: '',
-		content: `😭 您的订阅将在 ${dayjs($user?.expire_at * 1000).format('YYYY-MM-DD HH:mm')} 过期，请您提前续费`,
+		content: `😭 您的订阅将在 ${dayjs($user?.expire_at * 1000).format('YYYY-MM-DD HH:mm')} 过期，请您[点击进行续费](${$config?.recharge_url})！`,
 		dismissible: true,
 		timestamp: Math.floor(Date.now() / 1000)
 	};
@@ -2033,11 +2033,12 @@
 									}}
 								/>
 							{/each}
-							{#if $user?.expire_at !== null && $user?.expire_at > dayjs()
+							{#if $user?.expire_at !== null && $config?.recharge_url && $user?.expire_at > dayjs()
 										.subtract(3, 'days')
 										.unix()}
 								<Banner
 									banner={expireAt_banner}
+									isExpiring={true}
 									on:dismiss={(e) => {
 										const bannerId = e.detail;
 									}}

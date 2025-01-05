@@ -79,6 +79,7 @@ from open_webui.config import (
     WEBHOOK_URL,
     WEBUI_AUTH,
     AppConfig,
+    ADMIN_URL,
     run_migrations, BACKGROUND_RANDOM_IMAGE_URL, MODEL_STATUS, SPEECH_PREVIEW, INSTRUCTIONS_URL, LOBECHAT_URL, MIDJOURNEY_URL, TURNSTILE_SIGNUP_CHECK, TURNSTILE_LOGIN_CHECK,
     TURNSTILE_SITE_KEY,
     OPENAI_API_NOSTREAM_MODELS,
@@ -206,6 +207,7 @@ app.state.config.ENABLE_MODEL_FILTER = ENABLE_MODEL_FILTER
 app.state.config.MODEL_FILTER_LIST = MODEL_FILTER_LIST
 
 app.state.config.WEBHOOK_URL = WEBHOOK_URL
+app.state.config.ADMIN_URL = ADMIN_URL
 
 app.state.config.TASK_MODEL = TASK_MODEL
 app.state.config.TASK_MODEL_EXTERNAL = TASK_MODEL_EXTERNAL
@@ -2102,6 +2104,7 @@ async def get_app_config(request: Request):
         "instructions_url": INSTRUCTIONS_URL,
         "lobeChat_url": LOBECHAT_URL,
         "midjourney_url": MIDJOURNEY_URL,
+        "recharge_url": app.state.config.ADMIN_URL,
         "random_image_url": app.state.config.BACKGROUND_RANDOM_IMAGE_URL,
         "turnstile_login_check": TURNSTILE_LOGIN_CHECK,
         "turnstile_signup_check": TURNSTILE_SIGNUP_CHECK,

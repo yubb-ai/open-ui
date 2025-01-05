@@ -4,6 +4,8 @@
 	import { fade } from 'svelte/transition';
 	import DOMPurify from 'dompurify';
 	import { marked } from 'marked';
+	import { config, user } from '$lib/stores';
+	import dayjs from 'dayjs';
 
 	const dispatch = createEventDispatcher();
 	const i18n = getContext('i18n');
@@ -17,6 +19,8 @@
 		dismissable: true,
 		timestamp: Math.floor(Date.now() / 1000)
 	};
+
+	export let isExpiring = false;
 
 	export let dismissed = false;
 
@@ -84,7 +88,12 @@
 				</div>
 
 				<div class="flex-1 text-xs text-gray-700 dark:text-white">
-					{@html marked.parse(DOMPurify.sanitize(banner.content))}
+					{#if isExpiring === true && $config?.recharge_url}
+						😭 您的订阅将在 {dayjs($user?.expire_at * 1000).format('YYYY-MM-DD HH:mm')} 过期，请您
+						<a href={$config?.recharge_url} class="text-blue-500">点击续费</a>！
+					{:else}
+						{@html marked.parse(DOMPurify.sanitize(banner.content))}
+					{/if}
 				</div>
 			</div>
 
