@@ -72,6 +72,7 @@
 	import ChatControls from './ChatControls.svelte';
 	import EventConfirmDialog from '../common/ConfirmDialog.svelte';
 	import Placeholder from './Placeholder.svelte';
+	import dayjs from 'dayjs';
 
 	export let chatIdProp = '';
 
@@ -120,7 +121,7 @@
 		id: 'expire_at_banner',
 		type: 'warning',
 		title: '',
-		content: `😭 您的订阅将在 ${$user?.expire_at} 过期，请您提前续费`,
+		content: `😭 您的订阅将在 ${dayjs($user?.expire_at * 1000).format('YYYY-MM-DD HH:mm')} 过期，请您提前续费`,
 		dismissable: true,
 		timestamp: Math.floor(Date.now() / 1000)
 	};
