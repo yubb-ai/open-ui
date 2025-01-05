@@ -122,9 +122,11 @@
 		type: 'warning',
 		title: '',
 		content: `😭 您的订阅将在 ${dayjs($user?.expire_at * 1000).format('YYYY-MM-DD HH:mm')} 过期，请您提前续费`,
-		dismissable: true,
+		dismissible: true,
 		timestamp: Math.floor(Date.now() / 1000)
 	};
+
+	console.log(expireAt_banner);
 
 	$: if (chatIdProp) {
 		(async () => {
@@ -2031,7 +2033,9 @@
 									}}
 								/>
 							{/each}
-							{#if $user?.expire_at !== null && $user?.expire_at < dayjs().unix() - 86400 * 3}
+							{#if $user?.expire_at !== null && $user?.expire_at > dayjs()
+										.subtract(3, 'days')
+										.unix()}
 								<Banner
 									banner={expireAt_banner}
 									on:dismiss={(e) => {
