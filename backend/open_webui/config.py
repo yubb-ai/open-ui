@@ -883,7 +883,7 @@ ADMIN_EMAIL = PersistentConfig(
 
 ADMIN_URL = PersistentConfig(
     "ADMIN_URL",
-    "auth.admin.email",
+    "auth.admin.url",
     os.environ.get("ADMIN_URL", None),
 )
 

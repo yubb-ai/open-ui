@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getAdminDetails } from '$lib/apis/auths';
 	import { onMount, getContext } from 'svelte';
+	import { WEBUI_BASE_URL } from '$lib/constants';
 	import dayjs from 'dayjs';
 
 	const i18n = getContext('i18n');
@@ -23,18 +24,12 @@
 		<div class="m-auto pb-10 flex flex-col justify-center">
 			<div class="max-w-md">
 				<div class="flex justify-center mb-6">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="h-16 w-16 text-yellow-500"
-						viewBox="0 0 20 20"
-						fill="currentColor"
-					>
-						<path
-							fill-rule="evenodd"
-							d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zm-8-3a1 1 0 00-1 1v3h-1a1 1 0 000 2h3a1 1 0 001-1v-3h1a1 1 0 000-2h-3V8a1 1 0 00-1-1z"
-							clip-rule="evenodd"
-						/>
-					</svg>
+					<img
+						crossorigin="anonymous"
+						src="{WEBUI_BASE_URL}/static/favicon.png"
+						class=" w-8 rounded-full"
+						alt="logo"
+					/>
 				</div>
 
 				<!-- 标题 -->
