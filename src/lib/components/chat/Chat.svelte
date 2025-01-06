@@ -2033,8 +2033,8 @@
 									}}
 								/>
 							{/each}
-							{#if $user?.expire_at !== null && $config?.recharge_url && $user?.expire_at > dayjs()
-										.subtract(3, 'days')
+							{#if $user?.expire_at !== null && $config?.recharge_url && $user?.expire_at < dayjs()
+										.add(3, 'days')
 										.unix()}
 								<Banner
 									banner={expireAt_banner}
