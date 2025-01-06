@@ -43,10 +43,9 @@
 				<!-- 状态信息 -->
 				<div class="text-center text-sm text-gray-700 dark:text-gray-200 mb-6 mx-4">
 					{#if $user && ($user.role === 'pending' || ($user?.expire_at !== null && Number($user?.expire_at) < dayjs().unix()))}
-						{$i18n.t('你的账号已经过期。')}<br />
 						{$i18n.t(
-							'To access the WebUI, please reach out to the administrator. Admins can manage user statuses from the Admin Panel.'
-						)}
+							'您的账号已过期，账户内容将在七天之内删除，请您尽快点击下面按钮或联系客服续费吧！'
+						)}<br />
 					{:else if $user && $user.role === 'pending'}
 						{$i18n.t('Your account status is currently pending activation.')}<br />
 						{$i18n.t(
@@ -55,31 +54,31 @@
 					{/if}
 				</div>
 
-				{#if adminDetails}
-					<div class="mt-4 text-sm font-medium text-center text-gray-700 dark:text-gray-200">
+				<div class="mt-4 text-sm font-medium text-center text-gray-700 dark:text-gray-200">
+					{#if adminDetails}
 						<div>
 							{$i18n.t('Admin')}: {adminDetails?.name} ({adminDetails?.email})
 						</div>
-						<div class="mt-6 mx-auto relative group w-fit">
-							<button
-								class="relative z-20 flex px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition font-medium text-sm"
-								on:click={async () => {
-									location.href = adminDetails?.url;
-								}}
-							>
-								{$i18n.t('点击购买续费')}
-							</button>
+					{/if}
+					<div class="mt-6 mx-auto relative group w-fit">
+						<button
+							class="relative z-20 flex px-5 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition font-medium text-sm"
+							on:click={async () => {
+								location.href = adminDetails?.url;
+							}}
+						>
+							{$i18n.t('点击购买续费')}
+						</button>
 
-							<button
-								class="text-xs text-center w-full mt-2 text-gray-400 underline"
-								on:click={async () => {
-									localStorage.removeItem('token');
-									location.href = '/auth';
-								}}>{$i18n.t('Sign Out')}</button
-							>
-						</div>
+						<button
+							class="text-xs text-center w-full mt-2 text-gray-400 underline"
+							on:click={async () => {
+								localStorage.removeItem('token');
+								location.href = '/auth';
+							}}>{$i18n.t('Sign Out')}</button
+						>
 					</div>
-				{/if}
+				</div>
 			</div>
 		</div>
 	</div>
