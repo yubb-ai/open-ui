@@ -129,7 +129,7 @@ def get_current_user_by_api_key(api_key: str):
 
 def get_verified_user(user=Depends(get_current_user)):
     if user.role == "pending" or (
-        user.expire_at and datetime.fromtimestamp(user.expire_at, UTC) < datetime.now(UTC)
+        user.expire_at and datetime.fromtimestamp(user.expire_at, UTC) < datetime.now(UTC) and user.role != "admin"
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
