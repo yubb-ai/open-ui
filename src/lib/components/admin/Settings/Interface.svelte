@@ -3,7 +3,7 @@
 	import { toast } from 'svelte-sonner';
 
 	import { getBackendConfig, getTaskConfig, updateTaskConfig } from '$lib/apis';
-	import { setDefaultPromptSuggestions } from '$lib/apis/configs';
+	import { setChatTypes, setDefaultPromptSuggestions } from '$lib/apis/configs';
 	import { config, models, settings, user } from '$lib/stores';
 	import { createEventDispatcher, onMount, getContext } from 'svelte';
 
@@ -26,7 +26,13 @@
 		SEARCH_QUERY_GENERATION_PROMPT_TEMPLATE: '',
 		SEARCH_QUERY_PROMPT_LENGTH_THRESHOLD: 0,
 		BACKGROUND_RANDOM_IMAGE_URL: '',
-		ENABLE_SEARCH_QUERY: true,
+		ENABLE_SEARCH_QUERY: true
+	};
+
+	let chatTypes = {
+		enable_create_image: true,
+		enable_create_video: true,
+		enable_create_ppt: true
 	};
 
 	let promptSuggestions = [];
@@ -36,6 +42,9 @@
 		taskConfig = await updateTaskConfig(localStorage.token, taskConfig);
 
 		promptSuggestions = await setDefaultPromptSuggestions(localStorage.token, promptSuggestions);
+
+		chatTypes = await setChatTypes(localStorage.token, chatTypes);
+
 		await updateBanners();
 
 		await config.set(await getBackendConfig());
@@ -44,7 +53,12 @@
 	onMount(async () => {
 		taskConfig = await getTaskConfig(localStorage.token);
 
-		promptSuggestions = $config?.default_prompt_suggestions;
+		promptSuggestions = $config?.default_prompt_suggestions ?? [];
+
+		chatTypes.enable_create_image = $config?.chatTypes.enable_create_image ?? true;
+		chatTypes.enable_create_video = $config?.chatTypes.enable_create_video ?? true;
+		chatTypes.enable_create_ppt = $config?.chatTypes.enable_create_ppt ?? true;
+
 		banners = await getBanners(localStorage.token);
 	});
 
@@ -164,6 +178,36 @@
 					</Tooltip>
 				</div>
 			{/if}
+		</div>
+
+		<hr class=" dark:border-gray-850 my-3" />
+		<div class=" mb-2.5 text-sm font-medium">
+			<div class=" self-center text-sm font-semibold">
+				{$i18n.t('AI模型分类')}
+			</div>
+			<div class="my-3 flex w-full items-center justify-between">
+				<div class=" self-center text-xs font-medium">
+					{$i18n.t('启动AI图像生成')}
+				</div>
+
+				<Switch bind:state={chatTypes.enable_create_image} />
+			</div>
+
+			<div class="my-3 flex w-full items-center justify-between">
+				<div class=" self-center text-xs font-medium">
+					{$i18n.t('启动AI视频生成')}
+				</div>
+
+				<Switch bind:state={chatTypes.enable_create_video} />
+			</div>
+
+			<div class="my-3 flex w-full items-center justify-between">
+				<div class=" self-center text-xs font-medium">
+					{$i18n.t('启动AIPPT生成')}
+				</div>
+
+				<Switch bind:state={chatTypes.enable_create_ppt} />
+			</div>
 		</div>
 
 		<hr class=" dark:border-gray-850 my-3" />

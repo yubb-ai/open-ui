@@ -11,13 +11,19 @@
 		usage: $i18n.t(
 			'Sends `stream_options: { include_usage: true }` in the request.\nSupported providers will return token usage information in the response when set.'
 		),
-		base64: $i18n.t('Accepts base64 encoded File objects')
+		base64: $i18n.t('Accepts base64 encoded File objects'),
+		createImage: $i18n.t('Sends `stream_options: { include_image: true }` in the request.'),
+		createVideo: $i18n.t('Sends `stream_options: { include_video: true }` in the request.'),
+		createPPT: $i18n.t('Sends `stream_options: { include_ppt: true }` in the request.')
 	};
 
 	export let capabilities: {
 		vision?: boolean;
 		usage?: boolean;
 		base64?: boolean;
+		createImage?: boolean;
+		createVideo?: boolean;
+		createPPT?: boolean;
 	} = {};
 </script>
 

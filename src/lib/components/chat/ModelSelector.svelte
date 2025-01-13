@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { models, showSettings, settings, user, mobile, config } from '$lib/stores';
+	import { models, showSettings, settings, user, mobile, config, chatType } from '$lib/stores';
 	import { onMount, tick, getContext } from 'svelte';
 	import { toast } from 'svelte-sonner';
 	import Selector from './ModelSelector/Selector.svelte';
@@ -14,6 +14,8 @@
 	export let disabled = false;
 
 	export let showSetDefault = true;
+
+	let filteredItems: { value: string; label: string; model: any }[] = [];
 
 	const saveDefaultModel = async () => {
 		const hasEmptyModel = selectedModels.filter((it) => it === '');
@@ -32,6 +34,28 @@
 			$models.map((m) => m.id).includes(model) ? model : ''
 		);
 	}
+
+	let temItems = $models.map((model) => ({
+		value: model.id,
+		label: model.name,
+		model: model
+	}));
+
+	$: filteredItems = temItems.filter((item) => {
+		if ($chatType !== 'chat') {
+			return (item.model?.info?.meta?.capabilities as { [key: string]: any })?.[$chatType];
+		}
+		return true;
+	});
+
+	$: if ($chatType !== 'chat') {
+		if (
+			filteredItems.length > 0 &&
+			!filteredItems.some((item) => selectedModels.includes(item.value))
+		) {
+			selectedModels = [filteredItems[0].value];
+		}
+	}
 </script>
 
 <div class="flex flex-col w-full items-start">
@@ -41,11 +65,7 @@
 				<div class="mr-1 max-w-full">
 					<Selector
 						placeholder={$i18n.t('Select a model')}
-						items={$models.map((model) => ({
-							value: model.id,
-							label: model.name,
-							model: model
-						}))}
+						bind:items={filteredItems}
 						showTemporaryChatControl={$user.role === 'user'
 							? ($config?.permissions?.chat?.temporary ?? true)
 							: true}

@@ -1699,3 +1699,25 @@ OSS_BUCKET_NAME = PersistentConfig(
     "oss.oss_bucket_name",
     os.environ.get("OSS_BUCKET_NAME", "your-bucket"),
 )
+
+####################################
+# UI ChatType 配置
+####################################
+
+UI_ENABLE_CREATE_IMAGE = PersistentConfig(
+    "UI_ENABLE_CREATE_IMAGE",
+    "ui.enable_create_image",
+    os.environ.get("UI_ENABLE_CREATE_IMAGE", "true").lower() == "true",
+)
+
+UI_ENABLE_CREATE_VIDEO = PersistentConfig(
+    "UI_ENABLE_CREATE_VIDEO",
+    "ui.enable_create_video",
+    os.environ.get("UI_ENABLE_CREATE_VIDEO", "true").lower() == "true",
+)
+
+UI_ENABLE_CREATE_PPT = PersistentConfig(
+    "UI_ENABLE_CREATE_PPT",
+    "ui.enable_create_ppt",
+    os.environ.get("UI_ENABLE_CREATE_PPT", "true").lower() == "true",
+)

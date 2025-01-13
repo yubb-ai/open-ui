@@ -21,6 +21,7 @@
 	import Switch from '$lib/components/common/Switch.svelte';
 	import ChatBubbleOval from '$lib/components/icons/ChatBubbleOval.svelte';
 	import { goto } from '$app/navigation';
+	import Chat from '../Chat.svelte';
 
 	const i18n = getContext('i18n');
 	const dispatch = createEventDispatcher();

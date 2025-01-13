@@ -19,6 +19,9 @@ export const activeUserCount: Writable<null | number> = writable(null);
 export const USAGE_POOL: Writable<null | string[]> = writable(null);
 
 export const theme = writable('system');
+
+// Chat Type 暂定为Chat,Image,Video,PPT
+export const chatType = writable('chat');
 export const chatId = writable('');
 export const chatTitle = writable('');
 
@@ -197,6 +200,11 @@ type Config = {
 		enable_admin_export: boolean;
 		enable_admin_chat_access: boolean;
 		enable_community_sharing: boolean;
+	};
+	chatTypes: {
+		enable_create_image: boolean;
+		enable_create_video: boolean;
+		enable_create_ppt: boolean;
 	};
 	oauth: {
 		providers: {

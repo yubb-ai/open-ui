@@ -181,6 +181,9 @@
 				if (model?.owned_by === 'openai') {
 					capabilities.usage = false;
 					capabilities.base64 = false;
+					capabilities.createImage = false;
+					capabilities.createVideo = false;
+					capabilities.createPPT = false;
 				}
 
 				if (model?.info?.meta?.capabilities) {

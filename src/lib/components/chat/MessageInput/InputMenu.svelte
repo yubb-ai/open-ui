@@ -21,6 +21,8 @@
 	export let tools = {};
 	export let onClose: Function;
 
+	let imageLoaded = {};
+
 	$: tools = Object.fromEntries(
 		Object.keys(tools).map((toolId) => [
 			toolId,
@@ -63,14 +65,21 @@
 						>
 							<div class="flex-1 flex items-center gap-2">
 								{#if tools[toolId]?.icon_url}
+									{#if !imageLoaded[toolId]}
+										<WrenchSolid />
+									{/if}
 									<img
 										src={tools[toolId]?.icon_url}
-										class="w-4 h-4 {tools[toolId]?.icon_url.includes('svg')
+										class="w-4 h-4 {tools[toolId]?.icon_url.includes('png') ||
+										tools[toolId]?.icon_url.includes('svg')
 											? 'dark:invert-[80%]'
 											: ''}"
 										style="fill: currentColor;"
+										fill-rule="evenodd"
 										alt={tools[toolId].name}
 										loading="lazy"
+										on:load={() => (imageLoaded[toolId] = true)}
+										on:error={() => (imageLoaded[toolId] = false)}
 									/>
 								{:else}
 									<WrenchSolid />

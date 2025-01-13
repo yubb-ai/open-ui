@@ -33,7 +33,8 @@
 		mobile,
 		showOverview,
 		chatTitle,
-		showArtifacts
+		showArtifacts,
+		chatType
 	} from '$lib/stores';
 	import {
 		convertMessagesToHistory,
@@ -297,6 +298,7 @@
 		if (!$chatId) {
 			chatIdUnsubscriber = chatId.subscribe(async (value) => {
 				if (!value) {
+					chatType.set('chat');
 					await initNewChat();
 				}
 			});

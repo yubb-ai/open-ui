@@ -225,7 +225,6 @@ change_background_random_image_url(app.state.config.BACKGROUND_RANDOM_IMAGE_URL)
 change_init_background_random_image_url(app.state.config.BACKGROUND_RANDOM_IMAGE_URL)
 app.state.MODELS = {}
 
-
 ##################################
 #
 # ChatCompletion Middleware
@@ -2134,6 +2133,11 @@ async def get_app_config(request: Request):
                 if user is not None
                 else {}
             ),
+        },
+        "chatTypes": {
+            "enable_create_image": webui_app.state.config.UI_ENABLE_CREATE_IMAGE,
+            "enable_create_video": webui_app.state.config.UI_ENABLE_CREATE_VIDEO,
+            "enable_create_ppt": webui_app.state.config.UI_ENABLE_CREATE_PPT,
         },
         **(
             {

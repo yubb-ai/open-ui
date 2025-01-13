@@ -1,3 +1,4 @@
+from typing import Any, Dict
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
@@ -41,6 +42,8 @@ class PromptSuggestion(BaseModel):
     title: list[str]
     content: str
 
+class chatTypes(BaseModel):
+    chatTypes: Dict[str, Any]
 
 class SetDefaultSuggestionsForm(BaseModel):
     suggestions: list[PromptSuggestion]
@@ -69,6 +72,22 @@ async def set_global_default_suggestions(
     request.app.state.config.DEFAULT_PROMPT_SUGGESTIONS = data["suggestions"]
     return request.app.state.config.DEFAULT_PROMPT_SUGGESTIONS
 
+
+@router.post("/default/chatTypes", response_model=Dict[str, Any])
+async def set_global_default_suggestions(
+        request: Request,
+        form_data: chatTypes,
+        user=Depends(get_admin_user),
+):
+    request.app.state.config.UI_ENABLE_CREATE_IMAGE = form_data.chatTypes.get("enable_create_image", False)
+    request.app.state.config.UI_ENABLE_CREATE_VIDEO = form_data.chatTypes.get("enable_create_video", False)
+    request.app.state.config.UI_ENABLE_CREATE_PPT = form_data.chatTypes.get("enable_create_ppt", False)
+
+    return {
+        "enable_create_image": request.app.state.config.UI_ENABLE_CREATE_IMAGE,
+        "enable_create_video": request.app.state.config.UI_ENABLE_CREATE_VIDEO,
+        "enable_create_ppt": request.app.state.config.UI_ENABLE_CREATE_PPT,
+    }
 
 ############################
 # SetBanners
