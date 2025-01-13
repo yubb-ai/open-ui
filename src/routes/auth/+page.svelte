@@ -153,7 +153,6 @@
 					>
 						<div>
 							{$i18n.t('Signing in')}
-							{$i18n.t('to')}
 							{$WEBUI_NAME}
 						</div>
 
@@ -173,7 +172,6 @@
 						<div class="mb-1">
 							<div class=" text-2xl font-medium">
 								{mode === 'signin' ? $i18n.t('Sign in') : $i18n.t('Sign up')}
-								{$i18n.t('to')}
 								{$WEBUI_NAME}
 							</div>
 

@@ -366,7 +366,7 @@
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
-							stroke-width="0.2"
+							stroke-width="0.25"
 							class="size-[1.1rem]"
 						>
 							<path
@@ -380,7 +380,7 @@
 					</div>
 
 					<div class="flex self-center">
-						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('AI 图像')}</div>
+						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('AI Images')}</div>
 					</div>
 				</a>
 			</div>
@@ -409,7 +409,7 @@
 							fill="none"
 							viewBox="0 0 48 48"
 							stroke="currentColor"
-							stroke-width="0.2"
+							stroke-width="0.25"
 							class="size-[1.1rem]"
 						>
 							<path
@@ -421,7 +421,7 @@
 					</div>
 
 					<div class="flex self-center">
-						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('AI 视频')}</div>
+						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('AI Video')}</div>
 					</div>
 				</a>
 			</div>
@@ -450,7 +450,7 @@
 							viewBox="0 0 500 500"
 							version="1.1"
 							stroke="currentColor"
-							stroke-width="0.2"
+							stroke-width="0.25"
 							class="size-[1.1rem]"
 							fill="none"
 						>
