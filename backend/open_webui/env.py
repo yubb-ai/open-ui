@@ -228,7 +228,7 @@ if FROM_INIT_PY:
     ).resolve()
 
 RESET_CONFIG_ON_START = (
-        os.environ.get("RESET_CONFIG_ON_START", "False").lower() == "true"
+    os.environ.get("RESET_CONFIG_ON_START", "False").lower() == "true"
 )
 
 if RESET_CONFIG_ON_START:

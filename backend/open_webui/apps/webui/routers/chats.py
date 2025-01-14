@@ -5,8 +5,18 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 
-from open_webui.apps.webui.models.chats import ChatForm, ChatResponse, Chats, ChatTitleIdResponse
-from open_webui.apps.webui.models.tags import ChatIdTagForm, ChatIdTagModel, TagModel, Tags
+from open_webui.apps.webui.models.chats import (
+    ChatForm,
+    ChatResponse,
+    Chats,
+    ChatTitleIdResponse,
+)
+from open_webui.apps.webui.models.tags import (
+    ChatIdTagForm,
+    ChatIdTagModel,
+    TagModel,
+    Tags,
+)
 from open_webui.config import ENABLE_ADMIN_CHAT_ACCESS, ENABLE_ADMIN_EXPORT
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.env import SRC_LOG_LEVELS
@@ -26,7 +36,7 @@ router = APIRouter()
 @router.get("/", response_model=list[ChatTitleIdResponse])
 @router.get("/list", response_model=list[ChatTitleIdResponse])
 async def get_session_user_chat_list(
-        user=Depends(get_verified_user), page: Optional[int] = None
+    user=Depends(get_verified_user), page: Optional[int] = None
 ):
     if page is not None:
         limit = 60
@@ -45,8 +55,8 @@ async def get_session_user_chat_list(
 @router.delete("/", response_model=bool)
 async def delete_all_user_chats(request: Request, user=Depends(get_verified_user)):
     if (
-            user.role != "admin"
-            and not request.app.state.config.USER_PERMISSIONS["chat"]["deletion"]
+        user.role != "admin"
+        and not request.app.state.config.USER_PERMISSIONS["chat"]["deletion"]
     ):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -64,10 +74,10 @@ async def delete_all_user_chats(request: Request, user=Depends(get_verified_user
 
 @router.get("/list/user/{user_id}", response_model=list[ChatTitleIdResponse])
 async def get_user_chat_list_by_user_id(
-        user_id: str,
-        user=Depends(get_admin_user),
-        skip: int = 0,
-        limit: int = 50,
+    user_id: str,
+    user=Depends(get_admin_user),
+    skip: int = 0,
+    limit: int = 50,
 ):
     if not ENABLE_ADMIN_CHAT_ACCESS:
         raise HTTPException(
@@ -147,7 +157,7 @@ async def get_all_user_chats_in_db(user=Depends(get_admin_user)):
 
 @router.get("/archived", response_model=list[ChatTitleIdResponse])
 async def get_archived_session_user_chat_list(
-        user=Depends(get_verified_user), skip: int = 0, limit: int = 50
+    user=Depends(get_verified_user), skip: int = 0, limit: int = 50
 ):
     return Chats.get_archived_chat_list_by_user_id(user.id, skip, limit)
 
@@ -200,7 +210,7 @@ class TagNameForm(BaseModel):
 
 @router.post("/tags", response_model=list[ChatTitleIdResponse])
 async def get_user_chat_list_by_tag_name(
-        form_data: TagNameForm, user=Depends(get_verified_user)
+    form_data: TagNameForm, user=Depends(get_verified_user)
 ):
     chat_ids = [
         chat_id_tag.chat_id
@@ -269,7 +279,7 @@ async def request_get_chat_by_id(id: str, user):
 
 @router.post("/{id}", response_model=Optional[ChatResponse])
 async def update_chat_by_id(
-        id: str, form_data: ChatForm, user=Depends(get_verified_user)
+    id: str, form_data: ChatForm, user=Depends(get_verified_user)
 ):
     chat = Chats.get_chat_by_id_and_user_id(id, user.id)
     if chat:
@@ -452,7 +462,7 @@ async def get_chat_tags_by_id(id: str, user=Depends(get_verified_user)):
 
 @router.post("/{id}/tags", response_model=Optional[ChatIdTagModel])
 async def add_chat_tag_by_id(
-        id: str, form_data: ChatIdTagForm, user=Depends(get_verified_user)
+    id: str, form_data: ChatIdTagForm, user=Depends(get_verified_user)
 ):
     tags = Tags.get_tags_by_chat_id_and_user_id(id, user.id)
 
@@ -479,7 +489,7 @@ async def add_chat_tag_by_id(
 
 @router.delete("/{id}/tags", response_model=Optional[bool])
 async def delete_chat_tag_by_id(
-        id: str, form_data: ChatIdTagForm, user=Depends(get_verified_user)
+    id: str, form_data: ChatIdTagForm, user=Depends(get_verified_user)
 ):
     result = Tags.delete_tag_by_tag_name_and_chat_id_and_user_id(
         form_data.tag_name, id, user.id

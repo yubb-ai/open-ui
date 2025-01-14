@@ -18,10 +18,19 @@ from open_webui.apps.webui.models.auths import (
     UserResponse,
 )
 from open_webui.apps.webui.models.users import Users
-from open_webui.config import WEBUI_AUTH, REGISTERED_EMAIL_SUFFIX, TURNSTILE_SIGNUP_CHECK, TURNSTILE_LOGIN_CHECK, TURNSTILE_SECRET_KEY, \
-    ENABLE_WECHAT_NOTICE
+from open_webui.config import (
+    WEBUI_AUTH,
+    REGISTERED_EMAIL_SUFFIX,
+    TURNSTILE_SIGNUP_CHECK,
+    TURNSTILE_LOGIN_CHECK,
+    TURNSTILE_SECRET_KEY,
+    ENABLE_WECHAT_NOTICE,
+)
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
-from open_webui.env import WEBUI_AUTH_TRUSTED_EMAIL_HEADER, WEBUI_AUTH_TRUSTED_NAME_HEADER
+from open_webui.env import (
+    WEBUI_AUTH_TRUSTED_EMAIL_HEADER,
+    WEBUI_AUTH_TRUSTED_NAME_HEADER,
+)
 from open_webui.utils.misc import parse_duration, validate_email_format
 from open_webui.utils.utils import (
     create_api_key,
@@ -43,7 +52,7 @@ router = APIRouter()
 
 @router.get("/", response_model=UserResponse)
 async def get_session_user(
-        request: Request, response: Response, user=Depends(get_current_user)
+    request: Request, response: Response, user=Depends(get_current_user)
 ):
     token = create_token(
         data={"id": user.id},
@@ -63,7 +72,7 @@ async def get_session_user(
         "name": user.name,
         "role": user.role,
         "profile_image_url": user.profile_image_url,
-        "expire_at": user.expire_at
+        "expire_at": user.expire_at,
     }
 
 
@@ -74,7 +83,7 @@ async def get_session_user(
 
 @router.post("/update/profile", response_model=UserResponse)
 async def update_profile(
-        form_data: UpdateProfileForm, session_user=Depends(get_current_user)
+    form_data: UpdateProfileForm, session_user=Depends(get_current_user)
 ):
     if session_user:
         user = Users.update_user_by_id(
@@ -96,7 +105,7 @@ async def update_profile(
 
 @router.post("/update/password", response_model=bool)
 async def update_password(
-        form_data: UpdatePasswordForm, session_user=Depends(get_current_user)
+    form_data: UpdatePasswordForm, session_user=Depends(get_current_user)
 ):
     if WEBUI_AUTH_TRUSTED_EMAIL_HEADER:
         raise HTTPException(400, detail=ERROR_MESSAGES.ACTION_PROHIBITED)
@@ -160,7 +169,8 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
             res = await validate_token(form_data.turnstileToken, TURNSTILE_SECRET_KEY)
             if not res.get("success", False):
                 raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.TURNSTILE_ERROR
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=ERROR_MESSAGES.TURNSTILE_ERROR,
                 )
         user = Auths.authenticate_user(form_data.email.lower(), form_data.password)
 
@@ -195,6 +205,7 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 # SignUp
 ############################
 
+
 @router.post("/signup", response_model=SigninResponse)
 async def signup(request: Request, response: Response, form_data: SignupForm):
     if WEBUI_AUTH:
@@ -215,7 +226,8 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
         res = await validate_token(form_data.turnstileToken, TURNSTILE_SECRET_KEY)
         if not res.get("success", False):
             raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.TURNSTILE_ERROR
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=ERROR_MESSAGES.TURNSTILE_ERROR,
             )
 
     if not validate_email_format(form_data.email.lower()):
@@ -223,9 +235,12 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
         )
 
-    if REGISTERED_EMAIL_SUFFIX and not form_data.email.lower().endswith(REGISTERED_EMAIL_SUFFIX):
+    if REGISTERED_EMAIL_SUFFIX and not form_data.email.lower().endswith(
+        REGISTERED_EMAIL_SUFFIX
+    ):
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_CUSTOMER_EMAIL_FORMAT
+            status.HTTP_400_BAD_REQUEST,
+            detail=ERROR_MESSAGES.INVALID_CUSTOMER_EMAIL_FORMAT,
         )
 
     if Users.get_user_by_email(form_data.email.lower()):
@@ -244,7 +259,7 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
         else:
             expire_duration = request.app.state.config.DEFAULT_USER_EXPIRE_DURATION
             expire_unit = request.app.state.config.DEFAULT_USER_EXPIRE_UNIT
-            
+
         hashed = get_password_hash(form_data.password)
         user = Auths.insert_new_auth(
             form_data.email.lower(),
@@ -327,7 +342,7 @@ async def add_user(form_data: AddUserForm, user=Depends(get_admin_user)):
             form_data.name,
             form_data.profile_image_url,
             form_data.role,
-            form_data.expire_at
+            form_data.expire_at,
         )
 
         if user:
@@ -415,7 +430,7 @@ class AdminConfig(BaseModel):
 
 @router.post("/admin/config")
 async def update_admin_config(
-        request: Request, form_data: AdminConfig, user=Depends(get_admin_user)
+    request: Request, form_data: AdminConfig, user=Depends(get_admin_user)
 ):
     request.app.state.config.SHOW_ADMIN_DETAILS = form_data.SHOW_ADMIN_DETAILS
     request.app.state.config.ENABLE_SIGNUP = form_data.ENABLE_SIGNUP
@@ -425,10 +440,14 @@ async def update_admin_config(
         request.app.state.config.DEFAULT_USER_ROLE = form_data.DEFAULT_USER_ROLE
 
     if form_data.DEFAULT_USER_EXPIRE_DURATION > 0:
-        request.app.state.config.DEFAULT_USER_EXPIRE_DURATION = form_data.DEFAULT_USER_EXPIRE_DURATION
+        request.app.state.config.DEFAULT_USER_EXPIRE_DURATION = (
+            form_data.DEFAULT_USER_EXPIRE_DURATION
+        )
 
     if form_data.DEFAULT_USER_EXPIRE_UNIT in ["day", "week", "month", "year"]:
-        request.app.state.config.DEFAULT_USER_EXPIRE_UNIT = form_data.DEFAULT_USER_EXPIRE_UNIT
+        request.app.state.config.DEFAULT_USER_EXPIRE_UNIT = (
+            form_data.DEFAULT_USER_EXPIRE_UNIT
+        )
 
     pattern = r"^(-1|0|(-?\d+(\.\d+)?)(ms|s|m|h|d|w))$"
 

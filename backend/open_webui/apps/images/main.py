@@ -356,7 +356,7 @@ def get_models(user=Depends(get_verified_user)):
                     )
                 )
         elif (
-                app.state.config.ENGINE == "automatic1111" or app.state.config.ENGINE == ""
+            app.state.config.ENGINE == "automatic1111" or app.state.config.ENGINE == ""
         ):
             r = requests.get(
                 url=f"{app.state.config.AUTOMATIC1111_BASE_URL}/sdapi/v1/sd-models",
@@ -446,8 +446,8 @@ def save_url_image(url):
 
 @app.post("/generations")
 async def image_generations(
-        form_data: GenerateImageForm,
-        user=Depends(get_verified_user),
+    form_data: GenerateImageForm,
+    user=Depends(get_verified_user),
 ):
     width, height = tuple(map(int, app.state.config.IMAGE_SIZE.split("x")))
 
@@ -481,10 +481,11 @@ async def image_generations(
                     ),
                     "prompt": form_data.prompt,
                     "image_size": (
-                        form_data.size if form_data.size else app.state.config.IMAGE_SIZE
+                        form_data.size
+                        if form_data.size
+                        else app.state.config.IMAGE_SIZE
                     ),
                 }
-
 
             # Use asyncio.to_thread for the requests.post call
             r = await asyncio.to_thread(
@@ -508,7 +509,7 @@ async def image_generations(
                     with open(file_body_path, "w") as f:
                         json.dump(form_data.model_dump(exclude_none=True), f)
                 log.debug(f"images: {images}")
-            
+
             else:
                 for image in res["data"]:
                     image_filename = save_b64_image(image["b64_json"])
@@ -566,7 +567,7 @@ async def image_generations(
             log.debug(f"images: {images}")
             return images
         elif (
-                app.state.config.ENGINE == "automatic1111" or app.state.config.ENGINE == ""
+            app.state.config.ENGINE == "automatic1111" or app.state.config.ENGINE == ""
         ):
             if form_data.model:
                 set_image_model(form_data.model)

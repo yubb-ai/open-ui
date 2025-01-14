@@ -46,9 +46,9 @@ async def get_toolkits(user=Depends(get_admin_user)):
 
 @router.post("/create", response_model=Optional[ToolResponse])
 async def create_new_toolkit(
-        request: Request,
-        form_data: ToolForm,
-        user=Depends(get_admin_user),
+    request: Request,
+    form_data: ToolForm,
+    user=Depends(get_admin_user),
 ):
     if not form_data.id.isidentifier():
         raise HTTPException(
@@ -121,10 +121,10 @@ async def get_toolkit_by_id(id: str, user=Depends(get_admin_user)):
 
 @router.post("/id/{id}/update", response_model=Optional[ToolModel])
 async def update_toolkit_by_id(
-        request: Request,
-        id: str,
-        form_data: ToolForm,
-        user=Depends(get_admin_user),
+    request: Request,
+    id: str,
+    form_data: ToolForm,
+    user=Depends(get_admin_user),
 ):
     try:
         form_data.content = replace_imports(form_data.content)
@@ -209,7 +209,7 @@ async def get_toolkit_valves_by_id(id: str, user=Depends(get_admin_user)):
 
 @router.get("/id/{id}/valves/spec", response_model=Optional[dict])
 async def get_toolkit_valves_spec_by_id(
-        request: Request, id: str, user=Depends(get_admin_user)
+    request: Request, id: str, user=Depends(get_admin_user)
 ):
     toolkit = Tools.get_tool_by_id(id)
     if toolkit:
@@ -237,7 +237,7 @@ async def get_toolkit_valves_spec_by_id(
 
 @router.post("/id/{id}/valves/update", response_model=Optional[dict])
 async def update_toolkit_valves_by_id(
-        request: Request, id: str, form_data: dict, user=Depends(get_admin_user)
+    request: Request, id: str, form_data: dict, user=Depends(get_admin_user)
 ):
     toolkit = Tools.get_tool_by_id(id)
     if toolkit:
@@ -300,7 +300,7 @@ async def get_toolkit_user_valves_by_id(id: str, user=Depends(get_verified_user)
 
 @router.get("/id/{id}/valves/user/spec", response_model=Optional[dict])
 async def get_toolkit_user_valves_spec_by_id(
-        request: Request, id: str, user=Depends(get_verified_user)
+    request: Request, id: str, user=Depends(get_verified_user)
 ):
     toolkit = Tools.get_tool_by_id(id)
     if toolkit:
@@ -323,7 +323,7 @@ async def get_toolkit_user_valves_spec_by_id(
 
 @router.post("/id/{id}/valves/user/update", response_model=Optional[dict])
 async def update_toolkit_user_valves_by_id(
-        request: Request, id: str, form_data: dict, user=Depends(get_verified_user)
+    request: Request, id: str, form_data: dict, user=Depends(get_verified_user)
 ):
     toolkit = Tools.get_tool_by_id(id)
 

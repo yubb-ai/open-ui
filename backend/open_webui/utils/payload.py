@@ -28,7 +28,7 @@ def apply_model_system_prompt_to_body(params: dict, form_data: dict, user) -> di
 
 # inplace function: form_data is modified
 def apply_model_params_to_body(
-        params: dict, form_data: dict, mappings: dict[str, Callable]
+    params: dict, form_data: dict, mappings: dict[str, Callable]
 ) -> dict:
     if not params:
         return form_data

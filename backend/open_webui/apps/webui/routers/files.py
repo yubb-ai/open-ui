@@ -12,8 +12,19 @@ from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
 from fastapi.responses import FileResponse
 
 from open_webui.apps.webui.models.files import Files, FileForm, FileModel
-from open_webui.config import UPLOAD_DIR, MODEL_IMAGES_DIR, BACKGROUND_IMAGES_DIR, USER_IMAGES_DIR, RAG_FILE_MAX_SIZE, \
-    OSS_ENABLE_STORAGE, OSS_ACCESS_KEY, OSS_ACCESS_SECRET, OSS_ENDPOINT, OSS_BUCKET_NAME, AppConfig
+from open_webui.config import (
+    UPLOAD_DIR,
+    MODEL_IMAGES_DIR,
+    BACKGROUND_IMAGES_DIR,
+    USER_IMAGES_DIR,
+    RAG_FILE_MAX_SIZE,
+    OSS_ENABLE_STORAGE,
+    OSS_ACCESS_KEY,
+    OSS_ACCESS_SECRET,
+    OSS_ENDPOINT,
+    OSS_BUCKET_NAME,
+    AppConfig,
+)
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.env import SRC_LOG_LEVELS
 from open_webui.utils.utils import get_verified_user, get_admin_user
@@ -33,11 +44,14 @@ config.OSS_BUCKET_NAME = OSS_BUCKET_NAME
 
 # 创建 OSS Bucket 对象
 auth = oss2.Auth(config.OSS_ACCESS_KEY, config.OSS_ACCESS_SECRET)
-bucket = oss2.Bucket(auth, config.OSS_ENDPOINT, config.OSS_BUCKET_NAME, connect_timeout=10)
+bucket = oss2.Bucket(
+    auth, config.OSS_ENDPOINT, config.OSS_BUCKET_NAME, connect_timeout=10
+)
 
 ############################
 # Upload File
 ############################
+
 
 @router.post("/")
 def upload_file(file: UploadFile = File(...), user=Depends(get_verified_user)):
@@ -125,7 +139,7 @@ def save_file(file: UploadFile, oss_directory: str) -> dict:
             bucket.put_object_from_file(filename, oss_file_path)
 
             # 设置文件为公共读
-            bucket.put_object_acl(filename, 'public-read')
+            bucket.put_object_acl(filename, "public-read")
 
             # 生成文件的 URL
             oss_file_url = f"https://{config.OSS_ACCESS_KEY_ID}.{config.OSS_ENDPOINT.replace('https://', '')}/{filename}"
@@ -155,7 +169,6 @@ def save_file(file: UploadFile, oss_directory: str) -> dict:
                 },
             }
 
-
     except oss2.exceptions.RequestError as e:
         log.error(f"File upload request error: {str(e)}")
         return {
@@ -183,7 +196,9 @@ def upload_model_image(file: UploadFile = File(...), user=Depends(get_admin_user
 
 # Background Images
 @router.post("/background/images")
-def upload_background_image(file: UploadFile = File(...), user=Depends(get_verified_user)):
+def upload_background_image(
+    file: UploadFile = File(...), user=Depends(get_verified_user)
+):
     return save_file(file, BACKGROUND_IMAGES_DIR)
 
 

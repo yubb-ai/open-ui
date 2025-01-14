@@ -30,6 +30,7 @@ enableBase64 = False
 # GetUsers
 ############################
 
+
 def change_background_random_image_url(url: str):
     global backgroundImageUrl
     backgroundImageUrl = url
@@ -57,7 +58,7 @@ async def get_user_permissions(request: Request, user=Depends(get_admin_user)):
 
 @router.post("/permissions/user")
 async def update_user_permissions(
-        request: Request, form_data: dict, user=Depends(get_admin_user)
+    request: Request, form_data: dict, user=Depends(get_admin_user)
 ):
     request.app.state.config.USER_PERMISSIONS = form_data
     return request.app.state.config.USER_PERMISSIONS
@@ -103,7 +104,7 @@ async def get_user_settings_by_session_user(user=Depends(get_verified_user)):
 
 @router.post("/user/settings/update", response_model=UserSettings)
 async def update_user_settings_by_session_user(
-        form_data: UserSettings, user=Depends(get_verified_user)
+    form_data: UserSettings, user=Depends(get_verified_user)
 ):
     if form_data.ui.get("enableFileUpdateBase64", False):
         if enableBase64:
@@ -151,7 +152,7 @@ async def get_user_info_by_session_user(user=Depends(get_verified_user)):
 
 @router.post("/user/info/update", response_model=Optional[dict])
 async def update_user_info_by_session_user(
-        form_data: dict, user=Depends(get_verified_user)
+    form_data: dict, user=Depends(get_verified_user)
 ):
     user = Users.get_user_by_id(user.id)
     if user:
@@ -216,9 +217,9 @@ async def get_user_by_id(user_id: str, user=Depends(get_verified_user)):
 
 @router.post("/{user_id}/update", response_model=Optional[UserModel])
 async def update_user_by_id(
-        user_id: str,
-        form_data: UserUpdateForm,
-        session_user=Depends(get_admin_user),
+    user_id: str,
+    form_data: UserUpdateForm,
+    session_user=Depends(get_admin_user),
 ):
     user = Users.get_user_by_id(user_id)
 
@@ -244,7 +245,7 @@ async def update_user_by_id(
                 "name": form_data.name,
                 "email": form_data.email.lower(),
                 "profile_image_url": form_data.profile_image_url,
-                "expire_at": form_data.expire_at
+                "expire_at": form_data.expire_at,
             },
         )
 

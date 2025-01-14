@@ -44,7 +44,7 @@ async def get_functions(user=Depends(get_admin_user)):
 
 @router.post("/create", response_model=Optional[FunctionResponse])
 async def create_new_function(
-        request: Request, form_data: FunctionForm, user=Depends(get_admin_user)
+    request: Request, form_data: FunctionForm, user=Depends(get_admin_user)
 ):
     if not form_data.id.isidentifier():
         raise HTTPException(
@@ -171,7 +171,7 @@ async def toggle_global_by_id(id: str, user=Depends(get_admin_user)):
 
 @router.post("/id/{id}/update", response_model=Optional[FunctionModel])
 async def update_function_by_id(
-        request: Request, id: str, form_data: FunctionForm, user=Depends(get_admin_user)
+    request: Request, id: str, form_data: FunctionForm, user=Depends(get_admin_user)
 ):
     try:
         form_data.content = replace_imports(form_data.content)
@@ -210,7 +210,7 @@ async def update_function_by_id(
 
 @router.delete("/id/{id}/delete", response_model=bool)
 async def delete_function_by_id(
-        request: Request, id: str, user=Depends(get_admin_user)
+    request: Request, id: str, user=Depends(get_admin_user)
 ):
     result = Functions.delete_function_by_id(id)
 
@@ -253,7 +253,7 @@ async def get_function_valves_by_id(id: str, user=Depends(get_admin_user)):
 
 @router.get("/id/{id}/valves/spec", response_model=Optional[dict])
 async def get_function_valves_spec_by_id(
-        request: Request, id: str, user=Depends(get_admin_user)
+    request: Request, id: str, user=Depends(get_admin_user)
 ):
     function = Functions.get_function_by_id(id)
     if function:
@@ -281,7 +281,7 @@ async def get_function_valves_spec_by_id(
 
 @router.post("/id/{id}/valves/update", response_model=Optional[dict])
 async def update_function_valves_by_id(
-        request: Request, id: str, form_data: dict, user=Depends(get_admin_user)
+    request: Request, id: str, form_data: dict, user=Depends(get_admin_user)
 ):
     function = Functions.get_function_by_id(id)
     if function:
@@ -344,7 +344,7 @@ async def get_function_user_valves_by_id(id: str, user=Depends(get_verified_user
 
 @router.get("/id/{id}/valves/user/spec", response_model=Optional[dict])
 async def get_function_user_valves_spec_by_id(
-        request: Request, id: str, user=Depends(get_verified_user)
+    request: Request, id: str, user=Depends(get_verified_user)
 ):
     function = Functions.get_function_by_id(id)
     if function:
@@ -367,7 +367,7 @@ async def get_function_user_valves_spec_by_id(
 
 @router.post("/id/{id}/valves/user/update", response_model=Optional[dict])
 async def update_function_user_valves_by_id(
-        request: Request, id: str, form_data: dict, user=Depends(get_verified_user)
+    request: Request, id: str, form_data: dict, user=Depends(get_verified_user)
 ):
     function = Functions.get_function_by_id(id)
 

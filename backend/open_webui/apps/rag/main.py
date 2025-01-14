@@ -112,7 +112,11 @@ from open_webui.config import (
     OSS_ENDPOINT,
     AppConfig,
 )
-from open_webui.config import SILICONFLOW_API_KEY, SILICONFLOW_API_BASE_URL, ENABLE_BASE64
+from open_webui.config import (
+    SILICONFLOW_API_KEY,
+    SILICONFLOW_API_BASE_URL,
+    ENABLE_BASE64,
+)
 from open_webui.constants import ERROR_MESSAGES
 from open_webui.env import SRC_LOG_LEVELS, DEVICE_TYPE, DOCKER
 from open_webui.utils.misc import (
@@ -194,8 +198,8 @@ app.state.config.RAG_WEB_SEARCH_CONCURRENT_REQUESTS = RAG_WEB_SEARCH_CONCURRENT_
 
 
 def update_embedding_model(
-        embedding_model: str,
-        auto_update: bool = False,
+    embedding_model: str,
+    auto_update: bool = False,
 ):
     if embedding_model and app.state.config.RAG_EMBEDDING_ENGINE == "":
         import sentence_transformers
@@ -226,10 +230,14 @@ class Reranking(BaseModel):
             self.url = SILICONFLOW_API_BASE_URL
 
         if self.api_key is None:
-            self.api_key = [key.strip() for key in SILICONFLOW_API_KEY.split(",") if key.strip() != '']
+            self.api_key = [
+                key.strip()
+                for key in SILICONFLOW_API_KEY.split(",")
+                if key.strip() != ""
+            ]
 
     def predict(
-            self, query: str, docs: Sequence[Document], top_n: int, r_score: float
+        self, query: str, docs: Sequence[Document], top_n: int, r_score: float
     ) -> Optional[List[Tuple[str, float]]]:
         """Sends a reranking request to the API and returns documents with scores."""
         try:
@@ -266,8 +274,8 @@ class Reranking(BaseModel):
 
 
 def update_reranking_model(
-        reranking_model: str,
-        auto_update: bool = False,
+    reranking_model: str,
+    auto_update: bool = False,
 ):
     if reranking_model:
         if any(model in reranking_model for model in ["jinaai/jina-colbert-v2"]):
@@ -294,7 +302,7 @@ def update_reranking_model(
                     pass
 
                 def calculate_similarity_scores(
-                        self, query_embeddings, document_embeddings
+                    self, query_embeddings, document_embeddings
                 ):
 
                     query_embeddings = query_embeddings.to(self.device)
@@ -365,10 +373,12 @@ def update_reranking_model(
                 else:
                     import sentence_transformers
 
-                    app.state.sentence_transformer_rf = sentence_transformers.CrossEncoder(
-                        get_model_path(reranking_model, update_model),
-                        device=DEVICE_TYPE,
-                        trust_remote_code=RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
+                    app.state.sentence_transformer_rf = (
+                        sentence_transformers.CrossEncoder(
+                            get_model_path(reranking_model, update_model),
+                            device=DEVICE_TYPE,
+                            trust_remote_code=RAG_RERANKING_MODEL_TRUST_REMOTE_CODE,
+                        )
                     )
             except:
                 log.error("CrossEncoder error")
@@ -469,7 +479,7 @@ class EmbeddingModelUpdateForm(BaseModel):
 
 @app.post("/embedding/update")
 async def update_embedding_config(
-        form_data: EmbeddingModelUpdateForm, user=Depends(get_admin_user)
+    form_data: EmbeddingModelUpdateForm, user=Depends(get_admin_user)
 ):
     log.info(
         f"Updating embedding model: {app.state.config.RAG_EMBEDDING_MODEL} to {form_data.embedding_model}"
@@ -523,7 +533,7 @@ class RerankingModelUpdateForm(BaseModel):
 
 @app.post("/reranking/update")
 async def update_reranking_config(
-        form_data: RerankingModelUpdateForm, user=Depends(get_admin_user)
+    form_data: RerankingModelUpdateForm, user=Depends(get_admin_user)
 ):
     log.info(
         f"Updating reranking model: {app.state.config.RAG_RERANKING_MODEL} to {form_data.reranking_model}"
@@ -665,9 +675,11 @@ async def update_rag_config(form_data: ConfigUpdateForm, user=Depends(get_admin_
         else app.state.config.PDF_EXTRACT_IMAGES
     )
 
-    if (form_data.file is not None
-            and form_data.file.max_size is not None
-            and form_data.file.max_count is not None):
+    if (
+        form_data.file is not None
+        and form_data.file.max_size is not None
+        and form_data.file.max_count is not None
+    ):
         app.state.config.FILE_MAX_SIZE = form_data.file.max_size
         app.state.config.FILE_MAX_COUNT = form_data.file.max_count
 
@@ -809,7 +821,7 @@ class QuerySettingsForm(BaseModel):
 
 @app.post("/query/settings/update")
 async def update_query_settings(
-        form_data: QuerySettingsForm, user=Depends(get_admin_user)
+    form_data: QuerySettingsForm, user=Depends(get_admin_user)
 ):
     app.state.config.RAG_TEMPLATE = (
         form_data.template if form_data.template != "" else DEFAULT_RAG_TEMPLATE
@@ -819,11 +831,17 @@ async def update_query_settings(
     app.state.config.ENABLE_RAG_HYBRID_SEARCH = (
         form_data.hybrid if form_data.hybrid else False
     )
-    app.state.config.FILE_MAX_SIZE = form_data.max_file_size if form_data.max_file_size else 10
-    app.state.config.FILE_MAX_COUNT = form_data.max_file_count if form_data.max_file_count else 5
+    app.state.config.FILE_MAX_SIZE = (
+        form_data.max_file_size if form_data.max_file_size else 10
+    )
+    app.state.config.FILE_MAX_COUNT = (
+        form_data.max_file_count if form_data.max_file_count else 5
+    )
 
     if app.state.config.ENABLE_BASE64 != form_data.enableBase64:
-        app.state.config.ENABLE_BASE64 = form_data.enableBase64 if form_data.enableBase64 else False
+        app.state.config.ENABLE_BASE64 = (
+            form_data.enableBase64 if form_data.enableBase64 else False
+        )
         change_enableBase64(app.state.config.ENABLE_BASE64)
 
     return {
@@ -849,8 +867,8 @@ class QueryDocForm(BaseModel):
 
 @app.post("/query/doc")
 def query_doc_handler(
-        form_data: QueryDocForm,
-        user=Depends(get_verified_user),
+    form_data: QueryDocForm,
+    user=Depends(get_verified_user),
 ):
     try:
         if app.state.config.ENABLE_RAG_HYBRID_SEARCH:
@@ -890,8 +908,8 @@ class QueryCollectionsForm(BaseModel):
 
 @app.post("/query/collection")
 def query_collection_handler(
-        form_data: QueryCollectionsForm,
-        user=Depends(get_verified_user),
+    form_data: QueryCollectionsForm,
+    user=Depends(get_verified_user),
 ):
     try:
         if app.state.config.ENABLE_RAG_HYBRID_SEARCH:
@@ -1053,8 +1071,8 @@ def search_web(engine: str, query: str) -> list[SearchResult]:
             raise Exception("No SEARXNG_QUERY_URL found in environment variables")
     elif engine == "google_pse":
         if (
-                app.state.config.GOOGLE_PSE_API_KEY
-                and app.state.config.GOOGLE_PSE_ENGINE_ID
+            app.state.config.GOOGLE_PSE_API_KEY
+            and app.state.config.GOOGLE_PSE_ENGINE_ID
         ):
             return search_google_pse(
                 app.state.config.GOOGLE_PSE_API_KEY,
@@ -1182,7 +1200,7 @@ def store_web_search(form_data: SearchForm, user=Depends(get_verified_user)):
 
 
 def store_data_in_vector_db(
-        data, collection_name, metadata: Optional[dict] = None, overwrite: bool = False
+    data, collection_name, metadata: Optional[dict] = None, overwrite: bool = False
 ) -> bool:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=app.state.config.CHUNK_SIZE,
@@ -1200,7 +1218,7 @@ def store_data_in_vector_db(
 
 
 def store_text_in_vector_db(
-        text, metadata, collection_name, overwrite: bool = False
+    text, metadata, collection_name, overwrite: bool = False
 ) -> bool:
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=app.state.config.CHUNK_SIZE,
@@ -1212,7 +1230,7 @@ def store_text_in_vector_db(
 
 
 def store_docs_in_vector_db(
-        docs, collection_name, metadata: Optional[dict] = None, overwrite: bool = False
+    docs, collection_name, metadata: Optional[dict] = None, overwrite: bool = False
 ) -> bool:
     log.info(f"store_docs_in_vector_db {docs} {collection_name}")
 
@@ -1357,11 +1375,11 @@ def get_loader(filename: str, file_content_type: str, file_path: str):
     ]
 
     if (
-            app.state.config.CONTENT_EXTRACTION_ENGINE == "tika"
-            and app.state.config.TIKA_SERVER_URL
+        app.state.config.CONTENT_EXTRACTION_ENGINE == "tika"
+        and app.state.config.TIKA_SERVER_URL
     ):
         if file_ext in known_source_ext or (
-                file_content_type and file_content_type.find("text/") >= 0
+            file_content_type and file_content_type.find("text/") >= 0
         ):
             loader = TextLoader(file_path, autodetect_encoding=True)
         else:
@@ -1384,9 +1402,9 @@ def get_loader(filename: str, file_content_type: str, file_path: str):
         elif file_content_type == "application/epub+zip":
             loader = UnstructuredEPubLoader(file_path)
         elif (
-                file_content_type
-                == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                or file_ext == "docx"
+            file_content_type
+            == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            or file_ext == "docx"
         ):
             loader = Docx2txtLoader(file_path)
         elif file_content_type in [
@@ -1402,7 +1420,7 @@ def get_loader(filename: str, file_content_type: str, file_path: str):
         elif file_ext == "msg":
             loader = OutlookMessageLoader(file_path)
         elif file_ext in known_source_ext or (
-                file_content_type and file_content_type.find("text/") >= 0
+            file_content_type and file_content_type.find("text/") >= 0
         ):
             loader = TextLoader(file_path, autodetect_encoding=True)
         else:
@@ -1414,9 +1432,9 @@ def get_loader(filename: str, file_content_type: str, file_path: str):
 
 @app.post("/doc")
 def store_doc(
-        collection_name: Optional[str] = Form(None),
-        file: UploadFile = File(...),
-        user=Depends(get_verified_user),
+    collection_name: Optional[str] = Form(None),
+    file: UploadFile = File(...),
+    user=Depends(get_verified_user),
 ):
     # "https://www.gutenberg.org/files/1727/1727-h/1727-h.htm"
 
@@ -1477,18 +1495,24 @@ class ProcessDocForm(BaseModel):
 
 @app.post("/process/doc")
 def process_doc(
-        form_data: ProcessDocForm,
-        user=Depends(get_verified_user),
+    form_data: ProcessDocForm,
+    user=Depends(get_verified_user),
 ):
     try:
         user = Users.get_user_by_id(user.id)
         enableFileUpdateBase64 = False
 
         if user:
-            enableFileUpdateBase64 = user.settings.ui.get("enableFileUpdateBase64", False)
+            enableFileUpdateBase64 = user.settings.ui.get(
+                "enableFileUpdateBase64", False
+            )
             # logging.error(f"user_settings: {user_settings}")
             # logging.error(f"enableFileUpdateBase64: {enableFileUpdateBase64}")
-            if enableFileUpdateBase64 and app.state.config.ENABLE_BASE64 and form_data.is_base64:
+            if (
+                enableFileUpdateBase64
+                and app.state.config.ENABLE_BASE64
+                and form_data.is_base64
+            ):
                 return {
                     "status": True,
                     "base64": True,
@@ -1555,8 +1579,8 @@ class TextRAGForm(BaseModel):
 
 @app.post("/text")
 def store_text(
-        form_data: TextRAGForm,
-        user=Depends(get_verified_user),
+    form_data: TextRAGForm,
+    user=Depends(get_verified_user),
 ):
     collection_name = form_data.collection_name
     if collection_name is None:
@@ -1716,10 +1740,10 @@ class SafeWebBaseLoader(WebBaseLoader):
 
 
 if ENV == "dev":
+
     @app.get("/ef")
     async def get_embeddings():
         return {"result": app.state.EMBEDDING_FUNCTION("hello world")}
-
 
     @app.get("/ef/{text}")
     async def get_embeddings_text(text: str):

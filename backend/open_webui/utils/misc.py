@@ -63,7 +63,7 @@ def pop_system_message(messages: list[dict]) -> tuple[Optional[dict], list[dict]
 
 
 def prepend_to_first_user_message_content(
-        content: str, messages: list[dict]
+    content: str, messages: list[dict]
 ) -> list[dict]:
     for message in messages:
         if message["role"] == "user":
