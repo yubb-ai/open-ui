@@ -22,6 +22,7 @@
 
 	const updateHandler = async () => {
 		loading = true;
+		command = command.replaceAll('/', '');
 
 		const prompt = await updatePromptByCommand(localStorage.token, command, title, content).catch(
 			(error) => {

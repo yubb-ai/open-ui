@@ -1,4 +1,5 @@
 from typing import Optional
+from urllib.parse import unquote
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
@@ -26,6 +27,7 @@ async def get_prompts(user=Depends(get_verified_user)):
 
 @router.post("/create", response_model=Optional[PromptModel])
 async def create_new_prompt(form_data: PromptForm, user=Depends(get_admin_user)):
+    form_data.command = "/" + form_data.command.replace("/", "").strip()
     prompt = Prompts.get_prompt_by_command(form_data.command)
     if prompt is None:
         prompt = Prompts.insert_new_prompt(user.id, form_data)
@@ -49,7 +51,8 @@ async def create_new_prompt(form_data: PromptForm, user=Depends(get_admin_user))
 
 @router.get("/command/{command}", response_model=Optional[PromptModel])
 async def get_prompt_by_command(command: str, user=Depends(get_verified_user)):
-    prompt = Prompts.get_prompt_by_command(f"/{command}")
+    decoded_command = unquote(command)
+    prompt = Prompts.get_prompt_by_command(f"/{decoded_command}")
 
     if prompt:
         return prompt
@@ -71,7 +74,8 @@ async def update_prompt_by_command(
     form_data: PromptForm,
     user=Depends(get_admin_user),
 ):
-    prompt = Prompts.update_prompt_by_command(f"/{command}", form_data)
+    decoded_command = unquote(command)
+    prompt = Prompts.update_prompt_by_command(f"/{decoded_command}", form_data)
     if prompt:
         return prompt
     else:
@@ -88,5 +92,6 @@ async def update_prompt_by_command(
 
 @router.delete("/command/{command}/delete", response_model=bool)
 async def delete_prompt_by_command(command: str, user=Depends(get_admin_user)):
-    result = Prompts.delete_prompt_by_command(f"/{command}")
+    decoded_command = unquote(command)
+    result = Prompts.delete_prompt_by_command(f"/{decoded_command}")
     return result
