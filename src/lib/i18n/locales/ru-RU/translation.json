@@ -464,7 +464,6 @@
 	"Ollama Version": "Версия Ollama",
 	"On": "Включено",
 	"Only": "Только",
-	"Only alphanumeric characters and hyphens are allowed in the command string.": "В строке команды разрешено использовать только буквенно-цифровые символы и дефисы.",
 	"Oops! Hold tight! Your files are still in the processing oven. We're cooking them up to perfection. Please be patient and we'll let you know once they're ready.": "Упс! Пристегните ремни! Ваши файлы все еще в процессе обработки. Мы доводим их до совершенства. Пожалуйста, наберитесь терпения, и мы дадим вам знать, как только они будут готовы.",
 	"Oops! Looks like the URL is invalid. Please double-check and try again.": "Упс! Похоже, что URL-адрес недействителен. Пожалуйста, перепроверьте и попробуйте еще раз.",
 	"Oops! There was an error in the previous response. Please try again or contact admin.": "Упс! В предыдущем ответе была ошибка. Пожалуйста, повторите попытку или свяжитесь с администратором.",

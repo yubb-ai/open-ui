@@ -24,34 +24,20 @@
 	const submitHandler = async () => {
 		loading = true;
 
-		if (validateCommandString(command)) {
-			const prompt = await createNewPrompt(localStorage.token, command, title, content).catch(
-				(error) => {
-					toast.error(error);
+		const prompt = await createNewPrompt(localStorage.token, command, title, content).catch(
+			(error) => {
+				toast.error(error);
 
-					return null;
-				}
-			);
-
-			if (prompt) {
-				await prompts.set(await getPrompts(localStorage.token));
-				await goto('/workspace/prompts');
+				return null;
 			}
-		} else {
-			toast.error(
-				$i18n.t('Only alphanumeric characters and hyphens are allowed in the command string.')
-			);
+		);
+
+		if (prompt) {
+			await prompts.set(await getPrompts(localStorage.token));
+			await goto('/workspace/prompts');
 		}
 
 		loading = false;
-	};
-
-	const validateCommandString = (inputString) => {
-		// Regular expression to match only alphanumeric characters and hyphen
-		const regex = /^[a-zA-Z0-9-]+$/;
-
-		// Test the input string against the regular expression
-		return regex.test(inputString);
 	};
 
 	onMount(async () => {
@@ -147,19 +133,6 @@
 					bind:value={command}
 					required
 				/>
-			</div>
-
-			<div class="text-xs text-gray-400 dark:text-gray-500">
-				{$i18n.t('Only')}
-				<span class=" text-gray-600 dark:text-gray-300 font-medium"
-					>{$i18n.t('alphanumeric characters and hyphens')}</span
-				>
-				{$i18n.t('are allowed - Activate this command by typing')}&nbsp;"<span
-					class=" text-gray-600 dark:text-gray-300 font-medium"
-				>
-					/{command}
-				</span>" &nbsp;
-				{$i18n.t('to chat input.')}
 			</div>
 		</div>
 

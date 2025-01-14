@@ -23,33 +23,19 @@
 	const updateHandler = async () => {
 		loading = true;
 
-		if (validateCommandString(command)) {
-			const prompt = await updatePromptByCommand(localStorage.token, command, title, content).catch(
-				(error) => {
-					toast.error(error);
-					return null;
-				}
-			);
-
-			if (prompt) {
-				await prompts.set(await getPrompts(localStorage.token));
-				await goto('/workspace/prompts');
+		const prompt = await updatePromptByCommand(localStorage.token, command, title, content).catch(
+			(error) => {
+				toast.error(error);
+				return null;
 			}
-		} else {
-			toast.error(
-				$i18n.t('Only alphanumeric characters and hyphens are allowed in the command string.')
-			);
+		);
+
+		if (prompt) {
+			await prompts.set(await getPrompts(localStorage.token));
+			await goto('/workspace/prompts');
 		}
 
 		loading = false;
-	};
-
-	const validateCommandString = (inputString) => {
-		// Regular expression to match only alphanumeric characters and hyphen
-		const regex = /^[a-zA-Z0-9-]+$/;
-
-		// Test the input string against the regular expression
-		return regex.test(inputString);
 	};
 
 	onMount(async () => {

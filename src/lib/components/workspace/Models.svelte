@@ -371,7 +371,7 @@
 
 <hr class=" border-gray-50 dark:border-gray-850 my-2.5" />
 
-<div class=" my-2 mb-5" id="model-list">
+<div class=" font-primary my-2 mb-5" id="model-list">
 	{#each _models.filter((m) => searchValue === '' || m.name
 				.toLowerCase()
 				.includes(searchValue.toLowerCase())) as model}
