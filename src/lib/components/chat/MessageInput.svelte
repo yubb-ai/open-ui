@@ -310,7 +310,7 @@
 	};
 
 	const processFileCountLimit = async (inputFiles) => {
-		const maxFiles = $config?.file?.max_count;
+		const maxFiles = $config?.file?.max_count || 1;
 		const currentFilesCount = files.length;
 		const inputFilesCount = inputFiles.length;
 		const totalFilesCount = currentFilesCount + inputFilesCount;
