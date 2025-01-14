@@ -38,7 +38,6 @@ type FilterConfigForm = {
 	ENABLE_DAILY_USAGES_NOTICE: boolean;
 	SEND_FILTER_MESSAGE_TYPE: string;
 	WECHAT_NOTICE_SUFFIX: string;
-
 };
 
 export const updateFilterConfig = async (token: string, payload: FilterConfigForm) => {

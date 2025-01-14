@@ -11,7 +11,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from open_webui.apps.filter.wordsSearch import wordsSearch
 from open_webui.apps.socket.utils import RedisDict
-from open_webui.apps.webui.routers.chats import request_share_chat_by_id, request_get_chat_by_id
+from open_webui.apps.webui.routers.chats import (
+    request_share_chat_by_id,
+    request_get_chat_by_id,
+)
 from open_webui.config import (
     AppConfig,
     ENABLE_MESSAGE_FILTER,
@@ -25,7 +28,14 @@ from open_webui.config import (
     WECHAT_NOTICE_SUFFIX,
     WECHAT_APP_SECRET,
 )
-from open_webui.env import DATA_DIR, SRC_LOG_LEVELS, WEBUI_URL, WEBUI_NAME, WEBSOCKET_REDIS_URL, WEBSOCKET_MANAGER
+from open_webui.env import (
+    DATA_DIR,
+    SRC_LOG_LEVELS,
+    WEBUI_URL,
+    WEBUI_NAME,
+    WEBSOCKET_REDIS_URL,
+    WEBSOCKET_MANAGER,
+)
 from open_webui.utils.utils import (
     get_admin_user,
 )
@@ -61,9 +71,7 @@ file_path = os.path.join(DATA_DIR, app.state.config.CHAT_FILTER_WORDS_FILE)
 user_usage = defaultdict(lambda: defaultdict(int))
 redis_client = None
 if WEBSOCKET_REDIS_URL and WEBSOCKET_MANAGER == "redis":
-    user_usage = RedisDict(
-        "open-webui:user_usage", redis_url=WEBSOCKET_REDIS_URL
-    )
+    user_usage = RedisDict("open-webui:user_usage", redis_url=WEBSOCKET_REDIS_URL)
 usage_lock = asyncio.Lock()
 search = None
 
@@ -101,7 +109,7 @@ async def prepare_usage_to_wechatapp():
             msg_type: {
                 "content": content,
                 "mentioned_list": [] if msg_type == "markdown" else None,
-            }
+            },
         }
         for content in contents
     ]
@@ -114,12 +122,12 @@ async def notice_newnumber_signup_to_wechatapp(name, role, email):
         "msgtype": "text",
         "text": {
             "content": f"✨✨✨{WEBUI_NAME}"
-                       f"\n\n🤖用户：{name}"
-                       f"\n\n🔍角色：{role}"
-                       f"\n\n📮邮箱：{email}"
-                       f"\n\n🌟用户已注册成功，请确认是否正式通过！"
-                       f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
-        }
+            f"\n\n🤖用户：{name}"
+            f"\n\n🔍角色：{role}"
+            f"\n\n📮邮箱：{email}"
+            f"\n\n🌟用户已注册成功，请确认是否正式通过！"
+            f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+        },
     }
     return data
 
@@ -134,22 +142,22 @@ async def prepare_data_to_wechatapp(share_id, user, replyType: str, content: str
                         "title": f"🚨{user.name}提问敏感消息！",
                         "description": "💢💢💢为了API的正常运行，赶紧点开看看吧！",
                         "url": f"{WEBUI_URL}/s/{share_id}",
-                        "picurl": f"{WEBUI_URL}/static/favicon.png"
+                        "picurl": f"{WEBUI_URL}/static/favicon.png",
                     }
                 ]
-            }
+            },
         }
     else:
         data = {
             "msgtype": "text",
             "text": {
                 "content": f"🚨🚨🚨 警告"
-                           f"\n\n{user.name}提问敏感消息！"
-                           f"\n\n😅 {content[:100]}"
-                           f"\n\n🔗 {WEBUI_URL}/s/{share_id}"
-                           f"\n\n💢 为了API的正常运行，赶紧点开看看吧！"
-                           f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
-            }
+                f"\n\n{user.name}提问敏感消息！"
+                f"\n\n😅 {content[:100]}"
+                f"\n\n🔗 {WEBUI_URL}/s/{share_id}"
+                f"\n\n💢 为了API的正常运行，赶紧点开看看吧！"
+                f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+            },
         }
     return data
 
@@ -157,7 +165,7 @@ async def prepare_data_to_wechatapp(share_id, user, replyType: str, content: str
 async def send_message_to_wechatapp(data):
     url = f"https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key={app.state.config.WECHAT_APP_SECRET}"
     log.info(f"Send message to WeChat app: {url}")
-    headers = {'Content-type': 'application/json'}
+    headers = {"Content-type": "application/json"}
     log.info(f"Send message to WeChat app: {data}")
 
     try:
@@ -165,7 +173,9 @@ async def send_message_to_wechatapp(data):
             async with session.post(url, json=data, headers=headers) as response:
                 response.raise_for_status()  # 如果状态码不是200-299，会引发异常
                 response_text = await response.text()
-                log.info(f"POST 请求成功: {url}, 状态码: {response.status}, 响应: {response_text}")
+                log.info(
+                    f"POST 请求成功: {url}, 状态码: {response.status}, 响应: {response_text}"
+                )
                 return response_text
     except aiohttp.ClientError as e:
         log.error(f"POST 请求失败: {url}, 错误: {str(e)}")
@@ -179,7 +189,9 @@ async def init_file():
                     lines = file.readlines()
                     unique_lines = set(line.strip() for line in lines)
                     joined_text = ",".join(unique_lines)
-                    app.state.config.CHAT_FILTER_WORDS = joined_text if joined_text else ""
+                    app.state.config.CHAT_FILTER_WORDS = (
+                        joined_text if joined_text else ""
+                    )
             else:
                 await write_words_to_file()
 
@@ -206,11 +218,15 @@ async def app_start():
 
     if app.state.config.ENABLE_WECHAT_NOTICE:
         log.info("WeChat notice enabled.")
-        scheduler.add_job(reset_usage, 'cron', day_of_week='sun', hour=0, minute=0, id='reset_usage')
+        scheduler.add_job(
+            reset_usage, "cron", day_of_week="sun", hour=0, minute=0, id="reset_usage"
+        )
         log.info("Added reset_usage job.")
         if app.state.config.ENABLE_DAILY_USAGES_NOTICE:
             log.info("Daily usages notice enabled.")
-            scheduler.add_job(daily_send_usage, 'cron', hour=23, minute=30, id='daily_send_usage')
+            scheduler.add_job(
+                daily_send_usage, "cron", hour=23, minute=30, id="daily_send_usage"
+            )
             log.info("Added daily_send_usage job.")
         scheduler.start()
         log.info("Scheduler started.")
@@ -254,7 +270,7 @@ async def get_filter_config(user=Depends(get_admin_user)):
 
 @app.post("/config/update")
 async def update_filter_config(
-        form_data: FILTERConfigForm, user=Depends(get_admin_user)
+    form_data: FILTERConfigForm, user=Depends(get_admin_user)
 ):
     global search
     global file_path
@@ -284,13 +300,19 @@ async def update_filter_config(
     search = wordsSearch()
     search.SetKeywords(app.state.config.CHAT_FILTER_WORDS.split(","))
 
-    if not app.state.config.ENABLE_DAILY_USAGES_NOTICE and scheduler.get_job('daily_send_usage'):
-        scheduler.remove_job('daily_send_usage')
-        if not scheduler.get_job('daily_send_usage'):
+    if not app.state.config.ENABLE_DAILY_USAGES_NOTICE and scheduler.get_job(
+        "daily_send_usage"
+    ):
+        scheduler.remove_job("daily_send_usage")
+        if not scheduler.get_job("daily_send_usage"):
             log.info("Remove daily_send_usage job.")
-    elif app.state.config.ENABLE_DAILY_USAGES_NOTICE and not scheduler.get_job('daily_send_usage'):
-        scheduler.add_job(daily_send_usage, 'cron', hour=23, minute=30, id='daily_send_usage')
-        if scheduler.get_job('daily_send_usage'):
+    elif app.state.config.ENABLE_DAILY_USAGES_NOTICE and not scheduler.get_job(
+        "daily_send_usage"
+    ):
+        scheduler.add_job(
+            daily_send_usage, "cron", hour=23, minute=30, id="daily_send_usage"
+        )
+        if scheduler.get_job("daily_send_usage"):
             log.info("Add daily_send_usage job.")
 
     return {
@@ -316,14 +338,18 @@ async def init_markdown_usages():
 
     if isinstance(user_usage, RedisDict):
         all_users = user_usage.keys()
-        users_data = ((user_name, user_usage.get(user_name, {})) for user_name in all_users)
+        users_data = (
+            (user_name, user_usage.get(user_name, {})) for user_name in all_users
+        )
     else:
         users_data = user_usage.items()
 
     for user_name, models in users_data:
         if not models:
             continue
-        model_usage_list = [f"{model}: {count}" for model, count in sorted(models.items())]
+        model_usage_list = [
+            f"{model}: {count}" for model, count in sorted(models.items())
+        ]
         usage_string = f"⭐用户 {user_name} \n" + "\n".join(model_usage_list)
         usage_strings.append(usage_string)
 
@@ -340,14 +366,18 @@ async def init_usages():
 
     if isinstance(user_usage, RedisDict):
         all_users = user_usage.keys()
-        users_data = ((user_name, user_usage.get(user_name, {})) for user_name in all_users)
+        users_data = (
+            (user_name, user_usage.get(user_name, {})) for user_name in all_users
+        )
     else:
         users_data = user_usage.items()
 
     for user_name, models in users_data:
         if not models:
             continue
-        model_usage_list = [f"{model}: {count}" for model, count in sorted(models.items())]
+        model_usage_list = [
+            f"{model}: {count}" for model, count in sorted(models.items())
+        ]
         usage_string = f"⭐用户 {user_name} \n" + "\n".join(model_usage_list)
         usage_strings.append(usage_string)
 
@@ -373,9 +403,7 @@ async def process_user_usage(model, user):
 
 
 @app.post("/usages")
-async def get_usages(
-        user=Depends(get_admin_user)
-):
+async def get_usages(user=Depends(get_admin_user)):
     if user.role != "admin":
         raise HTTPException(status_code=401, detail="Permission denied.")
 
@@ -401,13 +429,15 @@ async def content_filter_message(payload: dict, content: str, user):
                     if chat_id != "local":
                         await request_share_chat_by_id(chat_id, user)
                         share_response = await request_get_chat_by_id(chat_id, user)
-                        share_id = getattr(share_response, 'share_id', None)
+                        share_id = getattr(share_response, "share_id", None)
 
                         if share_id:
                             log.info(f"Share ID: {share_id}")
                             data = await prepare_data_to_wechatapp(
-                                share_id, user,
-                                app.state.config.SEND_FILTER_MESSAGE_TYPE, content
+                                share_id,
+                                user,
+                                app.state.config.SEND_FILTER_MESSAGE_TYPE,
+                                content,
                             )
                             await send_message_to_wechatapp(data)
                     else:
@@ -415,25 +445,23 @@ async def content_filter_message(payload: dict, content: str, user):
                             "msgtype": "text",
                             "text": {
                                 "content": f"🚨🚨🚨 警告"
-                                           f"\n\n{user.name}提问敏感消息！"
-                                           f"\n\n😅 {content[:100]}"
-                                           f"\n\n💢 为了API的正常运行，赶紧点开看看吧！"
-                                           f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
-                            }
+                                f"\n\n{user.name}提问敏感消息！"
+                                f"\n\n😅 {content[:100]}"
+                                f"\n\n💢 为了API的正常运行，赶紧点开看看吧！"
+                                f"\n\n{app.state.config.WECHAT_NOTICE_SUFFIX}"
+                            },
                         }
                         await send_message_to_wechatapp(data)
                 except Exception as e:
                     log.error(f"发送消息到微信应用失败: {e}")
 
             if not app.state.config.ENABLE_REPLACE_FILTER_WORDS:
-                detail_message = (
-                    f"Yubb Chat: 您的消息包含敏感词语（`{filter_word}`）无法发送。请创建新话题并重试。"
-                )
-                raise HTTPException(
-                    status_code=503, detail=detail_message
-                )
+                detail_message = f"Yubb Chat: 您的消息包含敏感词语（`{filter_word}`）无法发送。请创建新话题并重试。"
+                raise HTTPException(status_code=503, detail=detail_message)
             else:
-                filter_text = search.Replace(content, app.state.config.REPLACE_FILTER_WORDS)
+                filter_text = search.Replace(
+                    content, app.state.config.REPLACE_FILTER_WORDS
+                )
                 return filter_text
     return content
 
@@ -447,10 +475,14 @@ async def filter_message(payload: dict, user):
                 if message.get("role") == "user":
                     content = message.get("content")
                     if isinstance(content, str):
-                        message["content"] = await content_filter_message(payload, content, user)
+                        message["content"] = await content_filter_message(
+                            payload, content, user
+                        )
                     elif isinstance(content, list):
                         for item in content:
                             if item.get("type", "image_url") == "text":
                                 item_content = item.get("text", "")
-                                item["text"] = await content_filter_message(payload, item_content, user)
+                                item["text"] = await content_filter_message(
+                                    payload, item_content, user
+                                )
                     break

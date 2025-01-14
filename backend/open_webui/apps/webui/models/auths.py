@@ -100,18 +100,19 @@ class UserForm(BaseModel):
 class AddUserForm(UserForm):
     role: Optional[str] = "pending"
 
+
 class AuthsTable:
     def insert_new_auth(
-            self,
-            email: str,
-            password: str,
-            name: str,
-            profile_image_url: str = "/user.png",
-            role: str = "pending",
-            expire_at: Optional[int] = None,
-            expire_duration: Optional[int] = None,
-            expire_unit: Optional[str] = None,
-            oauth_sub: Optional[str] = None,
+        self,
+        email: str,
+        password: str,
+        name: str,
+        profile_image_url: str = "/user.png",
+        role: str = "pending",
+        expire_at: Optional[int] = None,
+        expire_duration: Optional[int] = None,
+        expire_unit: Optional[str] = None,
+        oauth_sub: Optional[str] = None,
     ) -> Optional[UserModel]:
         log.debug(f"{expire_at}")
         with get_db() as db:
@@ -126,11 +127,17 @@ class AuthsTable:
             db.add(result)
 
             user = Users.insert_new_user(
-                id, name, email, profile_image_url,
-                role, expire_unit, expire_duration,
-                expire_at, oauth_sub
+                id,
+                name,
+                email,
+                profile_image_url,
+                role,
+                expire_unit,
+                expire_duration,
+                expire_at,
+                oauth_sub,
             )
-            
+
             log.info(f"insert_new_auth: {user}")
 
             db.commit()

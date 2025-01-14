@@ -66,7 +66,7 @@
 		createPPT: undefined,
 		createImage: undefined,
 		createVideo: undefined,
-		createSearch: undefined,
+		createSearch: undefined
 	};
 
 	let toolIds = [];

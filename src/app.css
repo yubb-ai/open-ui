@@ -47,11 +47,11 @@ math {
 }
 
 .font-medium {
-	font-weight: 600
+	font-weight: 600;
 }
 
 .font-semibold {
-	font-weight: 800
+	font-weight: 800;
 }
 
 iframe {
@@ -101,18 +101,20 @@ select {
 }
 
 .katex-display > .katex {
-	white-space: normal
+	white-space: normal;
 }
 
 .katex-display > .base {
-	margin: 0.25em 0
+	margin: 0.25em 0;
 }
 
 .katex-display {
-	 margin: 0.5em 0;
+	margin: 0.5em 0;
 }
 
-.katex-display { overflow: auto hidden }
+.katex-display {
+	overflow: auto hidden;
+}
 
 .scrollbar-hidden:active::-webkit-scrollbar-thumb,
 .scrollbar-hidden:focus::-webkit-scrollbar-thumb,

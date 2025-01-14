@@ -11,7 +11,7 @@ log.setLevel(SRC_LOG_LEVELS["RAG"])
 
 
 def search_duckduckgo(
-        query: str, count: int, filter_list: Optional[list[str]] = None
+    query: str, count: int, filter_list: Optional[list[str]] = None
 ) -> list[SearchResult]:
     """
     Search using DuckDuckGo's Search API and return the results as a list of SearchResult objects.

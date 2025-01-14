@@ -189,7 +189,7 @@ export const addUser = async (
 	email: string,
 	password: string,
 	role: string = 'pending',
-	expire_at: string,
+	expire_at: string
 ) => {
 	let error = null;
 

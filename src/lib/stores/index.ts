@@ -170,7 +170,7 @@ type Document = {
 type File = {
 	max_size: number;
 	max_count: number;
-}
+};
 
 type Config = {
 	status: boolean;

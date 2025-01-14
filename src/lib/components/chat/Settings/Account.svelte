@@ -131,8 +131,8 @@
 						profileImageUrl =
 							res?.meta?.oss_url ||
 							(res?.filename ? `/api/v1/files/user/images/${res.filename}` : compressedSrc);
-						
-							profileImageInputElement.files = null;
+
+						profileImageInputElement.files = null;
 					};
 				};
 

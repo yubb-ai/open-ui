@@ -137,7 +137,10 @@
 						</div>
 					</div>
 
-					<div class=" capitalize line-clamp-1 text-3xl md:text-4xl font-semibold" in:fade={{ duration: 100 }}>
+					<div
+						class=" capitalize line-clamp-1 text-3xl md:text-4xl font-semibold"
+						in:fade={{ duration: 100 }}
+					>
 						{#if models[selectedModelIdx]?.info}
 							<strong>{models[selectedModelIdx]?.info?.name}</strong>
 						{:else}

@@ -309,9 +309,7 @@
 	};
 </script>
 
-<div
-	class="h-full flex pt-8"
->
+<div class="h-full flex pt-8">
 	{#if Object.keys(history?.messages ?? {}).length == 0}
 		<ChatPlaceholder
 			modelIds={selectedModels}

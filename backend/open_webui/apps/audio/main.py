@@ -119,9 +119,9 @@ def is_mp4_audio(file_path):
 
     info = mediainfo(file_path)
     if (
-            info.get("codec_name") == "aac"
-            and info.get("codec_type") == "audio"
-            and info.get("codec_tag_string") == "mp4a"
+        info.get("codec_name") == "aac"
+        and info.get("codec_type") == "audio"
+        and info.get("codec_tag_string") == "mp4a"
     ):
         return True
     return False
@@ -161,7 +161,7 @@ async def get_audio_config(user=Depends(get_admin_user)):
 
 @app.post("/config/update")
 async def update_audio_config(
-        form_data: AudioConfigUpdateForm, user=Depends(get_admin_user)
+    form_data: AudioConfigUpdateForm, user=Depends(get_admin_user)
 ):
     app.state.config.TTS_OPENAI_API_BASE_URL = form_data.tts.OPENAI_API_BASE_URL
     app.state.config.TTS_OPENAI_API_KEY = form_data.tts.OPENAI_API_KEY
@@ -174,8 +174,12 @@ async def update_audio_config(
     app.state.config.TTS_AZURE_SPEECH_OUTPUT_FORMAT = (
         form_data.tts.AZURE_SPEECH_OUTPUT_FORMAT
     )
-    app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL = form_data.tts.AUDIO_SPEECH_PREVIEW_BASE_URL
-    app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS = form_data.tts.AUDIO_SPEECH_PREVIEW_API_KEYS
+    app.state.config.AUDIO_SPEECH_PREVIEW_BASE_URL = (
+        form_data.tts.AUDIO_SPEECH_PREVIEW_BASE_URL
+    )
+    app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS = (
+        form_data.tts.AUDIO_SPEECH_PREVIEW_API_KEYS
+    )
 
     app.state.config.STT_OPENAI_API_BASE_URL = form_data.stt.OPENAI_API_BASE_URL
     app.state.config.STT_OPENAI_API_KEY = form_data.stt.OPENAI_API_KEY
@@ -366,13 +370,18 @@ async def speech(request: Request, user=Depends(get_verified_user)):
                 status_code=500, detail=f"Error synthesizing speech - {response.reason}"
             )
 
+
 @app.post("/speech/preview")
 async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
     body = await request.json()
     if user.role not in ["vip", "svip", "admin"]:
         return {"error": "You are not authorized to use this endpoint."}
-    
-    speech_api_keys = [key.strip() for key in app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS.split(",") if key.strip()]
+
+    speech_api_keys = [
+        key.strip()
+        for key in app.state.config.AUDIO_SPEECH_PREVIEW_API_KEYS.split(",")
+        if key.strip()
+    ]
     headers = {
         "Authorization": f"Bearer {random.choice(speech_api_keys)}",
         "Content-Type": "application/json",
@@ -391,13 +400,14 @@ async def get_speech_preview(request: Request, user=Depends(get_verified_user)):
         log.exception(e)
         return {"error": "Error connecting to the speech preview service"}
 
+
 @app.post("/transcriptions")
 def transcribe(
-        file: UploadFile = File(...),
-        user=Depends(get_current_user),
+    file: UploadFile = File(...),
+    user=Depends(get_current_user),
 ):
     log.info(f"file.content_type: {file.content_type}")
-    
+
     if file.content_type not in ["audio/mpeg", "audio/wav", "audio/ogg", "audio/x-m4a"]:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

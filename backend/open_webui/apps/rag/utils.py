@@ -9,7 +9,10 @@ from langchain.retrievers import ContextualCompressionRetriever, EnsembleRetriev
 from langchain_community.retrievers import BM25Retriever
 from langchain_core.documents import Document
 
-from open_webui.apps.ollama.main import GenerateEmbeddingsForm, generate_ollama_embeddings
+from open_webui.apps.ollama.main import (
+    GenerateEmbeddingsForm,
+    generate_ollama_embeddings,
+)
 from open_webui.config import CHROMA_CLIENT
 from open_webui.env import SRC_LOG_LEVELS
 
@@ -62,10 +65,10 @@ class VectorSearchRetriever(BaseRetriever):
 
 
 def query_doc(
-        collection_name: str,
-        query: str,
-        embedding_function,
-        k: int,
+    collection_name: str,
+    query: str,
+    embedding_function,
+    k: int,
 ):
     try:
         result = VECTOR_DB_CLIENT.search(
@@ -259,12 +262,12 @@ def rag_template(template: str, context: str, query: str):
 
 
 def get_embedding_function(
-        embedding_engine,
-        embedding_model,
-        embedding_function,
-        openai_key,
-        openai_url,
-        batch_size,
+    embedding_engine,
+    embedding_model,
+    embedding_function,
+    openai_key,
+    openai_url,
+    batch_size,
 ):
     if embedding_engine == "":
         return lambda query: embedding_function.encode(query).tolist()
@@ -291,7 +294,7 @@ def get_embedding_function(
                 if embedding_engine == "openai":
                     embeddings = []
                     for i in range(0, len(query), batch_size):
-                        embeddings.extend(f(query[i: i + batch_size]))
+                        embeddings.extend(f(query[i : i + batch_size]))
                     return embeddings
                 else:
                     return [f(q) for q in query]
@@ -302,13 +305,13 @@ def get_embedding_function(
 
 
 def get_rag_context(
-        files,
-        messages,
-        embedding_function,
-        k,
-        reranking_function,
-        r,
-        hybrid_search,
+    files,
+    messages,
+    embedding_function,
+    k,
+    reranking_function,
+    r,
+    hybrid_search,
 ):
     log.debug(f"files: {files} {messages} {embedding_function} {reranking_function}")
     query = get_last_user_message(messages)
@@ -424,9 +427,9 @@ def get_model_path(model: str, update_model: bool = False):
 
     # Inspiration from upstream sentence_transformers
     if (
-            os.path.exists(model)
-            or ("\\" in model or model.count("/") > 1)
-            and local_files_only
+        os.path.exists(model)
+        or ("\\" in model or model.count("/") > 1)
+        and local_files_only
     ):
         # If fully qualified path exists, return input, else set repo_id
         return model
@@ -447,10 +450,10 @@ def get_model_path(model: str, update_model: bool = False):
 
 
 def generate_openai_embeddings(
-        model: str,
-        text: Union[str, list[str]],
-        key: str,
-        url: str = "https://api.openai.com/v1",
+    model: str,
+    text: Union[str, list[str]],
+    key: str,
+    url: str = "https://api.openai.com/v1",
 ):
     if isinstance(text, list):
         embeddings = generate_openai_batch_embeddings(model, text, key, url)
@@ -461,7 +464,7 @@ def generate_openai_embeddings(
 
 
 def generate_openai_batch_embeddings(
-        model: str, texts: list[str], key: str, url: str = "https://api.openai.com/v1"
+    model: str, texts: list[str], key: str, url: str = "https://api.openai.com/v1"
 ) -> Optional[list[list[float]]]:
     try:
         r = requests.post(
@@ -501,10 +504,10 @@ class RerankCompressor(BaseDocumentCompressor):
         arbitrary_types_allowed = True
 
     def compress_documents(
-            self,
-            documents: Sequence[Document],
-            query: str,
-            callbacks: Optional[Callbacks] = None,
+        self,
+        documents: Sequence[Document],
+        query: str,
+        callbacks: Optional[Callbacks] = None,
     ) -> Sequence[Document]:
         reranking = self.reranking_function is not None
 

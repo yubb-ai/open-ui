@@ -50,9 +50,7 @@ else:
 
 # Dictionary to maintain the user pool
 if WEBSOCKET_MANAGER == "redis":
-    SESSION_POOL = RedisDict(
-        "open-webui:session_pool", redis_url=WEBSOCKET_REDIS_URL
-    )
+    SESSION_POOL = RedisDict("open-webui:session_pool", redis_url=WEBSOCKET_REDIS_URL)
     USER_POOL = RedisDict("open-webui:user_pool", redis_url=WEBSOCKET_REDIS_URL)
     USAGE_POOL = RedisDict("open-webui:usage_pool", redis_url=WEBSOCKET_REDIS_URL)
 else:
@@ -95,6 +93,7 @@ app = socketio.ASGIApp(
     sio,
     socketio_path="/ws/socket.io",
 )
+
 
 def get_models_in_use():
     # List models that are currently in use
@@ -167,9 +166,11 @@ async def user_join(sid, data):
 
     await sio.emit("user-count", {"count": len(USER_POOL)})
 
+
 @sio.on("user-count")
 async def user_count(sid):
     await sio.emit("user-count", {"count": len(USER_POOL)})
+
 
 @sio.event
 async def disconnect(sid):
@@ -189,6 +190,7 @@ async def disconnect(sid):
         await sio.emit("user-count", {"count": len(USER_POOL)})
     else:
         log.debug(f"Unknown session ID {sid} disconnected")
+
 
 def get_event_emitter(request_info):
     async def __event_emitter__(event_data):

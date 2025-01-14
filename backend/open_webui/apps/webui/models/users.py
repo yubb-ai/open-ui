@@ -118,7 +118,9 @@ class UsersTable:
                 elif expire_unit == "day":
                     expire_time = current_time + relativedelta(days=expire_duration)
                 else:
-                    raise ValueError("Invalid expire_unit. Must be 'week', 'month', or 'year'.")
+                    raise ValueError(
+                        "Invalid expire_unit. Must be 'week', 'month', or 'year'."
+                    )
 
                 # 将计算的日期转换为时间戳（秒）
                 expire_at = int(expire_time.timestamp())
@@ -183,8 +185,8 @@ class UsersTable:
         with get_db() as db:
             users = (
                 db.query(User)
-                    # .offset(skip).limit(limit)
-                    .all()
+                # .offset(skip).limit(limit)
+                .all()
             )
             return [UserModel.model_validate(user) for user in users]
 
@@ -211,7 +213,7 @@ class UsersTable:
             return None
 
     def update_user_profile_image_url_by_id(
-            self, id: str, profile_image_url: str
+        self, id: str, profile_image_url: str
     ) -> Optional[UserModel]:
         try:
             with get_db() as db:
@@ -239,7 +241,7 @@ class UsersTable:
             return None
 
     def update_user_oauth_sub_by_id(
-            self, id: str, oauth_sub: str
+        self, id: str, oauth_sub: str
     ) -> Optional[UserModel]:
         try:
             with get_db() as db:

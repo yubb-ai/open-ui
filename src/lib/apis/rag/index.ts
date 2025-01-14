@@ -43,17 +43,17 @@ type YoutubeConfigForm = {
 };
 
 type OssConfigForm = {
-    enable_storage: boolean;
-    access_key: string | null;
-    access_secret: string | null;
-    endpoint: string | null;
-    bucket_name: string | null;
+	enable_storage: boolean;
+	access_key: string | null;
+	access_secret: string | null;
+	endpoint: string | null;
+	bucket_name: string | null;
 };
 
 type File = {
 	max_size: number;
 	max_count: number;
-}
+};
 
 type RAGConfigForm = {
 	file?: File | null;

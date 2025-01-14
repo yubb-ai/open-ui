@@ -45,7 +45,7 @@ class PromptForm(BaseModel):
 
 class PromptsTable:
     def insert_new_prompt(
-            self, user_id: str, form_data: PromptForm
+        self, user_id: str, form_data: PromptForm
     ) -> Optional[PromptModel]:
         prompt = PromptModel(
             **{
@@ -85,7 +85,7 @@ class PromptsTable:
             ]
 
     def update_prompt_by_command(
-            self, command: str, form_data: PromptForm
+        self, command: str, form_data: PromptForm
     ) -> Optional[PromptModel]:
         try:
             with get_db() as db:

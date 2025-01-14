@@ -119,8 +119,8 @@ export const getUsers = async (token: string) => {
 export const getFirstUser = ({ users = [] }) => {
 	if (!users.length) return null;
 
-	return users.reduce((minUser, currentUser) =>
-		currentUser.created_at < minUser.created_at ? currentUser : minUser,
+	return users.reduce(
+		(minUser, currentUser) => (currentUser.created_at < minUser.created_at ? currentUser : minUser),
 		users[0]
 	);
 };
@@ -311,7 +311,12 @@ type UserUpdateForm = {
 	password: string;
 };
 
-export const updateUserById = async (token: string, userId: string, user: UserUpdateForm, expire_at: number) => {
+export const updateUserById = async (
+	token: string,
+	userId: string,
+	user: UserUpdateForm,
+	expire_at: number
+) => {
 	let error = null;
 
 	const res = await fetch(`${WEBUI_API_BASE_URL}/users/${userId}/update`, {

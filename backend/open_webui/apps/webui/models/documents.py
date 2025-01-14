@@ -70,7 +70,7 @@ class DocumentForm(DocumentUpdateForm):
 
 class DocumentsTable:
     def insert_new_doc(
-            self, user_id: str, form_data: DocumentForm
+        self, user_id: str, form_data: DocumentForm
     ) -> Optional[DocumentModel]:
         with get_db() as db:
             document = DocumentModel(
@@ -108,7 +108,7 @@ class DocumentsTable:
             ]
 
     def update_doc_by_name(
-            self, name: str, form_data: DocumentUpdateForm
+        self, name: str, form_data: DocumentUpdateForm
     ) -> Optional[DocumentModel]:
         try:
             with get_db() as db:
@@ -126,7 +126,7 @@ class DocumentsTable:
             return None
 
     def update_doc_content_by_name(
-            self, name: str, updated: dict
+        self, name: str, updated: dict
     ) -> Optional[DocumentModel]:
         try:
             doc = self.get_doc_by_name(name)

@@ -142,7 +142,9 @@
 				</div>
 
 				<div class=" mb-1.5 py-0.5 flex w-full justify-between">
-					<div class=" self-center text-xs font-medium">{$i18n.t('Select restricted message warning acceptance type')}</div>
+					<div class=" self-center text-xs font-medium">
+						{$i18n.t('Select restricted message warning acceptance type')}
+					</div>
 					<div class="flex items-center relative">
 						<select
 							class="dark:bg-gray-900 w-fit pr-8 rounded px-2 p-1 text-xs bg-transparent outline-none text-right"

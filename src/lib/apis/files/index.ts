@@ -32,7 +32,7 @@ const upload = async (token: string, file: File, endpoint: string) => {
 
 export const uploadFile = async (token: string, file: File) => {
 	return upload(token, file, '/files/');
-}
+};
 
 export const uploadModelImage = (token: string, file: File) => {
 	return upload(token, file, '/files/model/images');
@@ -60,7 +60,7 @@ export const base64ToFile = (base64Data: string, fileName: string) => {
 	const file = new File([blob], fileName, { type: 'image/jpeg' });
 
 	return file;
-}
+};
 
 export const getFiles = async (token: string = '') => {
 	let error = null;

@@ -1,20 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<link rel="manifest" href="%sveltekit.assets%/manifest.json" crossorigin="use-credentials" />
-		<meta name="viewport"
-			content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+		<meta
+			name="viewport"
+			content="width=device-width, height=device-height, initial-scale=1, viewport-fit=cover, maximum-scale=1"
+		/>
 		<meta name="robots" content="noindex,nofollow" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="apple-touch-icon" href="%sveltekit.assets%/logo.png">
+		<meta name="apple-touch-icon" href="%sveltekit.assets%/logo.png" />
 		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 		<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
 		<meta name="description" content="Yubb Chat" />
-		<link rel="search" type="application/opensearchdescription+xml" title="Yubb Chat" href="/opensearch.xml" />
+		<link
+			rel="search"
+			type="application/opensearchdescription+xml"
+			title="Yubb Chat"
+			href="/opensearch.xml"
+		/>
 
 		<script>
 			function copyLink() {
@@ -31,7 +38,7 @@
 				}
 				document.body.removeChild(input);
 			}
-			
+
 			function IsWeixinOrAlipay() {
 				var ua = window.navigator.userAgent.toLowerCase();
 				if (ua.match(/MicroMessenger/i) == 'micromessenger') {
@@ -98,7 +105,6 @@
 					document.body.style.overflow = 'hidden';
 				}
 			};
-			
 		</script>
 
 		<title>Yubb Chat</title>
@@ -107,32 +113,32 @@
 	</head>
 
 	<body data-sveltekit-preload-data="hover">
-
 		<div id="main-content" style="display: contents">%sveltekit.body%</div>
 
 		<div id="browser-warning">
 			<div class="content">
-				<img id="startLogo" src="/favicon.png" alt="preview logo">
-				<p>
-					为了获得更好的体验，请您使用手机自带或其他浏览器打开此页面！
-				</p>
+				<img id="startLogo" src="/favicon.png" alt="preview logo" />
+				<p>为了获得更好的体验，请您使用手机自带或其他浏览器打开此页面！</p>
 				<button onclick="copyLink()">复制链接</button>
 			</div>
 		</div>
 
 		<div id="splash-screen">
-			<img id="logo" style="
-				position: absolute;
-				width: auto;
-				height: 6rem;
-				top: 44%;
-				left: 50%;
-				border-radius: 50%;
-				transform: translateX(-50%);
-			" src="/favicon.png" />
+			<img
+				id="logo"
+				style="
+					position: absolute;
+					width: auto;
+					height: 6rem;
+					top: 44%;
+					left: 50%;
+					border-radius: 50%;
+					transform: translateX(-50%);
+				"
+				src="/favicon.png"
+			/>
 		</div>
 	</body>
-
 </html>
 
 <style type="text/css" nonce="">
@@ -209,7 +215,6 @@
 		margin-bottom: 2rem;
 		color: #4a4a4a;
 		font-weight: 500;
-
 	}
 
 	#browser-warning button {

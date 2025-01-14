@@ -114,7 +114,7 @@ class ComfyUIGenerateImageForm(BaseModel):
 
 
 async def comfyui_generate_image(
-        model: str, payload: ComfyUIGenerateImageForm, client_id, base_url
+    model: str, payload: ComfyUIGenerateImageForm, client_id, base_url
 ):
     ws_url = base_url.replace("http://", "ws://").replace("https://", "wss://")
     workflow = json.loads(payload.workflow.workflow)

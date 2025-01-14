@@ -46,6 +46,7 @@ def migrate(migrator: Migrator, database: pw.Database, *, fake=False):
         expire_at=pw.BigIntegerField(null=False, default=one_year_from_now_timestamp),
     )
 
+
 def rollback(migrator: Migrator, database: pw.Database, *, fake=False):
     """Write your rollback migrations here."""
 

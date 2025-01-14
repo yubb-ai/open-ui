@@ -12,7 +12,11 @@ log.setLevel(SRC_LOG_LEVELS["RAG"])
 
 
 def search_searchapi(
-        api_key: str, engine: str, query: str, count: int, filter_list: Optional[list[str]] = None
+    api_key: str,
+    engine: str,
+    query: str,
+    count: int,
+    filter_list: Optional[list[str]] = None,
 ) -> list[SearchResult]:
     """Search using searchapi.io's API and return the results as a list of SearchResult objects.
 
@@ -24,11 +28,7 @@ def search_searchapi(
 
     engine = engine or "google"
 
-    payload = {
-        "engine": engine,
-        "q": query,
-        "api_key": api_key
-    }
+    payload = {"engine": engine, "q": query, "api_key": api_key}
 
     url = f"{url}?{urlencode(payload)}"
     response = requests.request("GET", url)
@@ -43,9 +43,7 @@ def search_searchapi(
         results = get_filtered_results(results, filter_list)
     return [
         SearchResult(
-            link=result["link"],
-            title=result["title"],
-            snippet=result["snippet"]
+            link=result["link"], title=result["title"], snippet=result["snippet"]
         )
         for result in results[:count]
     ]

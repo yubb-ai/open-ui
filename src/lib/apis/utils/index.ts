@@ -191,4 +191,4 @@ export const removeMarkdown = (text: string) => {
 	text = text.replace(/^\s*([-*+]|\d+\.)\s+/gm, '');
 	text = text.replace(/\s{2,}/g, ' ').trim();
 	return text;
-}
+};

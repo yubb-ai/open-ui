@@ -125,8 +125,6 @@ export const transcribeAudio = async (token: string, file: File) => {
 	return res;
 };
 
-
-
 export const synthesizeOpenAISpeech = async (
 	token: string = '',
 	speaker: string = 'alloy',

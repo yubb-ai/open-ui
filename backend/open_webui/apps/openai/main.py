@@ -15,7 +15,10 @@ from starlette.background import BackgroundTask
 
 from open_webui.apps.filter.main import process_user_usage
 
-from open_webui.apps.openai.utils.streaming import convert_from_stream_headers, convert_to_stream_data
+from open_webui.apps.openai.utils.streaming import (
+    convert_from_stream_headers,
+    convert_to_stream_data,
+)
 from open_webui.apps.webui.models.models import Models
 from open_webui.config import (
     AIOHTTP_CLIENT_TIMEOUT,
@@ -194,8 +197,8 @@ async def fetch_url(url, key):
 
 
 async def cleanup_response(
-        response: Optional[aiohttp.ClientResponse],
-        session: Optional[aiohttp.ClientSession],
+    response: Optional[aiohttp.ClientResponse],
+    session: Optional[aiohttp.ClientSession],
 ):
     if response:
         response.close()
@@ -337,7 +340,12 @@ async def get_models(url_idx: Optional[int] = None, user=Depends(get_verified_us
         timeout_duration = 10
 
         try:
-            r = requests.request(method="GET", url=f"{url}/models", headers=headers, timeout=timeout_duration)
+            r = requests.request(
+                method="GET",
+                url=f"{url}/models",
+                headers=headers,
+                timeout=timeout_duration,
+            )
             r.raise_for_status()
 
             response_data = r.json()
@@ -500,7 +508,7 @@ async def generate_chat_completion(
                 if "content-length" in headers:
                     log.warning("Removing Content-Length for streaming response")
                     del headers["content-length"]
-                
+
                 # Set Transfer-Encoding: chunked for streaming
                 headers["transfer-encoding"] = "chunked"
 
@@ -508,7 +516,9 @@ async def generate_chat_completion(
                     content_generator(),
                     status_code=r.status,
                     headers=headers,
-                    background=BackgroundTask(cleanup_response, response=r, session=session),
+                    background=BackgroundTask(
+                        cleanup_response, response=r, session=session
+                    ),
                 )
             else:
                 log.info("Returning non-streaming response to client")

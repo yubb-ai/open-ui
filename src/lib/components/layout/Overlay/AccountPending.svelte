@@ -24,11 +24,7 @@
 		<div class="m-auto pb-10 flex flex-col justify-center">
 			<div class="max-w-md">
 				<div class="flex justify-center mb-6">
-					<img
-						src="{WEBUI_BASE_URL}/static/favicon.png"
-						class=" w-8 rounded-full"
-						alt="logo"
-					/>
+					<img src="{WEBUI_BASE_URL}/static/favicon.png" class=" w-8 rounded-full" alt="logo" />
 				</div>
 
 				<!-- 标题 -->
