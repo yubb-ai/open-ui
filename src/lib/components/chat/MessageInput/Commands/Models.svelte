@@ -78,6 +78,8 @@
 									src={model?.info?.meta?.profile_image_url ?? '/static/favicon.png'}
 									alt={model?.name ?? model.id}
 									class="rounded-full size-6 items-center mr-2"
+									on:load={(event) => (event.target.src = model?.info?.meta?.profile_image_url ?? '/static/favicon.png')}
+									on:error={(event) => (event.target.src = '/static/favicon.png')}
 								/>
 								{model.name}
 							</div>

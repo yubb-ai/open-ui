@@ -2138,6 +2138,7 @@ async def get_app_config(request: Request):
             "enable_create_image": webui_app.state.config.UI_ENABLE_CREATE_IMAGE,
             "enable_create_video": webui_app.state.config.UI_ENABLE_CREATE_VIDEO,
             "enable_create_ppt": webui_app.state.config.UI_ENABLE_CREATE_PPT,
+            "enable_create_search": webui_app.state.config.UI_ENABLE_CREATE_SEARCH,
         },
         **(
             {

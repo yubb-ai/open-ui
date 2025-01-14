@@ -1721,3 +1721,9 @@ UI_ENABLE_CREATE_PPT = PersistentConfig(
     "ui.enable_create_ppt",
     os.environ.get("UI_ENABLE_CREATE_PPT", "true").lower() == "true",
 )
+
+UI_ENABLE_CREATE_SEARCH = PersistentConfig(
+    "UI_ENABLE_CREATE_SEARCH",
+    "ui.enable_create_search",
+    os.environ.get("UI_ENABLE_CREATE_SEARCH", "true").lower() == "true",
+)

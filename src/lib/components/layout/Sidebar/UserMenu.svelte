@@ -177,6 +177,7 @@
 							}
 
 							try {
+								toast.info('正在请求跳转实时语音预览，请稍等...');
 								// await 等待异步获取语音预览URL
 								const speechPreviewJson = await getSpeechPreviewUrl(
 									localStorage.token,

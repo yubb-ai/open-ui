@@ -17,9 +17,7 @@
 		temporaryChatEnabled,
 		showArtifacts,
 		chatType,
-
 		config
-
 	} from '$lib/stores';
 	import { onMount, getContext, tick } from 'svelte';
 
@@ -281,7 +279,7 @@
 	data-state={$showSidebar}
 >
 	<div
-		class="py-2.5 my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[260px] z-50 {$showSidebar
+		class="font-primary py-2.5 my-auto flex flex-col justify-between h-screen max-h-[100dvh] w-[260px] z-50 {$showSidebar
 			? ''
 			: 'invisible'}"
 	>
@@ -305,7 +303,6 @@
 			>
 				<div class="self-center mx-1.5">
 					<img
-						crossorigin="anonymous"
 						src="{WEBUI_BASE_URL}/static/favicon.png"
 						class=" size-6 -translate-x-1.5 rounded-full"
 						alt="logo"
@@ -344,11 +341,52 @@
 			</button>
 		</div>
 
-		{#if $config?.chatTypes.enable_create_image}
+		{#if $config?.chatTypes.enable_create_search}
 			<div class="pt-1 px-2.5 flex justify-center text-gray-800 dark:text-gray-200">
 				<a
 					class="flex-grow flex space-x-3 rounded-xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-					href="/?chatType=createImage"
+					href="/"
+					on:click={() => {
+						selectedChatId = null;
+						chatId.set('');
+						chatType.set('createSearch');
+
+						if ($mobile) {
+							showSidebar.set(false);
+						}
+					}}
+					draggable="false"
+				>
+					<div class="self-center">
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							stroke-width="0.2"
+							class="size-[1.1rem]"
+						>
+							<path
+								fill="currentColor"
+								fill-rule="evenodd"
+								d="M17.809 10.109c.26 0 .453-.188.49-.435.23-1.373.433-2.078.869-2.515.435-.436 1.137-.638 2.502-.868.25-.03.448-.23.448-.492a.49.49 0 0 0-.45-.491c-1.363-.232-2.065-.434-2.5-.87-.436-.438-.638-1.142-.869-2.513a.49.49 0 0 0-.49-.438.5.5 0 0 0-.494.436c-.23 1.372-.432 2.077-.868 2.514-.435.437-1.135.64-2.498.871a.49.49 0 0 0-.453.492c0 .266.204.458.45.49 1.366.23 2.066.428 2.501.862.436.435.638 1.14.869 2.524a.5.5 0 0 0 .493.433m.37 7.16a9.06 9.06 0 0 0 2.023-5.721c-.601.25-1.25.41-1.93.46a7.185 7.185 0 1 1-6.532-7.62c.153-.658.41-1.277.753-1.837a9.101 9.101 0 1 0 4.33 16.073l3.615 3.613a.954.954 0 0 0 1.348-.006.954.954 0 0 0 .007-1.348z"
+								clip-rule="evenodd"
+							>
+							</path>
+						</svg>
+					</div>
+
+					<div class="flex self-center">
+						<div class=" self-center font-medium text-sm font-primary">{$i18n.t('AI Search')}</div>
+					</div>
+				</a>
+			</div>
+		{/if}
+
+		{#if $config?.chatTypes.enable_create_image}
+			<div class="px-2.5 flex justify-center text-gray-800 dark:text-gray-200">
+				<a
+					class="flex-grow flex space-x-3 rounded-xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
+					href="/"
 					on:click={() => {
 						selectedChatId = null;
 						chatId.set('');
@@ -366,7 +404,7 @@
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
-							stroke-width="0.25"
+							stroke-width="0.2"
 							class="size-[1.1rem]"
 						>
 							<path
@@ -390,7 +428,7 @@
 			<div class="px-2.5 flex justify-center text-gray-800 dark:text-gray-200">
 				<a
 					class="flex-grow flex space-x-3 rounded-xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-					href="/?chatType=createVideo"
+					href="/"
 					on:click={() => {
 						selectedChatId = null;
 						chatId.set('');
@@ -409,12 +447,13 @@
 							fill="none"
 							viewBox="0 0 48 48"
 							stroke="currentColor"
-							stroke-width="0.25"
+							stroke-width="1"
 							class="size-[1.1rem]"
 						>
 							<path
 								fill="currentColor"
 								fill-rule="evenodd"
+								clip-rule="evenodd"
 								d="M43,42H5c-2.209,0-4-1.791-4-4V10c0-2.209,1.791-4,4-4h38c2.209,0,4,1.791,4,4v28  C47,40.209,45.209,42,43,42z M12,8H5c-1.104,0-2,0.896-2,2v2h9V8z M23,8h-9v4h9V8z M34,8h-9v4h9V8z M45,10c0-1.104-0.896-2-2-2h-7v4  h9l0,0V10z M45,14L45,14H3v20h42l0,0V14z M45,36L45,36h-9v4h-2v-4h-9v4h-2v-4h-9v4h-2v-4H3v2c0,1.104,0.896,2,2,2h38  c1.104,0,2-0.896,2-2V36z M21.621,29.765C21.449,29.904,21.238,30,21,30c-0.553,0-1-0.447-1-1V19c0-0.552,0.447-1,1-1  c0.213,0,0.4,0.082,0.563,0.196l7.771,4.872C29.72,23.205,30,23.566,30,24c0,0.325-0.165,0.601-0.405,0.783L21.621,29.765z"
 							/>
 						</svg>
@@ -431,7 +470,7 @@
 			<div class="px-2.5 flex justify-center text-gray-800 dark:text-gray-200">
 				<a
 					class="flex-grow flex space-x-3 rounded-xl px-2.5 py-2 hover:bg-gray-100 dark:hover:bg-gray-900 transition"
-					href="/?chatType=createPPT"
+					href="/"
 					on:click={() => {
 						selectedChatId = null;
 						chatId.set('');
@@ -450,7 +489,7 @@
 							viewBox="0 0 500 500"
 							version="1.1"
 							stroke="currentColor"
-							stroke-width="0.25"
+							stroke-width="1"
 							class="size-[1.1rem]"
 							fill="none"
 						>
@@ -458,6 +497,7 @@
 								d="M445,85 C472.614237,85 495,107.385763 495,135 L495,365 C495,392.614237 472.614237,415 445,415 L390,415 L330,475 L119.990375,475 C92.6544153,475 70.4480893,453.060137 70.0066963,425.827789 L70,425.000964 L70,415 L55,415 C27.3857625,415 5,392.614237 5,365 L5,135 C5,107.385763 27.3857625,85 55,85 L445,85 Z M347.573,415 L100,415 L100,425.345515 C100.184687,436.118352 108.876491,444.813253 119.642377,444.997032 L119.990375,445 L317.573,445 L347.573,415 Z M445,115 L55,115 C44.0693643,115 35.186775,123.768729 35,134.655511 L35,365 C35,375.930636 43.7687286,384.813225 54.6555106,384.997093 L55,385 L445,385 C455.930636,385 464.813225,376.231271 465,365.344489 L465,135 C465,124.069364 456.231271,115.186775 445.344489,115.002907 L445,115 Z M132.2,175 C164.825,175 182.6,197.05 182.6,223.375 C182.6,249.214 164.9582,270.863072 133.167676,271.29347 L132.2,271.3 L93.95,271.3 L93.95,325.075 L62,325.075 L62,175 L132.2,175 Z M265.1,175 C297.725,175 315.5,197.05 315.5,223.375 C315.5,249.214 297.8582,270.863072 266.067676,271.29347 L265.1,271.3 L226.85,271.3 L226.85,325.075 L194.9,325.075 L194.9,175 L265.1,175 Z M438.275,175 L438.275,203.125 L394.625,203.125 L394.625,325.075 L362.45,325.075 L362.45,203.125 L318.575,203.125 L318.575,175 L438.275,175 Z M127.925,202.45 L93.95,202.45 L93.95,243.85 L127.925,243.85 C140.525,243.85 149.975,235.75 149.975,223.15 C149.975,210.89875 140.713055,202.616905 128.302049,202.452493 L127.925,202.45 Z M260.825,202.45 L226.85,202.45 L226.85,243.85 L260.825,243.85 C273.425,243.85 282.875,235.75 282.875,223.15 C282.875,210.89875 273.613055,202.616905 261.202049,202.452493 L260.825,202.45 Z M380.009625,25 C405.934834,25 427.246205,44.7337569 429.753348,70.0007546 L399.372554,70.0007546 C397.182818,61.490886 389.538934,55.1750176 380.391623,55.003577 L380.009625,55 L119.646183,55 C110.486627,55.1573191 102.822334,61.4822685 100.629913,70.0007546 L70.246796,70.0007546 C72.7297027,44.9921013 93.6441185,25.395342 119.214115,25.0059076 L119.990375,25 L380.009625,25 Z"
 								fill="currentColor"
 								fill-rule="evenodd"
+								clip-rule="evenodd"
 							/>
 						</svg>
 					</div>
@@ -496,6 +536,7 @@
 							<path
 								stroke-linecap="round"
 								stroke-linejoin="round"
+								clip-rule="evenodd"
 								d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 0 0 2.25-2.25V6a2.25 2.25 0 0 0-2.25-2.25H6A2.25 2.25 0 0 0 3.75 6v2.25A2.25 2.25 0 0 0 6 10.5Zm0 9.75h2.25A2.25 2.25 0 0 0 10.5 18v-2.25a2.25 2.25 0 0 0-2.25-2.25H6a2.25 2.25 0 0 0-2.25 2.25V18A2.25 2.25 0 0 0 6 20.25Zm9.75-9.75H18a2.25 2.25 0 0 0 2.25-2.25V6A2.25 2.25 0 0 0 18 3.75h-2.25A2.25 2.25 0 0 0 13.5 6v2.25a2.25 2.25 0 0 0 2.25 2.25Z"
 							/>
 						</svg>
@@ -516,7 +557,7 @@
 				: ''}"
 		>
 			{#if $temporaryChatEnabled}
-				<div class="absolute z-40 w-full h-full flex justify-center"></div>
+				<div class="font-primary absolute z-40 w-full h-full flex justify-center"></div>
 			{/if}
 
 			<div class="px-2 mt-0.5 mb-2 flex justify-center space-x-2">

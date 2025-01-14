@@ -79,14 +79,16 @@ async def set_global_default_suggestions(
         form_data: chatTypes,
         user=Depends(get_admin_user),
 ):
+    request.app.state.config.UI_ENABLE_CREATE_PPT = form_data.chatTypes.get("enable_create_ppt", False)
     request.app.state.config.UI_ENABLE_CREATE_IMAGE = form_data.chatTypes.get("enable_create_image", False)
     request.app.state.config.UI_ENABLE_CREATE_VIDEO = form_data.chatTypes.get("enable_create_video", False)
-    request.app.state.config.UI_ENABLE_CREATE_PPT = form_data.chatTypes.get("enable_create_ppt", False)
+    request.app.state.config.UI_ENABLE_CREATE_SEARCH = form_data.chatTypes.get("enable_create_search", False)
 
     return {
+        "enable_create_ppt": request.app.state.config.UI_ENABLE_CREATE_PPT,
         "enable_create_image": request.app.state.config.UI_ENABLE_CREATE_IMAGE,
         "enable_create_video": request.app.state.config.UI_ENABLE_CREATE_VIDEO,
-        "enable_create_ppt": request.app.state.config.UI_ENABLE_CREATE_PPT,
+        "enable_create_search": request.app.state.config.UI_ENABLE_CREATE_SEARCH,
     }
 
 ############################

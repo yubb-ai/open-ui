@@ -202,9 +202,10 @@ type Config = {
 		enable_community_sharing: boolean;
 	};
 	chatTypes: {
+		enable_create_ppt: boolean;
 		enable_create_image: boolean;
 		enable_create_video: boolean;
-		enable_create_ppt: boolean;
+		enable_create_search: boolean;
 	};
 	oauth: {
 		providers: {

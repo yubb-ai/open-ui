@@ -32,7 +32,8 @@
 	let chatTypes = {
 		enable_create_image: true,
 		enable_create_video: true,
-		enable_create_ppt: true
+		enable_create_ppt: true,
+		enable_create_search: true
 	};
 
 	let promptSuggestions = [];
@@ -55,9 +56,10 @@
 
 		promptSuggestions = $config?.default_prompt_suggestions ?? [];
 
+		chatTypes.enable_create_ppt = $config?.chatTypes.enable_create_ppt ?? true;
 		chatTypes.enable_create_image = $config?.chatTypes.enable_create_image ?? true;
 		chatTypes.enable_create_video = $config?.chatTypes.enable_create_video ?? true;
-		chatTypes.enable_create_ppt = $config?.chatTypes.enable_create_ppt ?? true;
+		chatTypes.enable_create_search = $config?.chatTypes.enable_create_search ?? true;
 
 		banners = await getBanners(localStorage.token);
 	});
@@ -185,6 +187,15 @@
 			<div class=" self-center text-sm font-semibold">
 				{$i18n.t('AI模型分类')}
 			</div>
+
+			<div class="my-3 flex w-full items-center justify-between">
+				<div class=" self-center text-xs font-medium">
+					{$i18n.t('启动AIPPT生成')}
+				</div>
+
+				<Switch bind:state={chatTypes.enable_create_ppt} />
+			</div>
+
 			<div class="my-3 flex w-full items-center justify-between">
 				<div class=" self-center text-xs font-medium">
 					{$i18n.t('启动AI图像生成')}
@@ -203,10 +214,10 @@
 
 			<div class="my-3 flex w-full items-center justify-between">
 				<div class=" self-center text-xs font-medium">
-					{$i18n.t('启动AIPPT生成')}
+					{$i18n.t('启动AI搜索生成')}
 				</div>
 
-				<Switch bind:state={chatTypes.enable_create_ppt} />
+				<Switch bind:state={chatTypes.enable_create_search} />
 			</div>
 		</div>
 

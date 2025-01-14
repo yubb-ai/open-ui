@@ -479,7 +479,6 @@
 					>
 						<div class="flex items-center gap-2 text-sm dark:text-gray-500">
 							<img
-								crossorigin="anonymous"
 								alt="model profile"
 								class="size-4 max-w-[28px] object-cover rounded-full"
 								src={$models.find((model) => model.id === atSelectedModel.id)?.info?.meta
@@ -662,7 +661,7 @@
 							{/if}
 
 							<div class=" flex">
-								<div class=" ml-0.5 self-end mb-1.5 flex space-x-1">
+								<div class=" self-center ml-0.5 flex space-x-1">
 									<InputMenu
 										bind:webSearchEnabled
 										bind:selectedToolIds
@@ -880,7 +879,7 @@
 									}}
 								/>
 
-								<div class="self-end mb-2 flex space-x-1 mr-1">
+								<div class="self-center flex space-x-1 mr-1.5">
 									{#if !history?.currentId || history.messages[history.currentId]?.done == true}
 										<Tooltip content={$i18n.t('Record voice')}>
 											<button

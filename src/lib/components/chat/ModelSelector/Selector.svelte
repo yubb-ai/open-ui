@@ -230,14 +230,14 @@
 	}}
 	closeFocus={false}
 >
-	<DropdownMenu.Trigger class="relative w-full font-primary" aria-label={placeholder}>
+	<DropdownMenu.Trigger class="relative w-full font-primary font-semibold" aria-label={placeholder}>
 		<div
-			class="flex w-full text-left px-0.5 outline-none bg-transparent truncate text-lg font-medium placeholder-gray-400 focus:outline-none"
+			class="flex w-full text-left px-0.5 outline-none bg-transparent truncate text-lg font-semibold placeholder-gray-400 focus:outline-none"
 		>
 			{#if selectedModel}
-				{selectedModel.label}
+				<strong>{selectedModel.label}</strong>
 			{:else}
-				{placeholder}
+				<strong>{placeholder}</strong>
 			{/if}
 			<ChevronDown className=" self-center ml-2 size-3" strokeWidth="2.5" />
 		</div>
@@ -246,7 +246,7 @@
 	<DropdownMenu.Content
 		class=" z-40 {$mobile
 			? `w-full`
-			: `${className}`} max-w-[calc(100vw-1rem)] justify-start rounded-xl  bg-white dark:bg-gray-850 dark:text-white shadow-lg border border-gray-300/30 dark:border-gray-700/40  outline-none"
+			: `${className}`} font-primary max-w-[calc(100vw-1rem)] justify-start rounded-xl  bg-white dark:bg-gray-850 dark:text-white shadow-lg border border-gray-300/30 dark:border-gray-700/40  outline-none"
 		transition={flyAndScale}
 		side={$mobile ? 'bottom' : 'bottom-start'}
 		sideOffset={4}
@@ -318,9 +318,13 @@
 									<div class="line-clamp-1">
 										<div class="flex items-center min-w-fit">
 											<img
-												src={item.model?.info?.meta?.profile_image_url ?? '/static/favicon.png'}
+												src="/static/favicon.png"
 												alt="Model"
 												class="rounded-full size-5 flex items-center mr-2"
+												on:load={(event) =>
+													(event.target.src =
+														item.model?.info?.meta?.profile_image_url ?? '/static/favicon.png')}
+												on:error={(event) => (event.target.src = '/static/favicon.png')}
 											/>
 											{item.label}
 										</div>

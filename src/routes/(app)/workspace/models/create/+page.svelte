@@ -63,9 +63,10 @@
 		vision: true,
 		usage: undefined,
 		base64: undefined,
+		createPPT: undefined,
 		createImage: undefined,
 		createVideo: undefined,
-		createPPT: undefined
+		createSearch: undefined,
 	};
 
 	let toolIds = [];
@@ -90,12 +91,14 @@
 				capabilities.createImage = baseModel.info?.meta?.capabilities?.createImage ?? false;
 				capabilities.createVideo = baseModel.info?.meta?.capabilities?.createVideo ?? false;
 				capabilities.createPPT = baseModel.info?.meta?.capabilities?.createPPT ?? false;
+				capabilities.createSearch = baseModel.info?.meta?.capabilities?.createSearch ?? false;
 			} else {
 				delete capabilities.usage;
 				delete capabilities.base64;
+				delete capabilities.createPPT;
 				delete capabilities.createImage;
 				delete capabilities.createVideo;
-				delete capabilities.createPPT;
+				delete capabilities.createSearch;
 			}
 			capabilities = capabilities;
 		}

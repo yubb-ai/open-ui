@@ -77,7 +77,6 @@
 										style="fill: currentColor;"
 										fill-rule="evenodd"
 										alt={tools[toolId].name}
-										loading="lazy"
 										on:load={() => (imageLoaded[toolId] = true)}
 										on:error={() => (imageLoaded[toolId] = false)}
 									/>

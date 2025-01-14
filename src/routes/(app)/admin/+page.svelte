@@ -445,7 +445,7 @@
 
 <style>
 	.font-mona {
-		font-family: 'Mona Sans';
+		font-family: 'Archivo', sans-serif;
 	}
 
 	.scrollbar-hidden::-webkit-scrollbar {
