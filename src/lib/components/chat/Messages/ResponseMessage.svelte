@@ -342,7 +342,7 @@
 		imageUrls = (message?.files ?? [])
 			.filter((file) => file.type === 'image')
 			.map((file) => ({
-				src: file.url,
+				src: file.url.startsWith('/') ? `${WEBUI_BASE_URL}${file.url}` : file.url,
 				alt: message.content || 'Image Preview'
 			}));
 	}

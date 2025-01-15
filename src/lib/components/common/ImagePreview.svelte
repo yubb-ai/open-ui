@@ -288,7 +288,6 @@
 		bind:this={previewElement}
 		class="font-primary fixed modal fixed top-0 right-0 left-0 bottom-0 bg-black text-white w-full min-h-screen h-screen flex justify-center z-[9999] overflow-hidden overscroll-contain"
 		on:mouseup={handleMouseUp}
-		on:mousemove={handleMouseMove}
 		on:wheel={handleWheel}
 		on:touchstart={handleTouchStart}
 		on:touchmove={handleTouchMove}
@@ -388,7 +387,7 @@
 			</svg>
 		</button>
 		<div
-			class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 select-none z-[99999] bg-gray-900 bg-opacity-20 rounded-lg p-1 w-fit"
+			class="absolute bottom-[25px] left-1/2 -translate-x-1/2 flex gap-2 select-none z-[99999] bg-gray-900 bg-opacity-20 rounded-lg p-1 w-fit"
 		>
 			<span class="absolute top-[-30px] left-1/2 -translate-x-1/2 text-white text-sm"
 				><strong>{previewIndex + 1} / {preview_src_list.length}</strong></span
