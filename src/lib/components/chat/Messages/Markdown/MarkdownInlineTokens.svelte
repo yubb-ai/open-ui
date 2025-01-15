@@ -4,17 +4,20 @@
 
 	import type { Token } from 'marked';
 	import { getContext } from 'svelte';
-
-	const i18n = getContext('i18n');
-
 	import { WEBUI_BASE_URL } from '$lib/constants';
+	import Image from '$lib/components/common/Image.svelte';
 	import { copyToClipboard, revertSanitizedResponseContent, unescapeHtml } from '$lib/utils';
 
-	import Image from '$lib/components/common/Image.svelte';
 	import KatexRenderer from './KatexRenderer.svelte';
 
 	export let id: string;
 	export let tokens: Token[];
+
+	const i18n = getContext('i18n');
+	let imageUrls = tokens
+		.filter((token) => token.type === 'image')
+		.map((token) => ({ src: token.href, alt: token.text }));
+	console.log(imageUrls);
 </script>
 
 {#each tokens as token}
@@ -38,7 +41,7 @@
 			<a href={token.href} target="_blank" rel="nofollow" title={token.title}>{token.text}</a>
 		{/if}
 	{:else if token.type === 'image'}
-		<Image src={token.href} alt={token.text} isMarkdown={true} />
+		<Image src={token.href} alt={token.text} isMarkdown={true} preview_src_list={imageUrls} />
 	{:else if token.type === 'strong'}
 		<strong>
 			<svelte:self id={`${id}-strong`} tokens={token.tokens} />

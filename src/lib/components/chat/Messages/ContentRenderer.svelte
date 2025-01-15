@@ -14,7 +14,7 @@
 
 	export let save = false;
 	export let floatingButtons = true;
-	export let bufferTime;
+	export let bufferTime = 30;
 
 	let contentContainerElement;
 	let buttonsContainerElement;

@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { toast } from 'svelte-sonner';
 	import dayjs from 'dayjs';
-
 	import { createEventDispatcher } from 'svelte';
 	import { onMount, tick, getContext } from 'svelte';
-
+	import Image from '$lib/components/common/Image.svelte';
 	const i18n = getContext<Writable<i18nType>>('i18n');
 
 	const dispatch = createEventDispatcher();
@@ -26,7 +25,6 @@
 	import Name from './Name.svelte';
 	import ProfileImage from './ProfileImage.svelte';
 	import Skeleton from './Skeleton.svelte';
-	import Image from '$lib/components/common/Image.svelte';
 	import Tooltip from '$lib/components/common/Tooltip.svelte';
 	import RateComment from './RateComment.svelte';
 	import Spinner from '$lib/components/common/Spinner.svelte';
@@ -95,13 +93,20 @@
 	export let chatId = '';
 	export let history;
 	export let messageId;
-	export let bufferTime;
+	export let bufferTime = 30;
 
 	let message: MessageType = JSON.parse(JSON.stringify(history.messages[messageId]));
 	$: if (history.messages) {
 		if (JSON.stringify(message) !== JSON.stringify(history.messages[messageId])) {
 			message = JSON.parse(JSON.stringify(history.messages[messageId]));
 		}
+	}
+
+	let imageUrls: string[] = [];
+
+	$: {
+		imageUrls =
+			message?.files?.filter((file) => file.type === 'image').map((file) => file.url) ?? [];
 	}
 
 	export let siblings;
@@ -375,7 +380,7 @@
 						{#each message.files as file}
 							<div>
 								{#if file.type === 'image'}
-									<Image src={file.url} alt={message.content} />
+									<Image src={file.url} alt={message.content} preview_src_list={imageUrls} />
 								{/if}
 							</div>
 						{/each}

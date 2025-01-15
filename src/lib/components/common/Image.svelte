@@ -7,6 +7,7 @@
 	export let alt = '';
 	export let isMarkdown: boolean = true;
 	export let showImagePreview = false;
+	export let preview_src_list: any[] = [];
 
 	export let className = ' w-full';
 
@@ -23,4 +24,4 @@
 	<img src={_src} {alt} class="rounded-lg cursor-pointer" draggable="false" data-cy="image" />
 </button>
 
-<ImagePreview bind:show={showImagePreview} src={_src} {alt} {isMarkdown} />
+<ImagePreview bind:show={showImagePreview} src={_src} {alt} {isMarkdown} {preview_src_list} />

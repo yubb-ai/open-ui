@@ -15,7 +15,7 @@
 	export let content;
 	export let model = null;
 	export let save = false;
-	export let bufferTime;
+	export let bufferTime = 30;
 
 	let tokens = [];
 

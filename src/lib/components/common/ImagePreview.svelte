@@ -5,10 +5,25 @@
 	export let src = '';
 	export let alt = '';
 	export let isMarkdown: boolean = true;
+	export let preview_src_list: any[] = [];
 
+	let previewIndex = preview_src_list.findIndex((item) => item.src === src);
 	let mounted = false;
-
-	let previewElement = null;
+	let previewElement: HTMLElement | null = null;
+	let imageElement: HTMLImageElement | null = null;
+	let scale = 1;
+	let rotation = 0;
+	let isDragging = false;
+	let startX = 0;
+	let startY = 0;
+	let offsetX = 0;
+	let offsetY = 0;
+	let touchStartX = 0;
+	let touchStartY = 0;
+	let isAnimating = false;
+	let animationTimer: any;
+	let initialDistance = 0;
+	let initialScale = 1;
 
 	const MimeTypes: { [index: string]: string } = {
 		jpeg: 'image/jpeg',
@@ -93,13 +108,158 @@
 
 	const handleKeyDown = (event: KeyboardEvent) => {
 		if (event.key === 'Escape') {
-			console.log('Escape');
 			closeShow();
+		} else if (event.key === 'ArrowLeft') {
+			previousImage();
+		} else if (event.key === 'ArrowRight') {
+			nextImage();
+		}
+	};
+
+	const handleMouseDown = (event: MouseEvent) => {
+		isDragging = true;
+		startX = event.clientX - offsetX;
+		startY = event.clientY - offsetY;
+	};
+
+	const handleMouseUp = () => {
+		isDragging = false;
+	};
+
+	const handleMouseMove = (event: MouseEvent) => {
+		if (!isDragging) return;
+		offsetX = event.clientX - startX;
+		offsetY = event.clientY - startY;
+	};
+
+	const handleWheel = (event: WheelEvent) => {
+		if (!imageElement) return;
+		const zoomSpeed = -event.deltaY * 0.001;
+		const newScale = scale + zoomSpeed;
+		const rect = imageElement.getBoundingClientRect();
+		const mouseX = event.clientX - rect.left;
+		const mouseY = event.clientY - rect.top;
+
+		scale = Math.max(0.1, newScale);
+
+		const scaleDelta = scale - newScale;
+
+		offsetX -= mouseX * scaleDelta;
+		offsetY -= mouseY * scaleDelta;
+	};
+
+	const handleTouchStart = (event: TouchEvent) => {
+		if (event.touches.length === 1) {
+			touchStartX = event.touches[0].clientX;
+		} else if (event.touches.length === 2) {
+			initialDistance = getDistance(event.touches[0], event.touches[1]);
+			initialScale = scale;
+			touchStartX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+			touchStartY = (event.touches[0].clientY + event.touches[1].clientY) / 2;
+		}
+	};
+
+	const handleTouchMove = (event: TouchEvent) => {
+		if (event.touches.length === 2) {
+			const currentDistance = getDistance(event.touches[0], event.touches[1]);
+			const zoomAmount = (currentDistance - initialDistance) * 0.005;
+			const newScale = initialScale + zoomAmount;
+			scale = Math.max(0.1, newScale);
+			const rect = imageElement!.getBoundingClientRect();
+			const touchX = (event.touches[0].clientX + event.touches[1].clientX) / 2 - rect.left;
+			const touchY = (event.touches[0].clientY + event.touches[1].clientY) / 2 - rect.top;
+
+			const scaleDelta = scale - newScale;
+
+			offsetX -= touchX * scaleDelta;
+			offsetY -= touchY * scaleDelta;
+		}
+	};
+
+	const handleTouchEnd = (event: TouchEvent) => {
+		if (event.changedTouches.length === 1) {
+			const touchEndX = event.changedTouches[0].clientX;
+			const deltaX = touchEndX - touchStartX;
+			if (deltaX > 50) {
+				previousImage();
+			} else if (deltaX < -50) {
+				nextImage();
+			}
+		}
+		initialDistance = 0;
+		initialScale = scale;
+	};
+	const getDistance = (touch1: Touch, touch2: Touch) => {
+		const xDiff = touch1.clientX - touch2.clientX;
+		const yDiff = touch1.clientY - touch2.clientY;
+		return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+	};
+	const animateButton = (element: HTMLElement) => {
+		if (isAnimating) return;
+		isAnimating = true;
+		element.classList.add('filter', 'drop-shadow-md', 'brightness-125');
+		animationTimer = setTimeout(() => {
+			element.classList.remove('filter', 'drop-shadow-md', 'brightness-125');
+			isAnimating = false;
+		}, 150);
+	};
+
+	const resetScale = () => {
+		scale = 1;
+	};
+	const resetRotate = () => {
+		rotation = 0;
+	};
+	const zoomIn = (e: any) => {
+		animateButton(e.currentTarget);
+		scale += 0.2;
+	};
+
+	const zoomOut = (e: any) => {
+		animateButton(e.currentTarget);
+		scale -= 0.2;
+	};
+
+	const rotateLeft = (e: any) => {
+		animateButton(e.currentTarget);
+		rotation -= 90;
+	};
+
+	const rotateRight = (e: any) => {
+		animateButton(e.currentTarget);
+		rotation += 90;
+	};
+
+	const nextImage = () => {
+		if (preview_src_list && preview_src_list.length > 0) {
+			previewIndex = (previewIndex + 1) % preview_src_list.length;
+			src = preview_src_list[previewIndex].src;
+			alt = preview_src_list[previewIndex].alt;
+			resetScale();
+			resetRotate();
+			offsetX = 0;
+			offsetY = 0;
+		}
+	};
+
+	const previousImage = () => {
+		if (preview_src_list && preview_src_list.length > 0) {
+			previewIndex = (previewIndex - 1 + preview_src_list.length) % preview_src_list.length;
+			src = preview_src_list[previewIndex].src;
+			alt = preview_src_list[previewIndex].alt;
+			resetScale();
+			resetRotate();
+			offsetX = 0;
+			offsetY = 0;
 		}
 	};
 
 	onMount(() => {
 		mounted = true;
+		if (preview_src_list && preview_src_list.length > 0) {
+			src = preview_src_list[previewIndex]?.src;
+			alt = preview_src_list[previewIndex]?.alt;
+		}
 	});
 
 	$: if (show && previewElement) {
@@ -126,12 +286,18 @@
 	<!-- svelte-ignore a11y-no-static-element-interactions -->
 	<div
 		bind:this={previewElement}
-		class="modal fixed top-0 right-0 left-0 bottom-0 bg-black text-white w-full min-h-screen h-screen flex justify-center z-[9999] overflow-hidden overscroll-contain"
+		class="font-primary fixed modal fixed top-0 right-0 left-0 bottom-0 bg-black text-white w-full min-h-screen h-screen flex justify-center z-[9999] overflow-hidden overscroll-contain"
+		on:mouseup={handleMouseUp}
+		on:mousemove={handleMouseMove}
+		on:wheel={handleWheel}
+		on:touchstart={handleTouchStart}
+		on:touchmove={handleTouchMove}
+		on:touchend={handleTouchEnd}
 	>
-		<div class=" absolute left-0 w-full flex justify-between select-none">
-			<div>
+		<div class="absolute top-0 left-0 w-full flex justify-between p-2 z-[99999] select-none">
+			<div class="flex gap-2">
 				<button
-					class=" p-5"
+					class="bg-transparent p-2 border-none bg-opacity-20 rounded-lg p-2 outline-none cursor-pointer text-white transition-all duration-200 ease-in-out hover:opacity-80 hover:scale-110 shadow-md rounded-lg hover:bg-opacity-50"
 					on:click={() => {
 						closeShow();
 					}}
@@ -149,9 +315,9 @@
 				</button>
 			</div>
 
-			<div>
+			<div class="flex gap-2">
 				<button
-					class=" p-5"
+					class="bg-transparent p-2 border-none bg-opacity-20 rounded-lg p-2 outline-none cursor-pointer text-white transition-all duration-200 ease-in-out hover:bg-opacity-50 rounded-lg"
 					on:click={() => {
 						if (isMarkdown) {
 							window.open(src, '_blank').focus();
@@ -176,6 +342,122 @@
 				</button>
 			</div>
 		</div>
-		<img {src} {alt} class=" mx-auto h-full object-scale-down select-none" draggable="false" />
+		<button
+			class="absolute top-1/2 -translate-y-1/2 bg-gray-900 bg-opacity-20 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out p-2 z-[99999] hover:bg-opacity-50 left-2 rounded-lg"
+			on:click={previousImage}
+			aria-label="Previous Image"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke-width="1.5"
+				stroke="currentColor"
+				class="w-6 h-6"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" d="m15.75 19.5-7.5-7.5 7.5-7.5" />
+			</svg>
+		</button>
+		<div
+			class="mx-auto h-full flex justify-center items-center select-none cursor-grab active:cursor-grabbing"
+			on:mousedown={handleMouseDown}
+		>
+			<img
+				bind:this={imageElement}
+				{src}
+				{alt}
+				class="object-scale-down select-none max-w-full max-h-full transition-transform duration-200 ease-in-out"
+				draggable="false"
+				style="transform: translate( {offsetX}px, {offsetY}px) scale({scale}) rotate({rotation}deg);"
+			/>
+		</div>
+		<button
+			class="absolute top-1/2 -translate-y-1/2 bg-gray-900 bg-opacity-20 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out p-2 z-[99999] hover:bg-opacity-50 right-2 rounded-lg"
+			on:click={nextImage}
+			aria-label="Next Image"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke-width="1.5"
+				stroke="currentColor"
+				class="w-6 h-6"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+			</svg>
+		</button>
+		<div
+			class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 select-none z-[99999] bg-gray-900 bg-opacity-20 rounded-lg p-1 w-fit"
+		>
+			<span class="absolute top-[-40px] left-1/2 -translate-x-1/2 text-white text-sm"
+				>{previewIndex + 1} / {preview_src_list.length}</span
+			>
+			<button
+				class="bg-transparent p-2 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out hover:bg-opacity-50 rounded-lg transform-button"
+				on:click={zoomIn}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-6 h-6"
+				>
+					<circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"
+					></line><line x1="8" x2="14" y1="11" y2="11"></line></svg
+				>
+			</button>
+			<button
+				class="bg-transparent p-2 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out hover:bg-opacity-50 rounded-lg transform-button"
+				on:click={zoomOut}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-6 h-6"
+				>
+					<circle cx="11" cy="11" r="8"></circle><line x1="21" x2="16.65" y1="21" y2="16.65"
+					></line><line x1="11" x2="11" y1="8" y2="14"></line><line x1="8" x2="14" y1="11" y2="11"
+					></line></svg
+				>
+			</button>
+			<button
+				class="bg-transparent p-2 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out hover:bg-opacity-50 rounded-lg transform-button"
+				on:click={rotateLeft}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-6 h-6"
+				>
+					<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"
+					></path></svg
+				>
+			</button>
+			<button
+				class="bg-transparent p-2 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out hover:bg-opacity-50 rounded-lg transform-button"
+				on:click={rotateRight}
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke-width="1.5"
+					stroke="currentColor"
+					class="w-6 h-6"
+				>
+					<path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"
+					></path></svg
+				>
+			</button>
+		</div>
 	</div>
 {/if}
