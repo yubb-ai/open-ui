@@ -24,7 +24,7 @@
 	const submitHandler = async () => {
 		loading = true;
 		command = command.replaceAll('/', '');
-		
+
 		const prompt = await createNewPrompt(localStorage.token, command, title, content).catch(
 			(error) => {
 				toast.error(error);

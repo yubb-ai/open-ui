@@ -1652,19 +1652,35 @@ SEND_FILTER_MESSAGE_TYPE = PersistentConfig(
 # REGISTERED_EMAIL
 ####################################
 
-REGISTERED_EMAIL_SUFFIX = os.environ.get("REGISTERED_EMAIL_SUFFIX", "").lower()
-
-TURNSTILE_SIGNUP_CHECK = (
-    os.environ.get("TURNSTILE_SIGNUP_CHECK", "false").lower() == "true"
+REGISTERED_EMAIL_SUFFIX = PersistentConfig(
+    "REGISTERED_EMAIL_SUFFIX",
+    "registered_email.suffix",
+    os.getenv("REGISTERED_EMAIL_SUFFIX", ""),
 )
 
-TURNSTILE_LOGIN_CHECK = (
-    os.environ.get("TURNSTILE_LOGIN_CHECK", "false").lower() == "true"
+TURNSTILE_SIGNUP_CHECK = PersistentConfig(
+    "TURNSTILE_SIGNUP_CHECK",
+    "registered_email.turnstile_signup_check",
+    os.environ.get("TURNSTILE_SIGNUP_CHECK", "false").lower() == "true",
 )
 
-TURNSTILE_SITE_KEY = os.environ.get("TURNSTILE_SITE_KEY", "")
+TURNSTILE_LOGIN_CHECK = PersistentConfig(
+    "TURNSTILE_LOGIN_CHECK",
+    "registered_email.turnstile_login_check",
+    os.environ.get("TURNSTILE_LOGIN_CHECK", "false").lower() == "true",
+)
 
-TURNSTILE_SECRET_KEY = os.environ.get("TURNSTILE_SECRET_KEY", "")
+TURNSTILE_SITE_KEY = PersistentConfig(
+    "TURNSTILE_SITE_KEY",
+    "registered_email.turnstile_site_key",
+    os.environ.get("TURNSTILE_SITE_KEY", ""),
+)
+
+TURNSTILE_SECRET_KEY = PersistentConfig(
+    "TURNSTILE_SECRET_KEY",
+    "registered_email.turnstile_secret_key",
+    os.environ.get("TURNSTILE_SECRET_KEY", ""),
+)
 
 
 ####################################

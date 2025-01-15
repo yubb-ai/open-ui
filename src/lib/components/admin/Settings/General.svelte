@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { getBackendConfig, getWebhookUrl, updateWebhookUrl } from '$lib/apis';
 	import { getAdminConfig, updateAdminConfig } from '$lib/apis/auths';
+	import SensitiveInput from '$lib/components/common/SensitiveInput.svelte';
 	import Switch from '$lib/components/common/Switch.svelte';
 	import { config } from '$lib/stores';
 	import { onMount, getContext } from 'svelte';
@@ -72,8 +73,6 @@
 						</div>
 					</div>
 
-					<hr class=" dark:border-gray-850 my-2" />
-
 					<div class="w-full flex flex-col space-y-4">
 						<div class="flex flex-col space-y-2">
 							<div class="text-xs font-medium">
@@ -104,6 +103,65 @@
 									<option value="day">{$i18n.t('day')}</option>
 								</select>
 							</div>
+						</div>
+					</div>
+
+					<hr class=" dark:border-gray-850 my-2" />
+
+					<div class="my-3 flex w-full items-center justify-between pr-2">
+						<div class=" self-center text-xs font-medium">
+							{$i18n.t('Enable Turnstile SignUp Check')}
+						</div>
+
+						<Switch bind:state={adminConfig.TURNSTILE_SIGNUP_CHECK} />
+					</div>
+
+					<div class="my-3 flex w-full items-center justify-between pr-2">
+						<div class=" self-center text-xs font-medium">
+							{$i18n.t('Enable Turnstile Login Check')}
+						</div>
+
+						<Switch bind:state={adminConfig.TURNSTILE_LOGIN_CHECK} />
+					</div>
+
+					{#if adminConfig.TURNSTILE_SIGNUP_CHECK || adminConfig.TURNSTILE_LOGIN_CHECK}
+						<div class=" w-full justify-between">
+							<div class="my-0.5 flex gap-2">
+								<input
+									class="flex-1 w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+									placeholder={$i18n.t('Turnstile Site Key')}
+									bind:value={adminConfig.TURNSTILE_SITE_KEY}
+									required
+								/>
+
+								<SensitiveInput
+									placeholder={$i18n.t('Turnstile Secret Key')}
+									bind:value={adminConfig.TURNSTILE_SECRET_KEY}
+								/>
+							</div>
+						</div>
+					{/if}
+
+					<div class=" w-full justify-between">
+						<div class="flex w-full justify-between">
+							<div class=" self-center text-xs font-medium">
+								{$i18n.t('Supported Registered Email Suffix')}
+							</div>
+						</div>
+
+						<div class="flex mt-2 space-x-2">
+							<input
+								class="w-full rounded-lg py-2 px-4 text-sm bg-gray-50 dark:text-gray-300 dark:bg-gray-850 outline-none"
+								type="text"
+								placeholder={''}
+								bind:value={adminConfig.REGISTERED_EMAIL_SUFFIX}
+							/>
+						</div>
+						<div class="mt-2 text-xs text-gray-400 dark:text-gray-500">
+							{$i18n.t('Valid Format:')}
+							<span class=" text-gray-300 font-medium"
+								>{$i18n.t("Multiple mailbox suffixes are separated by ','")}</span
+							>
 						</div>
 					</div>
 				{/if}

@@ -20,10 +20,6 @@ from open_webui.apps.webui.models.auths import (
 from open_webui.apps.webui.models.users import Users
 from open_webui.config import (
     WEBUI_AUTH,
-    REGISTERED_EMAIL_SUFFIX,
-    TURNSTILE_SIGNUP_CHECK,
-    TURNSTILE_LOGIN_CHECK,
-    TURNSTILE_SECRET_KEY,
     ENABLE_WECHAT_NOTICE,
 )
 from open_webui.constants import ERROR_MESSAGES, WEBHOOK_MESSAGES
@@ -165,8 +161,13 @@ async def signin(request: Request, response: Response, form_data: SigninForm):
 
             user = Auths.authenticate_user(admin_email.lower(), admin_password)
     else:
-        if TURNSTILE_LOGIN_CHECK and TURNSTILE_SECRET_KEY:
-            res = await validate_token(form_data.turnstileToken, TURNSTILE_SECRET_KEY)
+        if (
+            request.app.state.config.TURNSTILE_LOGIN_CHECK
+            and request.app.state.config.TURNSTILE_SECRET_KEY
+        ):
+            res = await validate_token(
+                form_data.turnstileToken, request.app.state.config.TURNSTILE_SECRET_KEY
+            )
             if not res.get("success", False):
                 raise HTTPException(
                     status_code=status.HTTP_403_FORBIDDEN,
@@ -222,8 +223,13 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
                 status.HTTP_403_FORBIDDEN, detail=ERROR_MESSAGES.ACCESS_PROHIBITED
             )
 
-    if TURNSTILE_SIGNUP_CHECK and TURNSTILE_SECRET_KEY:
-        res = await validate_token(form_data.turnstileToken, TURNSTILE_SECRET_KEY)
+    if (
+        request.app.state.config.TURNSTILE_SIGNUP_CHECK
+        and request.app.state.config.TURNSTILE_SECRET_KEY
+    ):
+        res = await validate_token(
+            form_data.turnstileToken, request.app.state.config.TURNSTILE_SECRET_KEY
+        )
         if not res.get("success", False):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -235,12 +241,19 @@ async def signup(request: Request, response: Response, form_data: SignupForm):
             status.HTTP_400_BAD_REQUEST, detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT
         )
 
-    if REGISTERED_EMAIL_SUFFIX and not form_data.email.lower().endswith(
-        REGISTERED_EMAIL_SUFFIX
+    registered_email_suffix = request.app.state.config.REGISTERED_EMAIL_SUFFIX
+    valid_email_formats = (
+        [suffix for suffix in registered_email_suffix.split(",") if suffix]
+        if registered_email_suffix
+        else []
+    )
+
+    if valid_email_formats and not any(
+        form_data.email.lower().endswith(suffix) for suffix in valid_email_formats
     ):
         raise HTTPException(
             status.HTTP_400_BAD_REQUEST,
-            detail=ERROR_MESSAGES.INVALID_CUSTOMER_EMAIL_FORMAT,
+            detail=ERROR_MESSAGES.INVALID_EMAIL_FORMAT,
         )
 
     if Users.get_user_by_email(form_data.email.lower()):
@@ -413,6 +426,11 @@ async def get_admin_config(request: Request, user=Depends(get_admin_user)):
         "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
         "ADMIN_URL": request.app.state.config.ADMIN_URL,
+        "REGISTERED_EMAIL_SUFFIX": request.app.state.config.REGISTERED_EMAIL_SUFFIX,
+        "TURNSTILE_SIGNUP_CHECK": request.app.state.config.TURNSTILE_SIGNUP_CHECK,
+        "TURNSTILE_LOGIN_CHECK": request.app.state.config.TURNSTILE_LOGIN_CHECK,
+        "TURNSTILE_SITE_KEY": request.app.state.config.TURNSTILE_SITE_KEY,
+        "TURNSTILE_SECRET_KEY": request.app.state.config.TURNSTILE_SECRET_KEY,
     }
 
 
@@ -426,6 +444,11 @@ class AdminConfig(BaseModel):
     ENABLE_COMMUNITY_SHARING: bool
     ENABLE_MESSAGE_RATING: bool
     ADMIN_URL: str
+    REGISTERED_EMAIL_SUFFIX: str
+    TURNSTILE_SIGNUP_CHECK: bool
+    TURNSTILE_LOGIN_CHECK: bool
+    TURNSTILE_SITE_KEY: str
+    TURNSTILE_SECRET_KEY: str
 
 
 @router.post("/admin/config")
@@ -435,6 +458,11 @@ async def update_admin_config(
     request.app.state.config.SHOW_ADMIN_DETAILS = form_data.SHOW_ADMIN_DETAILS
     request.app.state.config.ENABLE_SIGNUP = form_data.ENABLE_SIGNUP
     request.app.state.config.ADMIN_URL = form_data.ADMIN_URL
+    request.app.state.config.REGISTERED_EMAIL_SUFFIX = form_data.REGISTERED_EMAIL_SUFFIX
+    request.app.state.config.TURNSTILE_SIGNUP_CHECK = form_data.TURNSTILE_SIGNUP_CHECK
+    request.app.state.config.TURNSTILE_LOGIN_CHECK = form_data.TURNSTILE_LOGIN_CHECK
+    request.app.state.config.TURNSTILE_SITE_KEY = form_data.TURNSTILE_SITE_KEY
+    request.app.state.config.TURNSTILE_SECRET_KEY = form_data.TURNSTILE_SECRET_KEY
 
     if form_data.DEFAULT_USER_ROLE in ["pending", "user", "vip", "svip", "admin"]:
         request.app.state.config.DEFAULT_USER_ROLE = form_data.DEFAULT_USER_ROLE
@@ -470,6 +498,11 @@ async def update_admin_config(
         "JWT_EXPIRES_IN": request.app.state.config.JWT_EXPIRES_IN,
         "ENABLE_COMMUNITY_SHARING": request.app.state.config.ENABLE_COMMUNITY_SHARING,
         "ENABLE_MESSAGE_RATING": request.app.state.config.ENABLE_MESSAGE_RATING,
+        "REGISTERED_EMAIL_SUFFIX": request.app.state.config.REGISTERED_EMAIL_SUFFIX,
+        "TURNSTILE_SIGNUP_CHECK": request.app.state.config.TURNSTILE_SIGNUP_CHECK,
+        "TURNSTILE_LOGIN_CHECK": request.app.state.config.TURNSTILE_LOGIN_CHECK,
+        "TURNSTILE_SITE_KEY": request.app.state.config.TURNSTILE_SITE_KEY,
+        "TURNSTILE_SECRET_KEY": request.app.state.config.TURNSTILE_SECRET_KEY,
     }
 
 

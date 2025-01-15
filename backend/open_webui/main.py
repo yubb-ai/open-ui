@@ -226,6 +226,10 @@ app.state.config.MODEL_FILTER_LIST = MODEL_FILTER_LIST
 app.state.config.WEBHOOK_URL = WEBHOOK_URL
 app.state.config.ADMIN_URL = ADMIN_URL
 
+app.state.config.TURNSTILE_SIGNUP_CHECK = TURNSTILE_SIGNUP_CHECK
+app.state.config.TURNSTILE_LOGIN_CHECK = TURNSTILE_LOGIN_CHECK
+app.state.config.TURNSTILE_SITE_KEY = TURNSTILE_SITE_KEY
+
 app.state.config.TASK_MODEL = TASK_MODEL
 app.state.config.TASK_MODEL_EXTERNAL = TASK_MODEL_EXTERNAL
 app.state.config.TITLE_GENERATION_PROMPT_TEMPLATE = TITLE_GENERATION_PROMPT_TEMPLATE
@@ -2144,9 +2148,9 @@ async def get_app_config(request: Request):
         "midjourney_url": MIDJOURNEY_URL,
         "recharge_url": app.state.config.ADMIN_URL,
         "random_image_url": app.state.config.BACKGROUND_RANDOM_IMAGE_URL,
-        "turnstile_login_check": TURNSTILE_LOGIN_CHECK,
-        "turnstile_signup_check": TURNSTILE_SIGNUP_CHECK,
-        "turnstile_site_key": TURNSTILE_SITE_KEY,
+        "turnstile_login_check": app.state.config.TURNSTILE_LOGIN_CHECK,
+        "turnstile_signup_check": app.state.config.TURNSTILE_SIGNUP_CHECK,
+        "turnstile_site_key": app.state.config.TURNSTILE_SITE_KEY,
         "version": VERSION,
         "default_locale": str(DEFAULT_LOCALE),
         "oauth": {
