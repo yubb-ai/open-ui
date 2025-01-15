@@ -142,7 +142,7 @@ def save_file(file: UploadFile, oss_directory: str) -> dict:
             bucket.put_object_acl(filename, "public-read")
 
             # 生成文件的 URL
-            oss_file_url = f"https://{config.OSS_ACCESS_KEY_ID}.{config.OSS_ENDPOINT.replace('https://', '')}/{filename}"
+            oss_file_url = f"https://{config.OSS_BUCKET_NAME}.{config.OSS_ENDPOINT.replace('https://', '')}/{filename}"
 
             log.info(f"File uploaded to OSS: {oss_file_path}, Size: {file_size} bytes")
 
