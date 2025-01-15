@@ -390,8 +390,8 @@
 		<div
 			class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 select-none z-[99999] bg-gray-900 bg-opacity-20 rounded-lg p-1 w-fit"
 		>
-			<span class="absolute top-[-40px] left-1/2 -translate-x-1/2 text-white text-sm"
-				>{previewIndex + 1} / {preview_src_list.length}</span
+			<span class="absolute top-[-30px] left-1/2 -translate-x-1/2 text-white text-sm"
+				><strong>{previewIndex + 1} / {preview_src_list.length}</strong></span
 			>
 			<button
 				class="bg-transparent p-2 border-none outline-none cursor-pointer text-white transition-colors duration-200 ease-in-out hover:bg-opacity-50 rounded-lg transform-button"
