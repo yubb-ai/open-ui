@@ -14,10 +14,17 @@
 	export let tokens: Token[];
 
 	const i18n = getContext('i18n');
-	let imageUrls = tokens
-		.filter((token) => token.type === 'image')
-		.map((token) => ({ src: token.href, alt: token.text }));
-	console.log(imageUrls);
+
+	let imageUrls: { src: string; alt: string }[] = [];
+
+	$: {
+		imageUrls = tokens
+			.filter((token): token is Token & { href: string; text: string } => token.type === 'image')
+			.map((token) => ({
+				src: token.href,
+				alt: token.text || ''
+			}));
+	}
 </script>
 
 {#each tokens as token}

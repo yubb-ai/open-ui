@@ -102,13 +102,6 @@
 		}
 	}
 
-	let imageUrls: string[] = [];
-
-	$: {
-		imageUrls =
-			message?.files?.filter((file) => file.type === 'image').map((file) => file.url) ?? [];
-	}
-
 	export let siblings;
 
 	export let showPreviousMessage: Function;
@@ -341,6 +334,17 @@
 		(async () => {
 			await tick();
 		})();
+	}
+
+	let imageUrls: { src: string; alt: string }[] = [];
+
+	$: {
+		imageUrls = (message?.files ?? [])
+			.filter((file) => file.type === 'image')
+			.map((file) => ({
+				src: file.url,
+				alt: message.content || 'Image Preview'
+			}));
 	}
 
 	onMount(async () => {
